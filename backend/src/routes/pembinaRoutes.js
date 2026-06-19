@@ -5,11 +5,13 @@ const { createPembinaValidation, updatePembinaValidation } = require('../validat
 const validate = require('../middleware/validatorMiddleware');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
-// All Pembina CRUD endpoints are restricted to Admin role
+// Get all pembina (Public)
+router.get('/', pembinaController.getPembina);
+
+// All other Pembina CRUD endpoints are restricted to Admin role
 router.use(verifyToken);
 router.use(verifyAdmin);
 
-router.get('/', pembinaController.getPembina);
 router.get('/:id', pembinaController.getPembinaById);
 router.post('/', createPembinaValidation, validate, pembinaController.createPembina);
 router.put('/:id', updatePembinaValidation, validate, pembinaController.updatePembina);

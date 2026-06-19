@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { Mail, Phone, MapPin, Award, CheckCircle } from 'lucide-react';
+import logoImg from '../../assets/logo.png';
 
 const Profil = () => {
   const [profile, setProfile] = useState(null);
@@ -46,7 +47,7 @@ const Profil = () => {
         
         {/* Header Block */}
         <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 shadow-soft flex flex-col md:flex-row items-center md:space-x-8 text-center md:text-left">
-          <img src={profile.logo} alt="Logo" className="h-28 w-28 md:h-36 md:w-36 bg-slate-50 p-3 rounded-2xl border border-slate-200 object-contain flex-shrink-0 mb-6 md:mb-0" />
+          <img src={profile.logo || logoImg} alt="Logo" className="h-28 w-28 md:h-36 md:w-36 bg-slate-50 p-3 rounded-2xl border border-slate-200 object-contain flex-shrink-0 mb-6 md:mb-0" />
           <div className="space-y-4">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-primary-800 border border-emerald-200">
               Profil Gugus Depan

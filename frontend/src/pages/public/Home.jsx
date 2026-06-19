@@ -61,23 +61,9 @@ const Home = () => {
               <span className="text-emerald-400">Darmaku Kubaktikan</span>
             </h1>
             <p className="text-slate-300 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Selamat datang di portal resmi Gugus Depan Pramuka SMP Negeri 2 Katapang. Wadah kepanduan kreatif untuk menempa karakter pemuda tangguh, mandiri, dan berjiwa kepemimpinan.
+              Selamat datang di website resmi Gugus Depan Pramuka SMP Negeri 2 Katapang. Wadah kepanduan kreatif untuk menempa karakter pemuda tangguh, mandiri, dan berjiwa kepemimpinan.
             </p>
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start pt-2">
-              <Link
-                to="/profil"
-                className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white bg-primary rounded-xl hover:bg-primary-700 transition-all shadow-md min-h-[44px]"
-              >
-                Profil Gudep
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white rounded-xl border border-slate-700 transition-all min-h-[44px]"
-              >
-                Portal Anggota
-              </Link>
-            </div>
+
           </div>
           <div className="lg:col-span-5 flex justify-center items-center">
             <div className="bg-slate-800/40 p-8 rounded-3xl border border-slate-800/60 shadow-2xl glass max-w-[280px] sm:max-w-[320px] transition-transform duration-300 hover:scale-105">
@@ -200,7 +186,7 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="font-extrabold text-slate-800 text-sm">Pratama</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Ketua Dewan Galang</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Ketua Dewan PGalang</p>
                 <p className="text-xs text-slate-500 mt-2 leading-relaxed">
                   Pemimpin dewan pengurus penggalang aktif.
                 </p>
