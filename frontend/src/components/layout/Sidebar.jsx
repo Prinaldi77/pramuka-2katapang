@@ -45,7 +45,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
       { name: 'Siswa Management', path: '/admin/siswa', icon: UserCheck },
       { name: 'Pembina Management', path: '/admin/pembina', icon: Users },
       { name: 'Profil Gudep', path: '/admin/profil', icon: FileText },
-      { name: 'Berita', path: '/admin/berita', icon: FileText },
       { name: 'Kegiatan', path: '/admin/kegiatan', icon: Calendar },
       { name: 'Prestasi', path: '/admin/prestasi', icon: Award },
       { name: 'Galeri', path: '/admin/galeri', icon: ImageIcon },

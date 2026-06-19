@@ -14,7 +14,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Beranda', path: '/' },
     { name: 'Profil', path: '/profil' },
-    { name: 'Berita', path: '/berita' },
+    { name: 'Kepengurusan', path: '/kepengurusan' },
     { name: 'Kegiatan', path: '/kegiatan' },
     { name: 'Prestasi', path: '/prestasi' },
     { name: 'Galeri', path: '/galeri' },

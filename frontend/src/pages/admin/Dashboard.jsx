@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
-import { Users, UserCheck, FileText, Calendar, Compass, ShieldAlert } from 'lucide-react';
+import { Users, UserCheck, FileText, Calendar, Compass, ShieldAlert, Users2 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { motion } from 'framer-motion';
@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     siswa: 0,
     pembina: 0,
-    berita: 0,
+    pengurus: 0,
     kegiatan: 0,
     absensiHariIni: 0,
   });
@@ -38,10 +38,10 @@ const Dashboard = () => {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const [siswaRes, pembinaRes, beritaRes, kegiatanRes, absensiRes] = await Promise.all([
+        const [siswaRes, pembinaRes, pengurusRes, kegiatanRes, absensiRes] = await Promise.all([
           api.siswa.getAll(),
           api.pembina.getAll(),
-          api.berita.getAll(),
+          api.pengurus.getAll(),
           api.kegiatan.getAll(),
           api.absensi.getAll(),
         ]);
@@ -52,7 +52,7 @@ const Dashboard = () => {
         setStats({
           siswa: siswaRes.data.length,
           pembina: pembinaRes.data.length,
-          berita: beritaRes.data.length,
+          pengurus: pengurusRes.data.length,
           kegiatan: kegiatanRes.data.length,
           absensiHariIni: todayAbs,
         });
@@ -103,7 +103,7 @@ const Dashboard = () => {
   const statItems = [
     { label: 'Total Siswa', value: stats.siswa, icon: UserCheck, color: 'text-emerald-600 bg-emerald-50' },
     { label: 'Total Pembina', value: stats.pembina, icon: Users, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Total Berita', value: stats.berita, icon: FileText, color: 'text-amber-600 bg-amber-50' },
+    { label: 'Total Pengurus', value: stats.pengurus, icon: Users2, color: 'text-amber-600 bg-amber-50' },
     { label: 'Total Kegiatan', value: stats.kegiatan, icon: Calendar, color: 'text-purple-600 bg-purple-50' },
     { label: 'Absensi Hari Ini', value: stats.absensiHariIni, icon: Compass, color: 'text-rose-600 bg-rose-50' },
   ];

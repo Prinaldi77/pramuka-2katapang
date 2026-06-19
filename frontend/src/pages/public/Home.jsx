@@ -1,36 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
-import { Calendar, ArrowRight, Award, Users, FileText, Image } from 'lucide-react';
+import { Calendar, ArrowRight, Award, Users, FileText, Image, Crown, Shield } from 'lucide-react';
 import heroBg from '../../assets/logo.png'; // fallback or design element
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 const Home = () => {
-  const [berita, setBerita] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
   const [galeri, setGaleri] = useState([]);
-  const [stats, setStats] = useState({ siswa: 120, pembina: 6, berita: 0, kegiatan: 0 });
+  const [stats, setStats] = useState({ siswa: 120, pembina: 6, pengurus: 0, kegiatan: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [beritaRes, kegiatanRes, galeriRes, siswaRes, pembinaRes] = await Promise.all([
-          api.berita.getAll(),
+        const [kegiatanRes, galeriRes, siswaRes, pembinaRes, pengurusRes] = await Promise.all([
           api.kegiatan.getAll(),
           api.galeri.getAll(),
           api.siswa.getAll().catch(() => ({ data: [] })),
           api.pembina.getAll().catch(() => ({ data: [] })),
+          api.pengurus.getAll().catch(() => ({ data: [] })),
         ]);
 
-        setBerita(beritaRes.data.slice(0, 3));
         setKegiatan(kegiatanRes.data.slice(0, 2));
         setGaleri(galeriRes.data.slice(0, 4));
         setStats({
           siswa: siswaRes.data.length || 120,
           pembina: pembinaRes.data.length || 6,
-          berita: beritaRes.data.length || 0,
+          pengurus: pengurusRes.data.length || 0,
           kegiatan: kegiatanRes.data.length || 0,
         });
       } catch (err) {
@@ -107,10 +105,10 @@ const Home = () => {
             </div>
           </div>
           <div data-aos="zoom-in" data-aos-delay="300" className="bg-white p-6 rounded-2xl border border-slate-200 shadow-soft flex items-center space-x-4">
-            <div className="p-3.5 bg-emerald-50 text-primary rounded-xl"><FileText className="h-6 w-6" /></div>
+            <div className="p-3.5 bg-emerald-50 text-primary rounded-xl"><Users className="h-6 w-6" /></div>
             <div>
-              <p className="text-2xl font-bold text-slate-800">{stats.berita}</p>
-              <p className="text-xs text-slate-500 font-medium">Berita Dirilis</p>
+              <p className="text-2xl font-bold text-slate-800">{stats.pengurus}</p>
+              <p className="text-xs text-slate-500 font-medium">Dewan Pengurus</p>
             </div>
           </div>
           <div data-aos="zoom-in" data-aos-delay="400" className="bg-white p-6 rounded-2xl border border-slate-200 shadow-soft flex items-center space-x-4">
@@ -157,43 +155,58 @@ const Home = () => {
       {/* Latest News & Upcoming Events */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* Berita Terbaru (Left Column) */}
+        {/* Struktur Kepemimpinan (Left Column) */}
         <div data-aos="fade-up" className="lg:col-span-8 space-y-6">
           <div className="flex justify-between items-end border-b border-slate-200 pb-3">
-            <h2 className="text-2xl font-bold text-slate-800">Berita Terbaru</h2>
-            <Link to="/berita" className="text-sm font-semibold text-primary hover:underline flex items-center">
-              Semua Berita <ArrowRight className="h-4 w-4 ml-1" />
+            <h2 className="text-2xl font-bold text-slate-800">Struktur Kepemimpinan</h2>
+            <Link to="/kepengurusan" className="text-sm font-semibold text-primary hover:underline flex items-center">
+              Lihat Semua Pengurus <ArrowRight className="h-4 w-4 ml-1" />
             </Link>
           </div>
 
-          {loading ? (
-            <SkeletonLoader type="card" rows={3} />
-          ) : error ? (
-            <p className="text-sm text-red-500">Gagal memuat berita terbaru.</p>
-          ) : berita.length === 0 ? (
-            <p className="text-sm text-slate-500">Tidak ada berita saat ini.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {berita.map((b, i) => (
-                <div key={b.id} data-aos="zoom-in" data-aos-delay={i * 100} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between">
-                  <div className="aspect-video w-full overflow-hidden bg-slate-100">
-                    <img src={b.gambar} alt={b.judul} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                      <span className="text-[10px] text-slate-400 font-semibold">{b.tanggal}</span>
-                      <h3 className="font-bold text-slate-800 text-sm mt-1 line-clamp-2 hover:text-primary">
-                        <Link to={`/berita/${b.id}`}>{b.judul}</Link>
-                      </h3>
-                    </div>
-                    <Link to={`/berita/${b.id}`} className="text-xs font-semibold text-primary-700 hover:text-primary mt-4 inline-flex items-center">
-                      Baca Selengkapnya <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {/* Card 1: Kamabigus */}
+            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
+              <div className="mx-auto p-3 bg-emerald-50 text-emerald-600 rounded-2xl w-fit">
+                <Crown className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm">Kepala Sekolah</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Ketua Kamabigus</p>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Penanggung jawab pangkalan SMPN 2 Katapang.
+                </p>
+              </div>
             </div>
-          )}
+
+            {/* Card 2: Pembina */}
+            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
+              <div className="mx-auto p-3 bg-blue-50 text-blue-600 rounded-2xl w-fit">
+                <Shield className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm">Kakak Pembina</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Pembina Gudep</p>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Pembina utama Gugus Depan 11.083 - 11.084.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: Pratama */}
+            <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
+              <div className="mx-auto p-3 bg-amber-50 text-amber-600 rounded-2xl w-fit">
+                <Award className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-sm">Pratama</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Ketua Dewan Galang</p>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Pemimpin dewan pengurus penggalang aktif.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Kegiatan Terdekat (Right Column) */}

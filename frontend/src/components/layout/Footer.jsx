@@ -41,7 +41,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-slate-400">
               <li><Link to="/" className="hover:text-white transition-colors">Beranda</Link></li>
               <li><Link to="/profil" className="hover:text-white transition-colors">Profil Gudep</Link></li>
-              <li><Link to="/berita" className="hover:text-white transition-colors">Berita Utama</Link></li>
+              <li><Link to="/kepengurusan" className="hover:text-white transition-colors">Struktur Kepengurusan</Link></li>
               <li><Link to="/kegiatan" className="hover:text-white transition-colors">Agenda Kegiatan</Link></li>
               <li><Link to="/prestasi" className="hover:text-white transition-colors">Galeri Prestasi</Link></li>
               <li><Link to="/galeri" className="hover:text-white transition-colors">Dokumentasi Galeri</Link></li>

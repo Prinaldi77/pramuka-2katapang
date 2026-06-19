@@ -9,8 +9,7 @@ import ProtectedRoute from './ProtectedRoute';
 // Public pages
 import Home from '../pages/public/Home';
 import Profil from '../pages/public/Profil';
-import Berita from '../pages/public/Berita';
-import DetailBerita from '../pages/public/DetailBerita';
+import Kepengurusan from '../pages/public/Kepengurusan';
 import Kegiatan from '../pages/public/Kegiatan';
 import DetailKegiatan from '../pages/public/DetailKegiatan';
 import Prestasi from '../pages/public/Prestasi';
@@ -24,7 +23,6 @@ import AdminUsers from '../pages/admin/Users';
 import AdminSiswa from '../pages/admin/Siswa';
 import AdminPembina from '../pages/admin/Pembina';
 import AdminProfilGudep from '../pages/admin/ProfilGudep';
-import AdminBerita from '../pages/admin/Berita';
 import AdminKegiatan from '../pages/admin/Kegiatan';
 import AdminPrestasi from '../pages/admin/Prestasi';
 import AdminGaleri from '../pages/admin/Galeri';
@@ -58,8 +56,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'profil', element: <Profil /> },
-      { path: 'berita', element: <Berita /> },
-      { path: 'berita/:id', element: <DetailBerita /> },
+      { path: 'kepengurusan', element: <Kepengurusan /> },
       { path: 'kegiatan', element: <Kegiatan /> },
       { path: 'kegiatan/:id', element: <DetailKegiatan /> },
       { path: 'prestasi', element: <Prestasi /> },
@@ -84,7 +81,6 @@ export const router = createBrowserRouter([
       { path: 'siswa', element: <AdminSiswa /> },
       { path: 'pembina', element: <AdminPembina /> },
       { path: 'profil', element: <AdminProfilGudep /> },
-      { path: 'berita', element: <AdminBerita /> },
       { path: 'kegiatan', element: <AdminKegiatan /> },
       { path: 'prestasi', element: <AdminPrestasi /> },
       { path: 'galeri', element: <AdminGaleri /> },
