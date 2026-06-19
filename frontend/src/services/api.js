@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// Log for debugging production URL
+console.log('Current VITE_API_URL:', import.meta.env.VITE_API_URL);
+
 // Base Axios instance
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
