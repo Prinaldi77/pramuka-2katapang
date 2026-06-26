@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 import { Menu, LogOut, User } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 const DashboardLayout = () => {
   const { user, isAuthenticated, loading } = useAuth();
@@ -89,7 +90,13 @@ const DashboardLayout = () => {
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
             >
-              <Outlet />
+              <Suspense fallback={
+                <div className="flex items-center justify-center min-h-[50vh]">
+                  <LoadingSpinner size="lg" />
+                </div>
+              }>
+                <Outlet />
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </main>

@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Log for debugging production URL
-console.log('Current VITE_API_URL:', import.meta.env.VITE_API_URL);
+// Log for debugging URL (development only)
+if (import.meta.env.DEV) {
+  console.log('Current VITE_API_URL:', import.meta.env.VITE_API_URL);
+}
 
 // Base Axios instance
 const apiClient = axios.create({
@@ -450,43 +452,8 @@ export const api = {
   nilai: {
     getAll: async () => {
       const response = await apiClient.get('/nilai');
-      const rawList = response.data || [];
-      const absensiRes = await apiClient.get('/absensi');
-      const agendaRes = await apiClient.get('/agenda');
-      
-      const totalAgenda = agendaRes.data?.length || 0;
-      const absensiList = absensiRes.data || [];
-      
-      const gradesBySiswa = {};
-      rawList.forEach((row) => {
-        const sId = row.siswa_id;
-        if (!gradesBySiswa[sId]) {
-          gradesBySiswa[sId] = {
-            id: row.id,
-            siswa_id: sId,
-            keaktifan: 0,
-            kedisiplinan: 0,
-            kerjasama: 0,
-            tanggung_jawab: 0,
-            kehadiran: 0,
-            catatan: "Sangat baik dalam mengikuti kegiatan pramuka. Tingkatkan terus kedisiplinan dan keterampilan kepramukaan Anda!"
-          };
-        }
-        
-        if (row.kategori_nilai_id === 1) gradesBySiswa[sId].keaktifan = row.nilai;
-        else if (row.kategori_nilai_id === 2) gradesBySiswa[sId].kedisiplinan = row.nilai;
-        else if (row.kategori_nilai_id === 3) gradesBySiswa[sId].kerjasama = row.nilai;
-        else if (row.kategori_nilai_id === 4) gradesBySiswa[sId].tanggung_jawab = row.nilai;
-      });
-      
-      Object.keys(gradesBySiswa).forEach((sId) => {
-        const studentAbsenCount = absensiList.filter(a => a.siswa_id === Number(sId)).length;
-        const kehadiranScore = totalAgenda > 0 ? Math.round((studentAbsenCount / totalAgenda) * 100) : 0;
-        gradesBySiswa[sId].kehadiran = kehadiranScore;
-      });
-      
       return {
-        data: Object.values(gradesBySiswa)
+        data: response.data || []
       };
     },
     getBySiswa: async (siswaId) => {

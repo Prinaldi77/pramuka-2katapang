@@ -3,8 +3,11 @@ import { api } from '../../services/api';
 import { Image as ImageIcon, X, ZoomIn } from 'lucide-react';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Galeri = () => {
+  useDocumentMetadata('Galeri Kegiatan', 'Koleksi dokumentasi foto kegiatan kepramukaan, latihan pionering, berkemah, upacara pelantikan, dan keseruan Pramuka SMP Negeri 2 Katapang.');
+
   const [galeriList, setGaleriList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

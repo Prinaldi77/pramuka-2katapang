@@ -4,8 +4,11 @@ import { api } from '../../services/api';
 import { Calendar, ArrowRight, Award, Users, FileText, Image, Crown, Shield } from 'lucide-react';
 import heroBg from '../../assets/logo.png'; // fallback or design element
 import SkeletonLoader from '../../components/common/SkeletonLoader';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Home = () => {
+  useDocumentMetadata('Beranda', 'Selamat datang di website resmi Gugus Depan Pramuka SMP Negeri 2 Katapang. Wadah kepanduan kreatif untuk menempa karakter pemuda tangguh, mandiri, dan berjiwa kepemimpinan.');
+
   const [kegiatan, setKegiatan] = useState([]);
   const [galeri, setGaleri] = useState([]);
   const [stats, setStats] = useState({ siswa: 120, pembina: 6, pengurus: 0, kegiatan: 0 });

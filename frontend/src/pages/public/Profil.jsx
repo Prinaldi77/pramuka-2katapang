@@ -3,8 +3,11 @@ import { api } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { Mail, Phone, MapPin, Award, CheckCircle } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Profil = () => {
+  useDocumentMetadata('Profil Gudep', 'Informasi mengenai profil Gugus Depan, visi dan misi, sejarah, kepengurusan, serta alamat lengkap Pramuka SMP Negeri 2 Katapang.');
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

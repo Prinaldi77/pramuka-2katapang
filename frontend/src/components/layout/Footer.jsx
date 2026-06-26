@@ -12,10 +12,10 @@ const Footer = () => {
           {/* Identity Column */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <img src={logoImg} alt="Logo" className="h-24 w-auto bg-white p-0.5 rounded-xl object-contain -my-4 shadow-xs" />
+              <img src={logoImg} alt="Logo" className="h-42 w-auto bg-white p-0.5 rounded-xl object-contain -my-4 shadow-xs" />
               <div className="flex flex-col">
                 <span className="font-bold text-white text-base leading-tight">
-                  SATRIA BATARA
+                  BARISAN SATRIA BATARA
                 </span>
                 <span className="text-xs text-slate-400">
                   SMPN 2 Katapang
@@ -23,7 +23,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Sistem Informasi Pramuka Gugus Depan 11.083 - 11.084 Pangkalan SMP Negeri 2 Katapang. Membina generasi mandiri, disiplin, berkarakter, dan berprestasi tinggi.
+              Sistem Informasi Pramuka Gugus Depan 28.065-28.066 Pangkalan SMP Negeri 2 Katapang. Membina generasi mandiri, disiplin, berkarakter, dan berprestasi tinggi.
             </p>
             <div className="flex space-x-3 pt-2">
               <a href="#" className="p-2 bg-slate-800 hover:bg-primary rounded-lg hover:text-white transition-colors" aria-label="Instagram">
@@ -55,16 +55,16 @@ const Footer = () => {
               <li className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-primary-400 mt-0.5 flex-shrink-0" />
                 <span className="text-xs">
-                  Jl. Terusan Katapang Kulon No. 45, Katapang, Kabupaten Bandung, Jawa Barat
+                  Komplek Gading Junti Asri, Desa Sangkanhurip, Kecamatan Katapang, Kabupaten Bandung, Jawa Barat
                 </span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary-400 flex-shrink-0" />
-                <span className="text-xs">(022) 5891234</span>
+                <span className="text-xs">087825056256</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary-400 flex-shrink-0" />
-                <span className="text-xs">gudep@smpn2katapang.sch.id</span>
+                <span className="text-xs">[EMAIL_ADDRESS]</span>
               </li>
             </ul>
           </div>
@@ -75,8 +75,8 @@ const Footer = () => {
             <div className="p-4 bg-slate-800/50 border border-slate-800 rounded-xl space-y-2">
               <p className="text-xs font-semibold text-white">Latihan Rutin Penggalang:</p>
               <p className="text-xs text-primary-400">Setiap Hari Sabtu</p>
-              <p className="text-xs text-slate-400">Pukul 14.00 - 17.00 WIB</p>
-              <p className="text-[10px] text-slate-500 italic">Mengenakan Seragam Pramuka Lengkap</p>
+              <p className="text-xs text-slate-400">Pukul 08.00 - 13.00 WIB</p>
+              <p className="text-[10px] text-slate-500 italic">Mengenakan Pakaian Pramuka Lengkap</p>
             </div>
           </div>
 

@@ -5,8 +5,11 @@ import { Calendar, Search, MapPin, ArrowRight } from 'lucide-react';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 import { motion } from 'framer-motion';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Kegiatan = () => {
+  useDocumentMetadata('Agenda Kegiatan', 'Daftar lengkap agenda kegiatan, jadwal latihan mingguan, perkemahan, penjelajahan, dan kegiatan sosial Pramuka SMP Negeri 2 Katapang.');
+
   const [kegiatanList, setKegiatanList] = useState([]);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

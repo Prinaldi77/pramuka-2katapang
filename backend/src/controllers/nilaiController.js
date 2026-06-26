@@ -6,14 +6,59 @@ const { sendSuccess, sendError } = require('../utils/responseHelper');
  */
 const getNilai = async (req, res, next) => {
   try {
-    const { data: nilaiList, error } = await supabase
+    // 1. Fetch all raw grades
+    const { data: rawGrades, error: gradesError } = await supabase
       .from('nilai')
-      .select('*, siswa(*, users(nama)), kategori_nilai(*)')
+      .select('id, siswa_id, kategori_nilai_id, nilai')
       .order('id', { ascending: true });
 
-    if (error) throw error;
+    if (gradesError) throw gradesError;
 
-    return sendSuccess(res, 'Data nilai berhasil diambil.', nilaiList);
+    // 2. Fetch total number of agenda events
+    const { count: totalAgenda, error: agendaError } = await supabase
+      .from('agenda_absensi')
+      .select('id', { count: 'exact', head: true });
+
+    if (agendaError) throw agendaError;
+
+    // 3. Fetch all attendance logs (siswa_id only to keep response light)
+    const { data: absensiLogs, error: absensiError } = await supabase
+      .from('absensi')
+      .select('siswa_id');
+
+    if (absensiError) throw absensiError;
+
+    // Group grades by student
+    const gradesBySiswa = {};
+    rawGrades.forEach((row) => {
+      const sId = row.siswa_id;
+      if (!gradesBySiswa[sId]) {
+        gradesBySiswa[sId] = {
+          id: row.id,
+          siswa_id: sId,
+          keaktifan: 0,
+          kedisiplinan: 0,
+          kerjasama: 0,
+          tanggung_jawab: 0,
+          kehadiran: 0,
+          catatan: "Sangat baik dalam mengikuti kegiatan pramuka. Tingkatkan terus kedisiplinan dan keterampilan kepramukaan Anda!"
+        };
+      }
+
+      if (row.kategori_nilai_id === 1) gradesBySiswa[sId].keaktifan = row.nilai;
+      else if (row.kategori_nilai_id === 2) gradesBySiswa[sId].kedisiplinan = row.nilai;
+      else if (row.kategori_nilai_id === 3) gradesBySiswa[sId].kerjasama = row.nilai;
+      else if (row.kategori_nilai_id === 4) gradesBySiswa[sId].tanggung_jawab = row.nilai;
+    });
+
+    // Calculate attendance percentage for each student
+    Object.keys(gradesBySiswa).forEach((sId) => {
+      const studentAbsenCount = absensiLogs.filter(a => a.siswa_id === Number(sId)).length;
+      const kehadiranScore = totalAgenda > 0 ? Math.round((studentAbsenCount / totalAgenda) * 100) : 0;
+      gradesBySiswa[sId].kehadiran = kehadiranScore;
+    });
+
+    return sendSuccess(res, 'Data nilai berhasil diambil.', Object.values(gradesBySiswa));
   } catch (error) {
     next(error);
   }

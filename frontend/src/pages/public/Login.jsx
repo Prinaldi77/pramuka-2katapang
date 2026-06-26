@@ -4,8 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Eye, EyeOff, Lock, Mail, ShieldAlert } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Login = () => {
+  useDocumentMetadata('Login', 'Masuk ke Sistem Informasi Pramuka SMP Negeri 2 Katapang untuk melakukan absensi, melihat nilai, dan mengelola data pangkalan.');
+
   const { login } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();

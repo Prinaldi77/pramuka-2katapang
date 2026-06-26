@@ -4,8 +4,11 @@ import { Award, Calendar, Search } from 'lucide-react';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 import { motion } from 'framer-motion';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Prestasi = () => {
+  useDocumentMetadata('Prestasi Gudep', 'Daftar raihan prestasi, piagam penghargaan, juara perlombaan tingkat regional dan nasional yang diraih oleh Pramuka SMP Negeri 2 Katapang.');
+
   const [prestasiList, setPrestasiList] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 // Layout wrappers
@@ -7,46 +7,45 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
 
 // Public pages
-import Home from '../pages/public/Home';
-import Profil from '../pages/public/Profil';
-import Kepengurusan from '../pages/public/Kepengurusan';
-import Kegiatan from '../pages/public/Kegiatan';
-import DetailKegiatan from '../pages/public/DetailKegiatan';
-import Prestasi from '../pages/public/Prestasi';
-import Galeri from '../pages/public/Galeri';
-import Kontak from '../pages/public/Kontak';
-import Login from '../pages/public/Login';
+const Home = lazy(() => import('../pages/public/Home'));
+const Profil = lazy(() => import('../pages/public/Profil'));
+const Kepengurusan = lazy(() => import('../pages/public/Kepengurusan'));
+const Kegiatan = lazy(() => import('../pages/public/Kegiatan'));
+const DetailKegiatan = lazy(() => import('../pages/public/DetailKegiatan'));
+const Prestasi = lazy(() => import('../pages/public/Prestasi'));
+const Galeri = lazy(() => import('../pages/public/Galeri'));
+const Kontak = lazy(() => import('../pages/public/Kontak'));
+const Login = lazy(() => import('../pages/public/Login'));
 
 // Admin pages
-import AdminDashboard from '../pages/admin/Dashboard';
-import AdminUsers from '../pages/admin/Users';
-import AdminSiswa from '../pages/admin/Siswa';
-import AdminPembina from '../pages/admin/Pembina';
-import AdminProfilGudep from '../pages/admin/ProfilGudep';
-import AdminKegiatan from '../pages/admin/Kegiatan';
-import AdminPrestasi from '../pages/admin/Prestasi';
-import AdminGaleri from '../pages/admin/Galeri';
-import AdminPesan from '../pages/admin/Pesan';
-import AdminAgenda from '../pages/admin/AgendaAbsensi';
-import AdminAbsensi from '../pages/admin/Absensi';
-import AbsensiAndroid from '../pages/admin/AbsensiAndroid';
-import AdminNilai from '../pages/admin/Penilaian';
-import AdminPengurus from '../pages/admin/Pengurus';
-import AdminPengaturan from '../pages/admin/Pengaturan';
+const AdminDashboard = lazy(() => import('../pages/admin/Dashboard'));
+const AdminUsers = lazy(() => import('../pages/admin/Users'));
+const AdminSiswa = lazy(() => import('../pages/admin/Siswa'));
+const AdminPembina = lazy(() => import('../pages/admin/Pembina'));
+const AdminProfilGudep = lazy(() => import('../pages/admin/ProfilGudep'));
+const AdminKegiatan = lazy(() => import('../pages/admin/Kegiatan'));
+const AdminPrestasi = lazy(() => import('../pages/admin/Prestasi'));
+const AdminGaleri = lazy(() => import('../pages/admin/Galeri'));
+const AdminPesan = lazy(() => import('../pages/admin/Pesan'));
+const AdminAgenda = lazy(() => import('../pages/admin/AgendaAbsensi'));
+const AbsensiAndroid = lazy(() => import('../pages/admin/AbsensiAndroid'));
+const AdminNilai = lazy(() => import('../pages/admin/Penilaian'));
+const AdminPengurus = lazy(() => import('../pages/admin/Pengurus'));
+const AdminPengaturan = lazy(() => import('../pages/admin/Pengaturan'));
 
 // Pembina pages
-import PembinaDashboard from '../pages/pembina/Dashboard';
-import PembinaSiswa from '../pages/pembina/Siswa';
-import PembinaAgenda from '../pages/pembina/AgendaAbsensi';
-import PembinaAbsensi from '../pages/pembina/Absensi';
-import PembinaNilai from '../pages/pembina/Penilaian';
-import PembinaPengurus from '../pages/pembina/Pengurus';
+const PembinaDashboard = lazy(() => import('../pages/pembina/Dashboard'));
+const PembinaSiswa = lazy(() => import('../pages/pembina/Siswa'));
+const PembinaAgenda = lazy(() => import('../pages/pembina/AgendaAbsensi'));
+const PembinaAbsensi = lazy(() => import('../pages/pembina/Absensi'));
+const PembinaNilai = lazy(() => import('../pages/pembina/Penilaian'));
+const PembinaPengurus = lazy(() => import('../pages/pembina/Pengurus'));
 
 // Siswa pages
-import SiswaDashboard from '../pages/siswa/Dashboard';
-import SiswaProfilSaya from '../pages/siswa/ProfilSaya';
-import SiswaAbsensiSaya from '../pages/siswa/AbsensiSaya';
-import SiswaNilaiSaya from '../pages/siswa/NilaiSaya';
+const SiswaDashboard = lazy(() => import('../pages/siswa/Dashboard'));
+const SiswaProfilSaya = lazy(() => import('../pages/siswa/ProfilSaya'));
+const SiswaAbsensiSaya = lazy(() => import('../pages/siswa/AbsensiSaya'));
+const SiswaNilaiSaya = lazy(() => import('../pages/siswa/NilaiSaya'));
 
 export const router = createBrowserRouter([
   // Public website routes

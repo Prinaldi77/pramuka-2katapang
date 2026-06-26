@@ -3,11 +3,17 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { Calendar, MapPin, ArrowLeft, Info } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const DetailKegiatan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [kegiatan, setKegiatan] = useState(null);
+
+  useDocumentMetadata(
+    kegiatan ? kegiatan.nama_kegiatan : 'Detail Kegiatan',
+    kegiatan ? kegiatan.deskripsi?.substring(0, 160) : 'Detail agenda kegiatan Pramuka SMP Negeri 2 Katapang.'
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 

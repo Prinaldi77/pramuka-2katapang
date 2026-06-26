@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const Kontak = () => {
+  useDocumentMetadata('Hubungi Kami', 'Hubungi Kakak Pembina atau sekretariat Gugus Depan Pramuka SMP Negeri 2 Katapang melalui kontak atau form pesan di halaman ini.');
+
   const toast = useToast();
   const [formData, setFormData] = useState({
     nama: '',

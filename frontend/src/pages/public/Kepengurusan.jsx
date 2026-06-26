@@ -3,6 +3,7 @@ import { api } from '../../services/api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { motion } from 'framer-motion';
 import { Users, Shield, Crown, UserCheck, ShieldAlert, Award } from 'lucide-react';
+import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -20,6 +21,8 @@ const itemVariants = {
 };
 
 const Kepengurusan = () => {
+  useDocumentMetadata('Susunan Organisasi & Kepengurusan', 'Struktur organisasi pembina Gugus Depan dan dewan pengurus penggalang aktif Pramuka SMP Negeri 2 Katapang.');
+
   const [pembinaList, setPembinaList] = useState([]);
   const [pengurusList, setPengurusList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,7 +88,7 @@ const Kepengurusan = () => {
             Struktur Kepengurusan
           </h1>
           <p className="text-sm text-slate-500 leading-relaxed">
-            Struktur kepemimpinan dan dewan koordinasi Gugus Depan Pramuka 11.083 - 11.084 Pangkalan SMP Negeri 2 Katapang Periode Aktif.
+            Struktur kepemimpinan dan dewan koordinasi Gugus Depan Pramuka 28.065-28.066 Pangkalan SMP Negeri 2 Katapang Periode Aktif.
           </p>
         </div>
 
