@@ -20,6 +20,8 @@ const Prestasi = () => {
 
   // Form fields
   const [formData, setFormData] = useState({ judul: '', deskripsi: '', tanggal: '' });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [formLoading, setFormLoading] = useState(false);
 
   // Deletion checks
@@ -46,6 +48,8 @@ const Prestasi = () => {
 
   const handleOpenAdd = () => {
     setFormData({ judul: '', deskripsi: '', tanggal: new Date().toISOString().split('T')[0] });
+    setImageFile(null);
+    setImagePreview('');
     setModalType('add');
     setModalOpen(true);
   };
@@ -53,8 +57,18 @@ const Prestasi = () => {
   const handleOpenEdit = (p) => {
     setSelectedPrestasi(p);
     setFormData({ judul: p.judul, deskripsi: p.deskripsi, tanggal: p.tanggal });
+    setImageFile(null);
+    setImagePreview(p.gambar || '');
     setModalType('edit');
     setModalOpen(true);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   const handleDeleteClick = (id) => {
@@ -86,11 +100,19 @@ const Prestasi = () => {
 
     setFormLoading(true);
     try {
+      const data = new FormData();
+      data.append('nama_prestasi', formData.judul);
+      data.append('tanggal', formData.tanggal);
+      data.append('deskripsi', formData.deskripsi);
+      if (imageFile) {
+        data.append('gambar', imageFile);
+      }
+
       if (modalType === 'add') {
-        await api.prestasi.create(formData);
+        await api.prestasi.create(data);
         toast.success('Catatan prestasi baru berhasil disimpan.');
       } else {
-        await api.prestasi.update(selectedPrestasi.id, formData);
+        await api.prestasi.update(selectedPrestasi.id, data);
         toast.success('Catatan prestasi berhasil diperbarui.');
       }
       setModalOpen(false);
@@ -157,6 +179,7 @@ const Prestasi = () => {
             <table className="w-full border-collapse text-left text-sm whitespace-nowrap">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+                  <th className="px-6 py-4">Foto</th>
                   <th className="px-6 py-4">Judul Penghargaan</th>
                   <th className="px-6 py-4">Keterangan</th>
                   <th className="px-6 py-4">Tanggal Diraih</th>
@@ -166,6 +189,17 @@ const Prestasi = () => {
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {filteredPrestasi.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/50">
+                    <td className="px-6 py-4">
+                      <div className="h-10 w-16 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+                        {p.gambar ? (
+                          <img src={p.gambar} alt="Award" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-amber-500 bg-amber-50">
+                            <Award className="h-4 w-4" />
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 font-bold text-slate-900">{p.judul}</td>
                     <td className="px-6 py-4 max-w-xs truncate">{p.deskripsi}</td>
                     <td className="px-6 py-4 text-xs text-slate-400">{p.tanggal}</td>
@@ -210,13 +244,13 @@ const Prestasi = () => {
                 <h3 className="font-bold text-slate-800">
                   {modalType === 'add' ? 'Tambah Catatan Prestasi' : 'Edit Catatan Prestasi'}
                 </h3>
-                <button onClick={() => setModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 min-h-[44px] min-w-[44px]">
+                <button onClick={() => setModalOpen(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 min-h-[44px] min-w-[44px] flex items-center justify-center">
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="p-6 overflow-y-auto flex-1 text-sm space-y-4">
+              <div className="p-6 overflow-y-auto flex-1 text-sm space-y-4 max-h-[70vh]">
                 <form id="prestasiForm" onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-1">
                     <label htmlFor="judul" className="text-xs font-semibold text-slate-700">Nama Kejuaraan / Penghargaan</label>
@@ -241,6 +275,23 @@ const Prestasi = () => {
                       required
                     />
                   </div>
+
+                  {/* Prestasi File Upload Selector */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 block">Foto Dokumentasi Prestasi / Piala</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="text-xs block w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary file:hover:bg-primary-100 file:cursor-pointer"
+                    />
+                    {imagePreview && (
+                      <div className="mt-2 rounded-xl overflow-hidden border border-slate-200 max-h-36">
+                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+
                   <div className="space-y-1">
                     <label htmlFor="desc" className="text-xs font-semibold text-slate-700">Deskripsi / Keterangan Pencapaian</label>
                     <textarea

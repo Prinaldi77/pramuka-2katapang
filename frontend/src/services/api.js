@@ -355,23 +355,11 @@ export const api = {
       }
       return res;
     },
-    create: async (data) => {
-      const payload = {
-        nama_prestasi: data.judul,
-        deskripsi: data.deskripsi,
-        tanggal: data.tanggal,
-        gambar: data.gambar || null
-      };
-      return apiClient.post('/prestasi', payload);
+    create: async (formData) => {
+      return apiClient.post('/prestasi', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     },
-    update: async (id, data) => {
-      const payload = {
-        nama_prestasi: data.judul,
-        deskripsi: data.deskripsi,
-        tanggal: data.tanggal,
-        gambar: data.gambar || null
-      };
-      return apiClient.put(`/prestasi/${id}`, payload);
+    update: async (id, formData) => {
+      return apiClient.put(`/prestasi/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     },
     delete: async (id) => {
       return apiClient.delete(`/prestasi/${id}`);

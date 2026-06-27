@@ -15,9 +15,8 @@ const Navbar = () => {
     { name: 'Beranda', path: '/' },
     { name: 'Profil', path: '/profil' },
     { name: 'Kepengurusan', path: '/kepengurusan' },
-    { name: 'Kegiatan', path: '/kegiatan' },
+    { name: 'Kegiatan & Galeri', path: '/kegiatan' },
     { name: 'Prestasi', path: '/prestasi' },
-    { name: 'Galeri', path: '/galeri' },
     { name: 'Kontak', path: '/kontak' },
   ];
 

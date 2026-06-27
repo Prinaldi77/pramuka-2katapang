@@ -13,7 +13,7 @@ const Kepengurusan = lazy(() => import('../pages/public/Kepengurusan'));
 const Kegiatan = lazy(() => import('../pages/public/Kegiatan'));
 const DetailKegiatan = lazy(() => import('../pages/public/DetailKegiatan'));
 const Prestasi = lazy(() => import('../pages/public/Prestasi'));
-const Galeri = lazy(() => import('../pages/public/Galeri'));
+// const Galeri = lazy(() => import('../pages/public/Galeri'));
 const Kontak = lazy(() => import('../pages/public/Kontak'));
 const Login = lazy(() => import('../pages/public/Login'));
 
@@ -25,7 +25,7 @@ const AdminPembina = lazy(() => import('../pages/admin/Pembina'));
 const AdminProfilGudep = lazy(() => import('../pages/admin/ProfilGudep'));
 const AdminKegiatan = lazy(() => import('../pages/admin/Kegiatan'));
 const AdminPrestasi = lazy(() => import('../pages/admin/Prestasi'));
-const AdminGaleri = lazy(() => import('../pages/admin/Galeri'));
+// const AdminGaleri = lazy(() => import('../pages/admin/Galeri'));
 const AdminPesan = lazy(() => import('../pages/admin/Pesan'));
 const AdminAgenda = lazy(() => import('../pages/admin/AgendaAbsensi'));
 const AbsensiAndroid = lazy(() => import('../pages/admin/AbsensiAndroid'));
@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
       { path: 'kegiatan', element: <Kegiatan /> },
       { path: 'kegiatan/:id', element: <DetailKegiatan /> },
       { path: 'prestasi', element: <Prestasi /> },
-      { path: 'galeri', element: <Galeri /> },
+      { path: 'galeri', element: <Navigate to="/kegiatan" replace /> },
       { path: 'kontak', element: <Kontak /> },
       { path: 'login', element: <Login /> },
     ],
@@ -82,7 +82,7 @@ export const router = createBrowserRouter([
       { path: 'profil', element: <AdminProfilGudep /> },
       { path: 'kegiatan', element: <AdminKegiatan /> },
       { path: 'prestasi', element: <AdminPrestasi /> },
-      { path: 'galeri', element: <AdminGaleri /> },
+      { path: 'galeri', element: <Navigate to="/admin/kegiatan" replace /> },
       { path: 'pesan', element: <AdminPesan /> },
       { path: 'agenda', element: <AdminAgenda /> },
       { path: 'absensi', element: <AbsensiAndroid /> },

@@ -41,7 +41,7 @@ const Prestasi = () => {
         {/* Header Block */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Galeri Prestasi</h1>
+            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Galeri Prestasi Gudep</h1>
             <p className="text-sm text-slate-500 mt-1">Daftar pencapaian, piala, dan penghargaan yang berhasil diraih oleh Pramuka SMPN 2 Katapang.</p>
           </div>
           {/* Search Input */}
@@ -70,27 +70,44 @@ const Prestasi = () => {
             description={search ? `Pencarian "${search}" tidak menemukan kecocokan.` : 'Belum ada prestasi yang dicatat.'}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredPrestasi.map((p) => (
               <motion.div
                 key={p.id}
-                whileHover={{ scale: 1.02, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)' }}
-                className="bg-white border border-slate-200 rounded-2xl p-6 shadow-soft flex items-start space-x-4 transition-all duration-200"
+                whileHover={{ scale: 1.02, y: -4 }}
+                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-soft transition-all duration-200 flex flex-col justify-between"
               >
-                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl flex-shrink-0">
-                  <Award className="h-6 w-6" />
-                </div>
-                <div className="space-y-2 flex-1 min-w-0">
-                  <span className="flex items-center text-[10px] text-slate-400 font-semibold space-x-1">
-                    <Calendar className="h-3.5 w-3.5" />
-                    <span>{p.tanggal}</span>
-                  </span>
-                  <h3 className="font-bold text-slate-800 text-base leading-tight">
-                    {p.judul}
-                  </h3>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                    {p.deskripsi}
-                  </p>
+                <div>
+                  {/* Photo Section */}
+                  {p.gambar ? (
+                    <div className="aspect-video w-full overflow-hidden bg-slate-100 relative">
+                      <img src={p.gambar} alt={p.judul} className="w-full h-full object-cover" />
+                      <div className="absolute top-3 left-3 px-2.5 py-1 bg-amber-500 text-white rounded-lg flex items-center space-x-1.5 shadow-sm">
+                        <Award className="h-4 w-4" />
+                        <span className="text-[10px] font-bold tracking-wider uppercase">Prestasi</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-48 w-full bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center border-b border-slate-100">
+                      <div className="p-4 bg-amber-100/80 text-amber-600 rounded-full">
+                        <Award className="h-10 w-10" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Text Section */}
+                  <div className="p-6 space-y-3">
+                    <span className="inline-flex items-center text-[10px] text-slate-400 font-semibold space-x-1 bg-slate-50 border border-slate-100 px-2.5 py-0.5 rounded-md">
+                      <Calendar className="h-3.5 w-3.5 mr-1" />
+                      <span>{p.tanggal}</span>
+                    </span>
+                    <h3 className="font-bold text-slate-800 text-lg leading-snug">
+                      {p.judul}
+                    </h3>
+                    <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
+                      {p.deskripsi}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
