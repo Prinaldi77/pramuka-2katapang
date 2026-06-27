@@ -24,6 +24,8 @@ const absensiRoutes = require('./routes/absensiRoutes');
 const androidAbsensiRoutes = require('./routes/androidAbsensiRoutes');
 const nilaiRoutes = require('./routes/nilaiRoutes');
 const pengaturanRoutes = require('./routes/pengaturanRoutes');
+const piketRoutes = require('./routes/piketRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 
 const app = express();
 
@@ -77,6 +79,8 @@ app.use('/api/absensi', absensiRoutes);
 app.use('/api/android-absensi', androidAbsensiRoutes);
 app.use('/api/nilai', nilaiRoutes);
 app.use('/api/pengaturan', pengaturanRoutes);
+app.use('/api/piket', piketRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Catch 404 Route Not Found
 app.use((req, res) => {

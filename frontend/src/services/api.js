@@ -594,5 +594,15 @@ export const api = {
       return apiClient.get('/android-absensi/kegiatan');
     },
   },
+
+  // Piket
+  piket: {
+    getAll: async () => {
+      return apiClient.get('/piket');
+    },
+    update: async (id, data) => {
+      return apiClient.put(`/piket/${id}`, data);
+    },
+  },
 };
 

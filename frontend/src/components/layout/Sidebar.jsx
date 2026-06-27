@@ -52,6 +52,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
       { name: 'Rekap Absensi', path: '/admin/absensi', icon: Smartphone },
       { name: 'Penilaian Siswa', path: '/admin/nilai', icon: GraduationCap },
       { name: 'Pengurus Gudep', path: '/admin/pengurus', icon: Users2 },
+      { name: 'Jadwal Piket', path: '/admin/piket', icon: Calendar },
       { name: 'Pengaturan', path: '/admin/pengaturan', icon: Settings },
     ],
     pembina: [

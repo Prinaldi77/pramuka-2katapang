@@ -32,6 +32,7 @@ const AbsensiAndroid = lazy(() => import('../pages/admin/AbsensiAndroid'));
 const AdminNilai = lazy(() => import('../pages/admin/Penilaian'));
 const AdminPengurus = lazy(() => import('../pages/admin/Pengurus'));
 const AdminPengaturan = lazy(() => import('../pages/admin/Pengaturan'));
+const AdminPiket = lazy(() => import('../pages/admin/Piket'));
 
 // Pembina pages
 const PembinaDashboard = lazy(() => import('../pages/pembina/Dashboard'));
@@ -92,6 +93,7 @@ export const router = createBrowserRouter([
       { path: 'nilai', element: <AdminNilai /> },
       { path: 'pengurus', element: <AdminPengurus /> },
       { path: 'pengaturan', element: <AdminPengaturan /> },
+      { path: 'piket', element: <AdminPiket /> },
     ],
   },
 
