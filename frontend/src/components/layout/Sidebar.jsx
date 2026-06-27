@@ -63,10 +63,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
       { name: 'Pengurus Gudep', path: '/pembina/pengurus', icon: Users2 },
     ],
     siswa: [
-      { name: 'Dashboard', path: '/siswa/dashboard', icon: LayoutDashboard },
-      { name: 'Profil Saya', path: '/siswa/profil', icon: User },
-      { name: 'Absensi Saya', path: '/siswa/absensi', icon: Compass },
-      { name: 'Nilai Rapor', path: '/siswa/nilai', icon: GraduationCap },
+      { name: 'Dashboard (Absen)', path: '/siswa/dashboard', icon: LayoutDashboard },
+      { name: 'Daftar Anggota', path: '/siswa/anggota', icon: Users },
+      { name: 'Kalender Kegiatan', path: '/siswa/kalender', icon: Calendar },
+      { name: 'Menu Lainnya', path: '/siswa/menu-lainnya', icon: Smartphone },
     ],
   };
 

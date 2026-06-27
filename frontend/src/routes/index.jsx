@@ -46,6 +46,9 @@ const SiswaDashboard = lazy(() => import('../pages/siswa/Dashboard'));
 const SiswaProfilSaya = lazy(() => import('../pages/siswa/ProfilSaya'));
 const SiswaAbsensiSaya = lazy(() => import('../pages/siswa/AbsensiSaya'));
 const SiswaNilaiSaya = lazy(() => import('../pages/siswa/NilaiSaya'));
+const SiswaAnggota = lazy(() => import('../pages/siswa/Anggota'));
+const SiswaKalender = lazy(() => import('../pages/siswa/Kalender'));
+const SiswaMenuLainnya = lazy(() => import('../pages/siswa/MenuLainnya'));
 
 export const router = createBrowserRouter([
   // Public website routes
@@ -125,6 +128,9 @@ export const router = createBrowserRouter([
       { path: 'profil', element: <SiswaProfilSaya /> },
       { path: 'absensi', element: <SiswaAbsensiSaya /> },
       { path: 'nilai', element: <SiswaNilaiSaya /> },
+      { path: 'anggota', element: <SiswaAnggota /> },
+      { path: 'kalender', element: <SiswaKalender /> },
+      { path: 'menu-lainnya', element: <SiswaMenuLainnya /> },
     ],
   },
 

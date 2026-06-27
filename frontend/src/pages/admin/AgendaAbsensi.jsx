@@ -6,6 +6,7 @@ import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import { motion, AnimatePresence } from 'framer-motion';
+import LocationPickerMap from '../../components/Map/LocationPickerMap';
 
 const AgendaAbsensi = () => {
   const toast = useToast();
@@ -344,6 +345,15 @@ const AgendaAbsensi = () => {
                         required
                       />
                     </div>
+                  </div>
+
+                  <div className="my-2 border border-slate-100 rounded-xl p-3 bg-slate-50/50">
+                    <LocationPickerMap
+                      latitude={formData.latitude}
+                      longitude={formData.longitude}
+                      radius={formData.radius}
+                      onChange={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+                    />
                   </div>
 
                   <div className="space-y-1">
