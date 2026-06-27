@@ -3,6 +3,7 @@ import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { FileText, Save, Edit3, Image } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import logoImg from '../../assets/logo.png';
 
 const ProfilGudep = () => {
   const toast = useToast();
@@ -78,7 +79,7 @@ const ProfilGudep = () => {
         {/* Logo preview and details */}
         <div className="flex flex-col sm:flex-row items-center sm:space-x-6 pb-6 border-b border-slate-100">
           <div className="relative group overflow-hidden rounded-2xl border border-slate-200 p-2 bg-slate-50 mb-4 sm:mb-0">
-            <img src={formData.logo} alt="Logo" className="h-28 w-28 object-contain" />
+            <img src={formData.logo || logoImg} alt="Logo" className="h-28 w-28 object-contain" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
               <Image className="h-6 w-6 text-white" />
             </div>
