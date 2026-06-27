@@ -114,11 +114,24 @@ const AgendaAbsensi = () => {
 
     setFormLoading(true);
     try {
+      const cleanedData = {
+        ...formData,
+        latitude: parseFloat(String(formData.latitude).replace(',', '.')),
+        longitude: parseFloat(String(formData.longitude).replace(',', '.')),
+        radius: parseFloat(String(formData.radius).replace(',', '.')),
+      };
+
+      if (isNaN(cleanedData.latitude) || isNaN(cleanedData.longitude) || isNaN(cleanedData.radius)) {
+        toast.warning('Latitude, Longitude, dan Radius harus berupa angka!');
+        setFormLoading(false);
+        return;
+      }
+
       if (modalType === 'add') {
-        await api.agenda.create(formData);
+        await api.agenda.create(cleanedData);
         toast.success('Agenda absensi baru berhasil dijadwalkan!');
       } else {
-        await api.agenda.update(selectedAgenda.id, formData);
+        await api.agenda.update(selectedAgenda.id, cleanedData);
         toast.success('Agenda absensi berhasil diperbarui!');
       }
       setModalOpen(false);
@@ -313,11 +326,10 @@ const AgendaAbsensi = () => {
                     <div className="space-y-1">
                       <label htmlFor="lat" className="text-xs font-semibold text-slate-700">Latitude</label>
                       <input
-                        type="number"
-                        step="any"
+                        type="text"
                         id="lat"
                         value={formData.latitude}
-                        onChange={(e) => setFormData(prev => ({ ...prev, latitude: Number(e.target.value) }))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, latitude: e.target.value }))}
                         className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                         required
                       />
@@ -325,11 +337,10 @@ const AgendaAbsensi = () => {
                     <div className="space-y-1">
                       <label htmlFor="lng" className="text-xs font-semibold text-slate-700">Longitude</label>
                       <input
-                        type="number"
-                        step="any"
+                        type="text"
                         id="lng"
                         value={formData.longitude}
-                        onChange={(e) => setFormData(prev => ({ ...prev, longitude: Number(e.target.value) }))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, longitude: e.target.value }))}
                         className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                         required
                       />
@@ -340,7 +351,7 @@ const AgendaAbsensi = () => {
                         type="number"
                         id="rad"
                         value={formData.radius}
-                        onChange={(e) => setFormData(prev => ({ ...prev, radius: Number(e.target.value) }))}
+                        onChange={(e) => setFormData(prev => ({ ...prev, radius: e.target.value }))}
                         className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                         required
                       />
@@ -349,9 +360,9 @@ const AgendaAbsensi = () => {
 
                   <div className="my-2 border border-slate-100 rounded-xl p-3 bg-slate-50/50">
                     <LocationPickerMap
-                      latitude={formData.latitude}
-                      longitude={formData.longitude}
-                      radius={formData.radius}
+                      latitude={parseFloat(String(formData.latitude).replace(',', '.')) || -7.0278}
+                      longitude={parseFloat(String(formData.longitude).replace(',', '.')) || 107.5756}
+                      radius={parseFloat(String(formData.radius).replace(',', '.')) || 100}
                       onChange={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
                     />
                   </div>
