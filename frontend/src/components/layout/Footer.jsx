@@ -12,7 +12,7 @@ const Footer = () => {
           {/* Identity Column */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <img src={logoImg} alt="Logo" className="h-42 w-auto bg-white p-0.5 rounded-xl object-contain -my-4 shadow-xs" />
+              <img src={logoImg} alt="Logo" className="h-16 w-auto bg-white p-0.5 rounded-xl object-contain -my-4 shadow-xs" />
               <div className="flex flex-col">
                 <span className="font-bold text-white text-base leading-tight">
                   BARISAN SATRIA BATARA
@@ -64,7 +64,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary-400 flex-shrink-0" />
-                <span className="text-xs">[EMAIL_ADDRESS]</span>
+                <span className="text-xs">pramukasmpn2katapang@gmail.com</span>
               </li>
             </ul>
           </div>
