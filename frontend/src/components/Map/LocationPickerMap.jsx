@@ -1,47 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Circle, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-import { MapPin, Save, Trash2 } from 'lucide-react';
-
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
-// Setup Leaflet icons
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
-
-const redMarkerIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-// Helper component to center the map when coords change
-function ChangeMapCenter({ center }) {
-  const map = useMap();
-  useEffect(() => {
-    map.setView(center, map.getZoom());
-  }, [center, map]);
-  return null;
-}
-
-// Helper component to handle map clicks
-function MapClickHandler({ onClick }) {
-  useMapEvents({
-    click(e) {
-      onClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Save } from 'lucide-react';
 
 const LocationPickerMap = ({
   latitude,
@@ -49,8 +7,13 @@ const LocationPickerMap = ({
   radius,
   onChange,
 }) => {
+  const mapContainerRef = useRef(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [presets, setPresets] = useState([]);
   const [presetName, setPresetName] = useState('');
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
+  const circleRef = useRef(null);
 
   // Load presets on mount
   useEffect(() => {
@@ -72,7 +35,113 @@ const LocationPickerMap = ({
     }
   }, []);
 
-  const handleMapClick = (lat, lng) => {
+  // Load Google Maps SDK Script
+  useEffect(() => {
+    const loadScript = () => {
+      if (window.google && window.google.maps) {
+        setMapLoaded(true);
+        return;
+      }
+      const existing = document.getElementById('google-maps-script');
+      if (existing) {
+        const check = setInterval(() => {
+          if (window.google && window.google.maps) {
+            clearInterval(check);
+            setMapLoaded(true);
+          }
+        }, 100);
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'google-maps-script';
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyA0qPgb21JTzpe0EruEbfLkYrPGSMvM6Co'}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setMapLoaded(true);
+      document.head.appendChild(script);
+    };
+
+    loadScript();
+  }, []);
+
+  // Initialize Map
+  useEffect(() => {
+    if (!mapLoaded || !mapContainerRef.current) return;
+
+    const latVal = Number(latitude) || -7.0278;
+    const lngVal = Number(longitude) || 107.5756;
+    const radVal = Number(radius) || 100;
+    const pos = { lat: latVal, lng: lngVal };
+
+    // Create Map instance
+    const map = new window.google.maps.Map(mapContainerRef.current, {
+      center: pos,
+      zoom: 16,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+    mapRef.current = map;
+
+    // Create Draggable Marker
+    const marker = new window.google.maps.Marker({
+      position: pos,
+      map: map,
+      draggable: true,
+      icon: {
+        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+      }
+    });
+    markerRef.current = marker;
+
+    // Create Geofence Circle
+    const circle = new window.google.maps.Circle({
+      strokeColor: '#4c1d95',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#8b5cf6',
+      fillOpacity: 0.15,
+      map: map,
+      center: pos,
+      radius: radVal,
+    });
+    circleRef.current = circle;
+
+    // Map Click Listener
+    map.addListener('click', (e) => {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      updatePosition(lat, lng);
+    });
+
+    // Marker Drag Listener
+    marker.addListener('dragend', (e) => {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      updatePosition(lat, lng);
+    });
+
+  }, [mapLoaded]);
+
+  // Handle external coordinate changes or preset selections
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return;
+    const latVal = Number(latitude) || -7.0278;
+    const lngVal = Number(longitude) || 107.5756;
+    const radVal = Number(radius) || 100;
+    const pos = { lat: latVal, lng: lngVal };
+
+    if (markerRef.current) {
+      markerRef.current.setPosition(pos);
+    }
+    if (circleRef.current) {
+      circleRef.current.setCenter(pos);
+      circleRef.current.setRadius(radVal);
+    }
+    mapRef.current.panTo(pos);
+  }, [latitude, longitude, radius, mapLoaded]);
+
+  const updatePosition = (lat, lng) => {
     onChange(lat, lng);
   };
 
@@ -83,8 +152,8 @@ const LocationPickerMap = ({
     }
     const newPreset = {
       name: presetName.trim(),
-      lat: latitude,
-      lng: longitude,
+      lat: Number(latitude),
+      lng: Number(longitude),
     };
     const updated = [...presets, newPreset];
     localStorage.setItem('agenda_location_presets', JSON.stringify(updated));
@@ -103,8 +172,6 @@ const LocationPickerMap = ({
   const selectPreset = (p) => {
     onChange(p.lat, p.lng);
   };
-
-  const center = [latitude || -7.0278, longitude || 107.5756];
 
   return (
     <div className="space-y-3 font-sans">
@@ -144,39 +211,13 @@ const LocationPickerMap = ({
 
       {/* The Interactive Map */}
       <div className="w-full h-60 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative z-0">
-        <MapContainer
-          center={center}
-          zoom={16}
-          scrollWheelZoom={true}
-          className="w-full h-full"
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <ChangeMapCenter center={center} />
-          <MapClickHandler onClick={handleMapClick} />
-          
-          <Circle
-            center={center}
-            pathOptions={{
-              color: '#4c1d95',
-              fillColor: '#8b5cf6',
-              fillOpacity: 0.15,
-              weight: 2,
-              dashArray: '5, 5'
-            }}
-            radius={radius || 100}
-          />
-          
-          <Marker position={center} icon={redMarkerIcon} />
-        </MapContainer>
+        <div ref={mapContainerRef} className="w-full h-full" />
       </div>
 
       {/* Coords & Save Preset Input */}
       <div className="flex flex-col sm:flex-row gap-2 items-end sm:items-center justify-between pt-1">
         <span className="text-[10px] font-mono text-slate-400">
-          Koordinat Terpilih: {latitude.toFixed(6)}, {longitude.toFixed(6)}
+          Koordinat Terpilih: {Number(latitude).toFixed(6)}, {Number(longitude).toFixed(6)}
         </span>
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           <input
