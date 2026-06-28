@@ -299,11 +299,10 @@ const AgendaAbsensi = () => {
                     <div className="space-y-1">
                       <label htmlFor="mulai" className="text-xs font-semibold text-slate-700">Jam Mulai</label>
                       <input
-                        type="text"
+                        type="time"
                         id="mulai"
                         value={formData.jam_mulai}
                         onChange={(e) => setFormData(prev => ({ ...prev, jam_mulai: e.target.value }))}
-                        placeholder="14:00"
                         className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                         required
                       />
@@ -311,11 +310,10 @@ const AgendaAbsensi = () => {
                     <div className="space-y-1">
                       <label htmlFor="selesai" className="text-xs font-semibold text-slate-700">Jam Selesai</label>
                       <input
-                        type="text"
+                        type="time"
                         id="selesai"
                         value={formData.jam_selesai}
                         onChange={(e) => setFormData(prev => ({ ...prev, jam_selesai: e.target.value }))}
-                        placeholder="17:00"
                         className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                         required
                       />

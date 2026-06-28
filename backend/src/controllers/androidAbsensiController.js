@@ -1,26 +1,31 @@
-const supabaseAndroid = require('../config/supabaseAndroid');
+const supabase = require('../config/supabase');
 
 exports.getAndroidAbsensiLogs = async (req, res) => {
   try {
-    // Fetch attendance data from Android Database
-    // Join with profiles to get student name
-    // Join with kegiatan to get activity name
-    const { data: attendanceData, error } = await supabaseAndroid
-      .from('attendance')
+    const { data: attendanceData, error } = await supabase
+      .from('absensi')
       .select(`
         id,
-        user_id,
-        kegiatan_id,
+        siswa_id,
+        agenda_id,
         latitude,
         longitude,
-        distance,
-        selfie,
+        jarak,
+        foto_absen,
         status,
-        check_in,
-        profiles:user_id ( name, nomor_induk, regu ),
-        kegiatan:kegiatan_id ( title, start_time )
+        keterangan,
+        created_at,
+        siswa:siswa_id (
+          nis,
+          kelas,
+          users(nama)
+        ),
+        agenda_absensi:agenda_id (
+          judul,
+          tanggal
+        )
       `)
-      .order('check_in', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching Android attendance:', error);
@@ -28,17 +33,17 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
     }
 
     // Format the data so the frontend can easily consume it
-    const formattedData = attendanceData.map(log => {
-      // Handle the fact that profiles might use 'name' or 'full_name'
-      const profile = log.profiles || {};
-      const studentName = profile.name || 'Unknown Student';
-      const studentId = profile.nomor_induk || log.user_id;
+    const formattedData = (attendanceData || []).map(log => {
+      const siswa = log.siswa || {};
+      const user = siswa.users || {};
+      const studentName = user.nama || 'Siswa Tidak Diketahui';
+      const studentId = siswa.nis || log.siswa_id;
       
-      const activity = log.kegiatan || {};
-      const activityTitle = activity.title || 'Unknown Activity';
+      const agenda = log.agenda_absensi || {};
+      const activityTitle = agenda.judul || 'Kegiatan Tidak Diketahui';
 
       // Formatting date time
-      let formattedTime = log.check_in;
+      let formattedTime = log.created_at;
       if (formattedTime) {
         const d = new Date(formattedTime);
         formattedTime = d.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
@@ -48,14 +53,14 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
         id: log.id,
         siswa_id: studentId,
         nama_siswa: studentName,
-        regu: profile.regu || '-',
-        agenda_id: log.kegiatan_id,
+        regu: siswa.kelas || '-',
+        agenda_id: log.agenda_id,
         judul_agenda: activityTitle,
         waktu_absen: formattedTime,
         latitude: log.latitude,
         longitude: log.longitude,
-        jarak: log.distance,
-        foto_absen: log.selfie,
+        jarak: log.jarak,
+        foto_absen: log.foto_absen,
         status: log.status || 'HADIR'
       };
     });
@@ -69,17 +74,23 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
 
 exports.getAndroidKegiatanList = async (req, res) => {
   try {
-    const { data: kegiatanData, error } = await supabaseAndroid
-      .from('kegiatan')
-      .select('id, title, start_time')
-      .order('start_time', { ascending: false });
+    const { data: kegiatanData, error } = await supabase
+      .from('agenda_absensi')
+      .select('id, judul, tanggal')
+      .order('tanggal', { ascending: false });
 
     if (error) {
       console.error('Error fetching Android kegiatan:', error);
       return res.status(500).json({ message: 'Gagal mengambil data kegiatan Android', error: error.message });
     }
 
-    res.json({ data: kegiatanData });
+    const formattedKegiatans = (kegiatanData || []).map(k => ({
+      id: k.id,
+      title: k.judul,
+      start_time: k.tanggal
+    }));
+
+    res.json({ data: formattedKegiatans });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error', error: error.message });

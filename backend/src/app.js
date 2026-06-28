@@ -26,6 +26,7 @@ const nilaiRoutes = require('./routes/nilaiRoutes');
 const pengaturanRoutes = require('./routes/pengaturanRoutes');
 const piketRoutes = require('./routes/piketRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.use('/api/nilai', nilaiRoutes);
 app.use('/api/pengaturan', pengaturanRoutes);
 app.use('/api/piket', piketRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/attendance', attendanceRoutes);
 
 // Catch 404 Route Not Found
 app.use((req, res) => {
