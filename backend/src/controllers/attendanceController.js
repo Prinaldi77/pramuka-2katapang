@@ -162,14 +162,9 @@ const checkIn = async (req, res, next) => {
     let selfieUrl = null;
     if (req.file) {
       try {
-        selfieUrl = await uploadFile(req.file, 'absensi');
+        selfieUrl = await uploadFile(req.file, 'kegiatan');
       } catch (err) {
-        console.error("Error uploading to absensi bucket, trying kegiatan:", err.message);
-        try {
-          selfieUrl = await uploadFile(req.file, 'kegiatan');
-        } catch (err2) {
-          console.error("Selfie upload failed:", err2.message);
-        }
+        console.error("Selfie upload failed:", err.message);
       }
     }
 
@@ -259,13 +254,9 @@ const submitPermit = async (req, res, next) => {
     let docUrl = null;
     if (req.file) {
       try {
-        docUrl = await uploadFile(req.file, 'absensi');
+        docUrl = await uploadFile(req.file, 'kegiatan');
       } catch (err) {
-        try {
-          docUrl = await uploadFile(req.file, 'kegiatan');
-        } catch (err2) {
-          console.error("Document upload failed:", err2.message);
-        }
+        console.error("Document upload failed:", err.message);
       }
     }
 
