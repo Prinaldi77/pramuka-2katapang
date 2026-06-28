@@ -347,10 +347,129 @@ const getTodayAttendance = async (req, res, next) => {
   }
 };
 
+/**
+ * Handle face selfie verification.
+ */
+const selfieVerification = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { activityId, attendanceId, latitude, longitude } = req.body;
+
+    const latVal = parseFloat(latitude);
+    const lngVal = parseFloat(longitude);
+    const agendaId = parseInt(activityId);
+
+    // Retrieve active student profile
+    const { data: siswa, error: siswaErr } = await supabase
+      .from('siswa')
+      .select('id')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (siswaErr || !siswa) {
+      return res.status(404).json({
+        success: false,
+        verified: false,
+        message: 'Profil siswa tidak ditemukan.'
+      });
+    }
+
+    // Retrieve active agenda
+    const { data: agenda, error: agendaErr } = await supabase
+      .from('agenda_absensi')
+      .select('*')
+      .eq('id', agendaId)
+      .maybeSingle();
+
+    if (agendaErr || !agenda) {
+      return res.status(404).json({
+        success: false,
+        verified: false,
+        message: 'Agenda absensi tidak ditemukan.'
+      });
+    }
+
+    // Calculate proximity distance
+    const distance = calculateDistance(latVal, lngVal, agenda.latitude, agenda.longitude);
+
+    if (distance > agenda.radius) {
+      return res.status(400).json({
+        success: false,
+        verified: false,
+        message: `Anda berada di luar radius absensi. (Jarak Anda: ${distance.toFixed(1)} meter, Maksimal: ${agenda.radius} meter)`
+      });
+    }
+
+    // Handle selfie upload directly to kegiatan bucket
+    let selfieUrl = null;
+    if (req.file) {
+      try {
+        selfieUrl = await uploadFile(req.file, 'kegiatan');
+      } catch (err) {
+        console.error("Selfie upload failed:", err.message);
+      }
+    }
+
+    if (!selfieUrl) {
+      return res.status(400).json({
+        success: false,
+        verified: false,
+        message: 'Gagal mengunggah foto selfie verifikasi.'
+      });
+    }
+
+    // Upsert absensi
+    const { data: existing } = await supabase
+      .from('absensi')
+      .select('id')
+      .eq('siswa_id', siswa.id)
+      .eq('agenda_id', agenda.id)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabase
+        .from('absensi')
+        .update({
+          latitude: latVal,
+          longitude: lngVal,
+          jarak: parseFloat(distance.toFixed(2)),
+          foto_absen: selfieUrl,
+          status: 'HADIR',
+          keterangan: 'Verifikasi Wajah Android'
+        })
+        .eq('id', existing.id);
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from('absensi')
+        .insert([{
+          siswa_id: siswa.id,
+          agenda_id: agenda.id,
+          latitude: latVal,
+          longitude: lngVal,
+          jarak: parseFloat(distance.toFixed(2)),
+          foto_absen: selfieUrl,
+          status: 'HADIR',
+          keterangan: 'Verifikasi Wajah Android'
+        }]);
+      if (error) throw error;
+    }
+
+    return res.status(200).json({
+      success: true,
+      verified: true,
+      message: 'Verifikasi wajah berhasil. Absensi tercatat.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getCurrentActivity,
   getAttendanceStatus,
   checkIn,
   submitPermit,
-  getTodayAttendance
+  getTodayAttendance,
+  selfieVerification
 };

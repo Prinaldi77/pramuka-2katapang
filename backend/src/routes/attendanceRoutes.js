@@ -13,6 +13,9 @@ router.get('/status', verifyToken, attendanceController.getAttendanceStatus);
 // Post checkin (student only)
 router.post('/checkin', verifyToken, upload.single('selfie'), attendanceController.checkIn);
 
+// Post selfie verification (student only)
+router.post('/selfie-verification', verifyToken, upload.single('selfieImage'), attendanceController.selfieVerification);
+
 // Post permit (student only)
 router.post('/permit', verifyToken, upload.single('document'), attendanceController.submitPermit);
 
