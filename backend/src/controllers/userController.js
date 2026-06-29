@@ -2,9 +2,7 @@ const bcrypt = require('bcryptjs');
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all users list.
- */
+// Ambil semua daftar user
 const getUsers = async (req, res, next) => {
   try {
     const { data: users, error } = await supabase
@@ -20,9 +18,7 @@ const getUsers = async (req, res, next) => {
   }
 };
 
-/**
- * Get single user by ID.
- */
+// Ambil data user berdasarkan ID
 const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -43,19 +39,17 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-/**
- * Create a new user.
- */
+// Buat akun user baru
 const createUser = async (req, res, next) => {
   try {
     const { name, nama, email, password, role } = req.body;
     const nameValue = name || nama;
 
-    // Hash password
+    // Hash sandi password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert user into DB
+    // Simpan user ke database
     const { data: user, error } = await supabase
       .from('users')
       .insert([{ nama: nameValue, email, password: hashedPassword, role }])
@@ -70,9 +64,7 @@ const createUser = async (req, res, next) => {
   }
 };
 
-/**
- * Update user details by ID.
- */
+// Update data akun user berdasarkan ID
 const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -103,9 +95,7 @@ const updateUser = async (req, res, next) => {
   }
 };
 
-/**
- * Delete user by ID.
- */
+// Hapus akun user berdasarkan ID
 const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;

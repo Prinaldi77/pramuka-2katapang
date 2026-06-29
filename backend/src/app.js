@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const { sendError } = require('./utils/responseHelper');
 
-// Import Routers
+// Import router
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const siswaRoutes = require('./routes/siswaRoutes');
@@ -30,16 +30,16 @@ const attendanceRoutes = require('./routes/attendanceRoutes');
 
 const app = express();
 
-// Set up general middlewares
+// Middleware umum
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors());
 
-// Rate limiting configuration
+// Batasan limit request
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 requests per 15 minutes
+  windowMs: 15 * 60 * 1000, // 15 menit
+  max: 300, // Maksimal 300 request per 15 menit dari satu IP
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -52,10 +52,10 @@ app.use('/api', apiLimiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static assets locally from /uploads in case of local testing
+// File statis untuk uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Health Check API Root Endpoint
+// Health check endpoint utama
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Register API Routes
+// Daftar rute API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/siswa', siswaRoutes);
@@ -84,14 +84,13 @@ app.use('/api/piket', piketRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/attendance', attendanceRoutes);
 
-// Catch 404 Route Not Found
+// Tangani rute tidak ditemukan (404)
 app.use((req, res) => {
   return sendError(res, `Endpoint ${req.originalUrl} tidak ditemukan.`, 404);
 });
 
-// Global Error Handler Middleware
+// Penanganan error global
 app.use((err, req, res, next) => {
-  // Log stack trace in development
   console.error('API Error: ', err.stack || err);
   
   const statusCode = err.status || err.statusCode || 500;

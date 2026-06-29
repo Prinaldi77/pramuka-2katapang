@@ -39,7 +39,7 @@ const Piket = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Save all piket items sequentially
+      // Simpan semua jadwal piket secara berurutan
       for (const item of piketList) {
         await api.piket.update(item.id, {
           regu_putra: item.regu_putra,
@@ -65,7 +65,7 @@ const Piket = () => {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {/* Judul Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
@@ -85,7 +85,7 @@ const Piket = () => {
         </button>
       </div>
 
-      {/* Grid container */}
+      {/* Grid Formulir */}
       <form onSubmit={handleSave} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {piketList.map((item) => (
@@ -137,7 +137,7 @@ const Piket = () => {
           ))}
         </div>
 
-        {/* Save button */}
+        {/* Tombol Simpan */}
         <div className="flex justify-end pt-4 border-t border-slate-200">
           <button
             type="submit"

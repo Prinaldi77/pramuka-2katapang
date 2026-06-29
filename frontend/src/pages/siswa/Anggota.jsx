@@ -36,7 +36,7 @@ const Anggota = () => {
   return (
     <div className="space-y-6">
       
-      {/* Title */}
+      {/* Judul Halaman */}
       <div>
         <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
           <Users className="h-6 w-6 text-primary mr-2" />
@@ -45,7 +45,7 @@ const Anggota = () => {
         <p className="text-xs text-slate-500 mt-1">Melihat daftar seluruh anggota pramuka penggalang Gugus Depan.</p>
       </div>
 
-      {/* Control panel */}
+      {/* Kolom Pencarian */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-soft flex items-center">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -59,7 +59,7 @@ const Anggota = () => {
         </div>
       </div>
 
-      {/* Grid view */}
+      {/* Grid Anggota */}
       {loading ? (
         <SkeletonLoader type="card" rows={6} />
       ) : filteredMembers.length === 0 ? (

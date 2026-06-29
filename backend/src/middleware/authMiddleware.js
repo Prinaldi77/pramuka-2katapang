@@ -2,9 +2,7 @@ const jwt = require('jsonwebtoken');
 const { sendError } = require('../utils/responseHelper');
 const supabase = require('../config/supabase');
 
-/**
- * Middleware to verify JWT token.
- */
+// Verifikasi token JWT
 const verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -15,7 +13,7 @@ const verifyToken = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
 
-    // Retrieve user from Supabase to verify existence
+    // Cari user di database
     const { data: user, error } = await supabase
       .from('users')
       .select('id, nama, email, role')
@@ -26,7 +24,7 @@ const verifyToken = async (req, res, next) => {
       return sendError(res, 'User tidak ditemukan atau token tidak valid.', 401);
     }
 
-    // Attach user to request object
+    // Pasang data user ke request
     req.user = user;
     next();
   } catch (error) {
@@ -34,9 +32,7 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-/**
- * Middleware to authorize Admin role.
- */
+// Validasi role Admin
 const verifyAdmin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
@@ -45,9 +41,7 @@ const verifyAdmin = (req, res, next) => {
   }
 };
 
-/**
- * Middleware to authorize Pembina (or Admin) role.
- */
+// Validasi role Pembina (atau Admin)
 const verifyPembina = (req, res, next) => {
   if (req.user && (req.user.role === 'pembina' || req.user.role === 'admin')) {
     next();
@@ -56,9 +50,7 @@ const verifyPembina = (req, res, next) => {
   }
 };
 
-/**
- * Middleware to authorize Siswa (or Admin) role.
- */
+// Validasi role Siswa (atau Admin)
 const verifySiswa = (req, res, next) => {
   if (req.user && (req.user.role === 'siswa' || req.user.role === 'admin')) {
     next();

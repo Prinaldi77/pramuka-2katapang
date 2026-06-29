@@ -8,9 +8,9 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { motion, AnimatePresence } from 'framer-motion';
 import CountUp from 'react-countup';
 
-// Haversine formula to compute distance in meters
+// Rumus Haversine untuk menghitung jarak dalam satuan meter
 const getDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371e3; // Earth radius in meters
+  const R = 6371e3; // Radius bumi dalam meter
   const phi1 = (lat1 * Math.PI) / 180;
   const phi2 = (lat2 * Math.PI) / 180;
   const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
@@ -21,7 +21,7 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
     Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c; // distance in meters
+  return R * c; // Jarak dalam meter
 };
 
 const Dashboard = () => {
@@ -33,7 +33,7 @@ const Dashboard = () => {
   const [absensiLogs, setAbsensiLogs] = useState([]);
   const [rapor, setRapor] = useState(null);
 
-  // Attendance check-in modal states
+  // State untuk modal konfirmasi absensi
   const [absenModalOpen, setAbsenModalOpen] = useState(false);
   const [absenStep, setAbsenStep] = useState('geo'); // 'geo' | 'face' | 'success'
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -42,13 +42,13 @@ const Dashboard = () => {
   const [outOfRadius, setOutOfRadius] = useState(false);
   const [lateToCheckIn, setLateToCheckIn] = useState(false);
 
-  // Leave Form (Izin / Sakit) modal states
+  // State untuk modal form izin atau sakit
   const [leaveModalOpen, setLeaveModalOpen] = useState(false);
   const [leaveType, setLeaveType] = useState('izin'); // 'izin' | 'sakit' | 'lainnya'
   const [leaveReason, setLeaveReason] = useState('');
   const [leaveSubmitting, setLeaveSubmitting] = useState(false);
 
-  // Face scanning camera states
+  // State untuk pemindaian wajah lewat kamera
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [faceScanning, setFaceScanning] = useState(false);
@@ -77,7 +77,7 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [user]);
 
-  // Clean up camera stream on unmount or modal close
+  // Bersihkan stream kamera saat komponen ditutup
   useEffect(() => {
     return () => {
       stopCamera();
@@ -100,7 +100,7 @@ const Dashboard = () => {
   const attendedCount = absensiLogs.length;
   const attendanceRate = Math.round((attendedCount / totalSessions) * 100) || 0;
 
-  // Trigger Geolocation Check
+  // Trigger pengecekan lokasi GPS
   const startAttendanceCheck = () => {
     if (!activeAgenda) return;
     setAbsenStep('geo');
@@ -110,7 +110,7 @@ const Dashboard = () => {
     setOutOfRadius(false);
     setLateToCheckIn(false);
 
-    // 1. Time deadline check
+    // 1. Pengecekan batas waktu absensi
     const now = new Date();
     const [selesaiHour, selesaiMin] = activeAgenda.jam_selesai.split(':');
     const deadline = new Date();
@@ -119,11 +119,11 @@ const Dashboard = () => {
     if (now > deadline) {
       setLateToCheckIn(true);
       setGpsLoading(false);
-      setOutOfRadius(true); // Treat late as outside capability so it triggers the leave popup
+      setOutOfRadius(true); // Posisi dianggap tidak valid jika terlambat
       return;
     }
 
-    // 2. Location Geofence check
+    // 2. Pengecekan radius lokasi (Geofence)
     if (!navigator.geolocation) {
       toast.error('Browser Anda tidak mendukung GPS lokasi.');
       setGpsLoading(false);
@@ -139,7 +139,7 @@ const Dashboard = () => {
         setCoords(studentCoords);
         setGpsLoading(false);
 
-        // Calculate distance
+        // Hitung jarak posisi siswa dengan koordinat latihan
         const dist = getDistance(
           studentCoords.latitude,
           studentCoords.longitude,
@@ -152,7 +152,7 @@ const Dashboard = () => {
           setOutOfRadius(true);
           toast.warning('Anda berada di luar radius lokasi latihan!');
         } else {
-          // Inside radius, proceed to face verification step
+          // Jika berada di dalam radius, lanjutkan ke tahap verifikasi wajah
           setAbsenStep('face');
           startFaceVerification();
         }
@@ -166,13 +166,13 @@ const Dashboard = () => {
     );
   };
 
-  // Start Face Verification Stream
+  // Memulai pemindaian wajah
   const startFaceVerification = async () => {
     setFaceScanning(true);
     setFaceVerified(false);
     setCameraError(false);
 
-    // Request camera feed
+    // Minta akses kamera perangkat
     setTimeout(async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
@@ -181,17 +181,17 @@ const Dashboard = () => {
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
-        console.error('Camera access failed, falling back to simulation:', err);
+        console.error('Akses kamera gagal, gunakan simulasi:', err);
         setCameraError(true);
       }
 
-      // Simulate face scan line processing for 3 seconds
+      // Simulasi pemindaian wajah selama 3 detik
       setTimeout(async () => {
         setFaceScanning(false);
         setFaceVerified(true);
         stopCamera();
 
-        // Submit attendance logs
+        // Kirim data absensi ke server
         try {
           await api.absensi.submit({
             agenda_id: activeAgenda.id,
@@ -212,7 +212,7 @@ const Dashboard = () => {
     }, 500);
   };
 
-  // Leave Form Submission (Sends to Pesan inbox for Admin review)
+  // Pengiriman formulir izin (Dikirim sebagai pesan masuk untuk review Pembina)
   const handleLeaveSubmit = async (e) => {
     e.preventDefault();
     if (!leaveReason.trim()) {
@@ -229,7 +229,7 @@ const Dashboard = () => {
         pesan: `Siswa ${user.name} mengajukan izin absen dengan keterangan: "${leaveReason.trim()}". (Dikirim otomatis dari aplikasi Android karena posisi di luar radius / waktu habis).`,
       };
 
-      // Send to messages endpoint
+      // Kirim pesan ke endpoint pesan masuk pembina
       await api.pesan.create(payload);
       toast.success('Keterangan ketidakhadiran berhasil dikirim ke Pembina!');
       setLeaveModalOpen(false);
@@ -458,7 +458,7 @@ const Dashboard = () => {
                   {/* Camera view container with scan overlay */}
                   <div className="w-56 h-56 rounded-full border-4 border-primary relative overflow-hidden bg-slate-950 flex items-center justify-center group shadow-soft">
                     {cameraError ? (
-                      // Mock Camera animation if webcam fails
+                      // Tampilkan simulasi jika kamera tidak aktif
                       <div className="flex flex-col items-center text-slate-500 p-4 space-y-2">
                         <User className="h-16 w-16 text-slate-400 animate-pulse" />
                         <span className="text-[9px]">Simulasi Kamera...</span>

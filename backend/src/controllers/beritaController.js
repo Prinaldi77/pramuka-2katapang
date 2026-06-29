@@ -2,9 +2,7 @@ const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
-/**
- * Get all news list.
- */
+// Ambil semua daftar berita
 const getBerita = async (req, res, next) => {
   try {
     const { data: beritaList, error } = await supabase
@@ -20,9 +18,7 @@ const getBerita = async (req, res, next) => {
   }
 };
 
-/**
- * Get single news by ID.
- */
+// Ambil data berita berdasarkan ID
 const getBeritaById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -43,9 +39,7 @@ const getBeritaById = async (req, res, next) => {
   }
 };
 
-/**
- * Create news article with image.
- */
+// Buat berita baru beserta gambar
 const createBerita = async (req, res, next) => {
   try {
     const { judul, isi, author_id } = req.body;
@@ -76,15 +70,13 @@ const createBerita = async (req, res, next) => {
   }
 };
 
-/**
- * Update news article by ID.
- */
+// Update data berita berdasarkan ID
 const updateBerita = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { judul, isi, author_id } = req.body;
 
-    // Retrieve existing news post
+    // Ambil data berita yang sudah ada
     const { data: existingBerita, error: fetchError } = await supabase
       .from('berita')
       .select('*')
@@ -100,12 +92,12 @@ const updateBerita = async (req, res, next) => {
     if (isi !== undefined) updates.isi = isi;
     if (author_id !== undefined) updates.author_id = parseInt(author_id);
 
-    // Handle image file updates
+    // Unggah gambar baru jika disertakan
     if (req.file) {
       const gambarUrl = await uploadFile(req.file, 'berita');
       updates.gambar = gambarUrl;
 
-      // Delete the old news image from storage
+      // Hapus gambar lama dari storage
       if (existingBerita.gambar) {
         await deleteFile(existingBerita.gambar, 'berita');
       }
@@ -126,9 +118,7 @@ const updateBerita = async (req, res, next) => {
   }
 };
 
-/**
- * Delete news article by ID.
- */
+// Hapus berita berdasarkan ID
 const deleteBerita = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -143,7 +133,7 @@ const deleteBerita = async (req, res, next) => {
       return sendError(res, 'Berita tidak ditemukan.', 404);
     }
 
-    // Delete image from Supabase Storage
+    // Hapus file gambar di storage
     if (berita.gambar) {
       await deleteFile(berita.gambar, 'berita');
     }

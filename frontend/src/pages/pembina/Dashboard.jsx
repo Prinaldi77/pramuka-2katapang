@@ -57,23 +57,23 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
-        {/* Welcome header */}
+        {/* Header selamat datang */}
         <div className="space-y-2">
           <div className="h-8 bg-slate-200 rounded-md w-1/3"></div>
           <div className="h-4 bg-slate-200 rounded-md w-1/2"></div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Grid Kartu Statistik */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-28 bg-slate-200 rounded-2xl"></div>
           ))}
         </div>
 
-        {/* Action card if active */}
+        {/* Kartu aksi latihan aktif */}
         <div className="h-28 bg-slate-200 rounded-3xl"></div>
 
-        {/* Quick actions block */}
+        {/* Blok menu aksi cepat */}
         <div className="h-56 bg-slate-200 rounded-3xl"></div>
       </div>
     );
@@ -83,7 +83,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      {/* Title */}
+      {/* Judul Halaman */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
           Selamat Datang, Kak <span className="text-primary">{user.name || user.nama || 'Pembina'}</span>!
@@ -91,7 +91,7 @@ const Dashboard = () => {
         <p className="text-xs text-slate-500 mt-1">Panel Pembina - Gudep 11.083 - 11.084 Pangkalan SMP Negeri 2 Katapang.</p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Kartu Statistik Utama */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -139,7 +139,7 @@ const Dashboard = () => {
         </motion.div>
       </motion.div>
 
-      {/* Geofence notice */}
+      {/* Informasi Sesi Latihan Aktif */}
       {activeAgenda && (
         <div className="p-6 rounded-3xl border border-emerald-200 bg-emerald-50/50 text-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-4 glass-card">
           <div className="flex items-center space-x-4 text-center sm:text-left flex-col sm:flex-row">
@@ -160,7 +160,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Quick Action grid */}
+      {/* Grid Aksi Manajemen Cepat */}
       <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-soft">
         <h3 className="font-bold text-slate-800 text-sm sm:text-base mb-6 border-b border-slate-100 pb-2">Manajemen Cepat</h3>
         

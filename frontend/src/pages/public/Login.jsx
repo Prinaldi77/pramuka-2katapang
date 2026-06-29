@@ -58,13 +58,13 @@ const Login = () => {
 
   return (
     <div className="min-h-[85vh] bg-slate-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background blobs for premium glassmorphism vibe */}
+      {/* Ornamen latar belakang untuk estetika premium */}
       <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-soft glass-card z-10 animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Header brand */}
+        {/* Identitas Gudep */}
         <div className="flex flex-col items-center space-y-4 text-center">
           <img src={logoImg} alt="Logo" className="h-28 w-auto object-contain bg-white p-1 rounded-3xl border border-slate-200 shadow-sm" />
           <div>
@@ -73,7 +73,7 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Error Notification Alert */}
+        {/* Notifikasi Error */}
         {errorMsg && (
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start space-x-3 text-red-950 text-xs sm:text-sm animate-in shake duration-200">
             <ShieldAlert className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -84,11 +84,11 @@ const Login = () => {
           </div>
         )}
 
-        {/* Form Body */}
+        {/* Form Login */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
             
-            {/* Email input */}
+            {/* Input Email */}
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-xs font-bold text-slate-700">Alamat Email</label>
               <div className="relative">
@@ -105,7 +105,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Password input */}
+            {/* Input Password */}
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-xs font-bold text-slate-700">Kata Sandi</label>
               <div className="relative">
@@ -131,7 +131,7 @@ const Login = () => {
 
           </div>
 
-          {/* Remember me options */}
+          {/* Opsi Ingat Saya */}
           <div className="flex items-center justify-between text-xs sm:text-sm">
             <label className="flex items-center space-x-2 text-slate-600 cursor-pointer">
               <input

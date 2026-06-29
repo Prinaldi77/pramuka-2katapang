@@ -2,14 +2,13 @@ const supabase = require('../config/supabase');
 const { calculateDistance } = require('../utils/gpsHelper');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Handle student GPS check-in (absensi).
- */
+
+// Buat data absensi baru
 const createAbsensi = async (req, res, next) => {
   try {
     const { siswa_id, agenda_id, latitude, longitude } = req.body;
 
-    // 1. Retrieve the agenda details
+    // Ambil detail agenda
     const { data: agenda, error: agendaError } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -24,7 +23,7 @@ const createAbsensi = async (req, res, next) => {
       return sendError(res, 'Agenda absensi ini sudah tidak aktif.', 400);
     }
 
-    // Check if the student has already checked in for this agenda
+    // Periksa apakah siswa sudah absen untuk agenda ini
     const { data: existingAbsensi, error: checkError } = await supabase
       .from('absensi')
       .select('id')
@@ -37,7 +36,7 @@ const createAbsensi = async (req, res, next) => {
       return sendError(res, 'Siswa sudah melakukan absensi untuk agenda ini.', 400);
     }
 
-    // 2. Calculate geodetic distance in meters using Haversine formula
+    // Hitung jarak lokasi dengan rumus Haversine
     const distance = calculateDistance(
       parseFloat(latitude),
       parseFloat(longitude),
@@ -45,7 +44,7 @@ const createAbsensi = async (req, res, next) => {
       agenda.longitude
     );
 
-    // 3. Compare distance againstallowed radius
+    // Validasi radius agenda
     if (distance > agenda.radius) {
       return sendError(
         res,
@@ -54,7 +53,7 @@ const createAbsensi = async (req, res, next) => {
       );
     }
 
-    // 4. Save absensi record
+    // Simpan data absensi
     const { data: absensi, error: saveError } = await supabase
       .from('absensi')
       .insert([{
@@ -75,9 +74,8 @@ const createAbsensi = async (req, res, next) => {
   }
 };
 
-/**
- * Get all students check-in logs.
- */
+
+// Ambil semua data absensi
 const getAbsensi = async (req, res, next) => {
   try {
     const { data: absensiList, error } = await supabase
@@ -93,9 +91,7 @@ const getAbsensi = async (req, res, next) => {
   }
 };
 
-/**
- * Get single check-in log by ID.
- */
+// Ambil data absensi berdasarkan ID
 const getAbsensiById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -116,9 +112,7 @@ const getAbsensiById = async (req, res, next) => {
   }
 };
 
-/**
- * Get check-in logs for a specific student.
- */
+// Ambil data absensi berdasarkan ID siswa
 const getAbsensiBySiswa = async (req, res, next) => {
   try {
     const { siswaId } = req.params;
@@ -137,9 +131,7 @@ const getAbsensiBySiswa = async (req, res, next) => {
   }
 };
 
-/**
- * Get check-in logs for a specific agenda event.
- */
+// Ambil data absensi berdasarkan ID agenda
 const getAbsensiByAgenda = async (req, res, next) => {
   try {
     const { agendaId } = req.params;

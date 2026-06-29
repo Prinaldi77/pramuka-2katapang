@@ -2,9 +2,7 @@ const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
-/**
- * Get all activities list.
- */
+// Ambil semua daftar kegiatan
 const getKegiatan = async (req, res, next) => {
   try {
     const { data: kegiatanList, error: kegError } = await supabase
@@ -14,7 +12,7 @@ const getKegiatan = async (req, res, next) => {
 
     if (kegError) throw kegError;
 
-    // Fetch agenda_absensi to merge into kegiatan list
+    // Ambil data agenda absensi untuk digabungkan ke list kegiatan
     const { data: agendaList, error: agendaError } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -45,9 +43,7 @@ const getKegiatan = async (req, res, next) => {
   }
 };
 
-/**
- * Get single activity by ID.
- */
+// Ambil data kegiatan berdasarkan ID
 const getKegiatanById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -68,9 +64,7 @@ const getKegiatanById = async (req, res, next) => {
   }
 };
 
-/**
- * Create a new activity.
- */
+// Buat kegiatan baru
 const createKegiatan = async (req, res, next) => {
   try {
     const { nama_kegiatan, deskripsi, tanggal, lokasi } = req.body;
@@ -100,9 +94,7 @@ const createKegiatan = async (req, res, next) => {
   }
 };
 
-/**
- * Update activity details by ID.
- */
+// Update data kegiatan berdasarkan ID
 const updateKegiatan = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -128,7 +120,7 @@ const updateKegiatan = async (req, res, next) => {
       const gambarUrl = await uploadFile(req.file, 'kegiatan');
       updates.gambar = gambarUrl;
 
-      // Delete the old image
+      // Hapus gambar lama
       if (existingKegiatan.gambar) {
         await deleteFile(existingKegiatan.gambar, 'kegiatan');
       }
@@ -149,9 +141,7 @@ const updateKegiatan = async (req, res, next) => {
   }
 };
 
-/**
- * Delete activity by ID.
- */
+// Hapus kegiatan berdasarkan ID
 const deleteKegiatan = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -166,7 +156,7 @@ const deleteKegiatan = async (req, res, next) => {
       return sendError(res, 'Kegiatan tidak ditemukan.', 404);
     }
 
-    // Delete image from storage
+    // Hapus file gambar di storage
     if (kegiatan.gambar) {
       await deleteFile(kegiatan.gambar, 'kegiatan');
     }

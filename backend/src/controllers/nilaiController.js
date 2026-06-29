@@ -1,12 +1,10 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all student grades records.
- */
+// Ambil semua data nilai siswa
 const getNilai = async (req, res, next) => {
   try {
-    // 1. Fetch all raw grades
+    // Ambil data nilai mentah
     const { data: rawGrades, error: gradesError } = await supabase
       .from('nilai')
       .select('id, siswa_id, kategori_nilai_id, nilai')
@@ -14,21 +12,21 @@ const getNilai = async (req, res, next) => {
 
     if (gradesError) throw gradesError;
 
-    // 2. Fetch total number of agenda events
+    // Ambil jumlah seluruh agenda kegiatan
     const { count: totalAgenda, error: agendaError } = await supabase
       .from('agenda_absensi')
       .select('id', { count: 'exact', head: true });
 
     if (agendaError) throw agendaError;
 
-    // 3. Fetch all attendance logs (siswa_id only to keep response light)
+    // Ambil data riwayat absensi (hanya siswa_id)
     const { data: absensiLogs, error: absensiError } = await supabase
       .from('absensi')
       .select('siswa_id');
 
     if (absensiError) throw absensiError;
 
-    // Group grades by student
+    // Kelompokkan nilai per siswa
     const gradesBySiswa = {};
     rawGrades.forEach((row) => {
       const sId = row.siswa_id;
@@ -51,7 +49,7 @@ const getNilai = async (req, res, next) => {
       else if (row.kategori_nilai_id === 4) gradesBySiswa[sId].tanggung_jawab = row.nilai;
     });
 
-    // Calculate attendance percentage for each student
+    // Hitung persentase kehadiran masing-masing siswa
     Object.keys(gradesBySiswa).forEach((sId) => {
       const studentAbsenCount = absensiLogs.filter(a => a.siswa_id === Number(sId)).length;
       const kehadiranScore = totalAgenda > 0 ? Math.round((studentAbsenCount / totalAgenda) * 100) : 0;
@@ -64,9 +62,7 @@ const getNilai = async (req, res, next) => {
   }
 };
 
-/**
- * Get grades list for a specific student.
- */
+// Ambil data nilai berdasarkan ID siswa
 const getNilaiBySiswa = async (req, res, next) => {
   try {
     const { siswaId } = req.params;
@@ -85,14 +81,12 @@ const getNilaiBySiswa = async (req, res, next) => {
   }
 };
 
-/**
- * Insert or update a student grade.
- */
+// Buat atau update nilai siswa
 const createNilai = async (req, res, next) => {
   try {
     const { siswa_id, kategori_nilai_id, nilai } = req.body;
 
-    // Check if grade for this category and student already exists
+    // Periksa apakah nilai untuk kategori ini sudah ada
     const { data: existingNilai, error: checkError } = await supabase
       .from('nilai')
       .select('id')
@@ -104,7 +98,7 @@ const createNilai = async (req, res, next) => {
 
     let result;
     if (existingNilai) {
-      // Update existing record
+      // Update nilai jika sudah ada
       const { data, error } = await supabase
         .from('nilai')
         .update({ nilai: parseInt(nilai) })
@@ -115,7 +109,7 @@ const createNilai = async (req, res, next) => {
       if (error) throw error;
       result = data;
     } else {
-      // Insert new record
+      // Tambah nilai baru
       const { data, error } = await supabase
         .from('nilai')
         .insert([{
@@ -136,9 +130,7 @@ const createNilai = async (req, res, next) => {
   }
 };
 
-/**
- * Update single grade record by ID.
- */
+// Update data nilai berdasarkan ID
 const updateNilai = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -159,9 +151,7 @@ const updateNilai = async (req, res, next) => {
   }
 };
 
-/**
- * Delete a grade record.
- */
+// Hapus data nilai
 const deleteNilai = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -179,14 +169,12 @@ const deleteNilai = async (req, res, next) => {
   }
 };
 
-/**
- * Calculate dynamic student report card (Rapor).
- */
+// Hitung rapor siswa secara dinamis
 const getRaporSiswa = async (req, res, next) => {
   try {
     const { siswaId } = req.params;
 
-    // Verify student exists
+    // Pastikan siswa terdaftar
     const { data: siswa, error: siswaErr } = await supabase
       .from('siswa')
       .select('id, user_id, nis, users(nama)')
@@ -197,15 +185,14 @@ const getRaporSiswa = async (req, res, next) => {
       return sendError(res, 'Siswa tidak ditemukan.', 404);
     }
 
-    // 1. Calculate Kehadiran dynamically
-    // Count total agenda events
+    // Hitung kehadiran secara dinamis
     const { count: totalAgenda, error: agendaErr } = await supabase
       .from('agenda_absensi')
       .select('*', { count: 'exact', head: true });
 
     if (agendaErr) throw agendaErr;
 
-    // Count student check-in records
+    // Hitung total absen hadir
     const { count: totalHadir, error: hadirErr } = await supabase
       .from('absensi')
       .select('*', { count: 'exact', head: true })
@@ -217,7 +204,7 @@ const getRaporSiswa = async (req, res, next) => {
       ? Math.round((totalHadir / totalAgenda) * 100)
       : 0;
 
-    // 2. Fetch other grade criteria (Keaktifan, Kedisiplinan, Kerjasama, Tanggung Jawab)
+    // Ambil kriteria nilai lainnya
     const { data: gradesList, error: gradesErr } = await supabase
       .from('nilai')
       .select('*, kategori_nilai(nama_kategori)')
@@ -225,7 +212,6 @@ const getRaporSiswa = async (req, res, next) => {
 
     if (gradesErr) throw gradesErr;
 
-    // Initialize default rapor criteria values
     const rapor = {
       kehadiran: scoreKehadiran,
       keaktifan: 0,
@@ -234,7 +220,7 @@ const getRaporSiswa = async (req, res, next) => {
       tanggung_jawab: 0
     };
 
-    // Map database grades to criteria keys
+    // Petakan nilai ke kriteria rapor
     if (gradesList) {
       gradesList.forEach(g => {
         if (g.kategori_nilai && g.kategori_nilai.nama_kategori) {
@@ -249,7 +235,7 @@ const getRaporSiswa = async (req, res, next) => {
       });
     }
 
-    // 3. Compute overall average (rata_rata)
+    // Hitung rata-rata rapor
     const sum =
       rapor.kehadiran +
       rapor.keaktifan +

@@ -7,17 +7,11 @@ const MenuLainnya = () => {
   const [activeSubTab, setActiveSubTab] = useState('piket');
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [piketData, setPiketData] = useState([]);
+  const [piketLoading, setPiketLoading] = useState(false);
+  const [piketError, setPiketError] = useState(null);
 
-  // Jadwal Piket data
-  const jadwalPiket = [
-    { hari: 'Senin', reguPutra: 'Regu Singa', reguPutri: 'Regu Melati', tugas: 'Kebersihan Sanggar & Inventaris' },
-    { hari: 'Selasa', reguPutra: 'Regu Elang', reguPutri: 'Regu Mawar', tugas: 'Pengecekan Atribut Upacara' },
-    { hari: 'Rabu', reguPutra: 'Regu Tiger', reguPutri: 'Regu Orchid', tugas: 'Perawatan Bendera & Semaphore' },
-    { hari: 'Kamis', reguPutra: 'Regu Cobra', reguPutri: 'Regu Tulip', tugas: 'Perapihan Buku & Administrasi' },
-    { hari: 'Sabtu', reguPutra: 'Latihan Rutin', reguPutri: 'Latihan Rutin', tugas: 'Seluruh Anggota Gudep' },
-  ];
-
-  // Peraturan data
+  // Data Dasa Darma
   const dasaDarma = [
     'Takwa kepada Tuhan Yang Maha Esa.',
     'Cinta alam dan kasih sayang sesama manusia.',
@@ -31,20 +25,51 @@ const MenuLainnya = () => {
     'Suci dalam pikiran, perkataan, dan perbuatan.'
   ];
 
+  // Ambil data piket dari API
+  useEffect(() => {
+    if (activeSubTab === 'piket') {
+      const loadPiket = async () => {
+        setPiketLoading(true);
+        setPiketError(null);
+        try {
+          const res = await api.piket.getAll();
+          setPiketData(res.data || []);
+        } catch (err) {
+          console.error(err);
+          setPiketError('Gagal memuat jadwal piket.');
+        } finally {
+          setPiketLoading(false);
+        }
+      };
+      loadPiket();
+    }
+  }, [activeSubTab]);
+
+  // Ambil data leaderboard dari database nilai asli
   useEffect(() => {
     if (activeSubTab === 'leaderboard') {
       const loadLeaderboard = async () => {
         setLoading(true);
         try {
-          const res = await api.siswa.getAll();
-          // Map students to add mock points based on a stable formula for display realism
-          const mapped = (res.data || []).map(s => {
-            const points = ((s.id * 17) % 45) + 55; // stable score between 55 and 100
-            return {
-              ...s,
-              poin: points
-            };
-          }).sort((a, b) => b.poin - a.poin);
+          const [siswaRes, nilaiRes] = await Promise.all([
+            api.siswa.getAll(),
+            api.nilai.getAll().catch(() => ({ data: [] }))
+          ]);
+          const siswaList = siswaRes.data || [];
+          const nilaiList = nilaiRes.data || [];
+
+          // Jumlahkan nilai riil per siswa_id
+          const scoreMap = {};
+          nilaiList.forEach(n => {
+            const sid = n.siswa_id;
+            scoreMap[sid] = (scoreMap[sid] || 0) + (Number(n.nilai) || 0);
+          });
+
+          const mapped = siswaList.map(s => ({
+            ...s,
+            poin: scoreMap[s.id] || 0
+          })).sort((a, b) => b.poin - a.poin);
+
           setLeaderboardData(mapped);
         } catch (err) {
           console.error(err);
@@ -59,7 +84,7 @@ const MenuLainnya = () => {
   return (
     <div className="space-y-6">
       
-      {/* Title */}
+      {/* Judul Halaman */}
       <div>
         <h1 className="text-xl font-bold text-slate-800 tracking-tight">
           Menu Lainnya
@@ -67,7 +92,7 @@ const MenuLainnya = () => {
         <p className="text-xs text-slate-500 mt-1">Akses jadwal piket harian, peraturan organisasi, leaderboard keaktifan, dan info aplikasi.</p>
       </div>
 
-      {/* Sub-tab Navigation */}
+      {/* Navigasi Sub-tab */}
       <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
         <button
           onClick={() => setActiveSubTab('piket')}
@@ -123,7 +148,7 @@ const MenuLainnya = () => {
         </button>
       </div>
 
-      {/* Tab Panels */}
+      {/* Panel Konten Tab */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-soft min-h-[300px]">
         <AnimatePresence mode="wait">
           {activeSubTab === 'piket' && (
@@ -135,28 +160,34 @@ const MenuLainnya = () => {
               className="space-y-4"
             >
               <h2 className="text-sm font-bold text-slate-800 border-b pb-2">Jadwal Piket Mingguan Sanggar</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-xs sm:text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-400 font-semibold">
-                      <th className="py-2.5">Hari</th>
-                      <th className="py-2.5">Regu Putra</th>
-                      <th className="py-2.5">Regu Putri</th>
-                      <th className="py-2.5">Tugas Utama</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    {jadwalPiket.map((p, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/50">
-                        <td className="py-3 font-bold text-slate-900">{p.hari}</td>
-                        <td className="py-3">{p.reguPutra}</td>
-                        <td className="py-3">{p.reguPutri}</td>
-                        <td className="py-3 text-slate-500 italic">{p.tugas}</td>
+              {piketLoading ? (
+                <div className="py-8 text-center text-xs text-slate-400">Memuat jadwal piket...</div>
+              ) : piketError ? (
+                <div className="py-8 text-center text-xs text-red-500">{piketError}</div>
+              ) : piketData.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">Jadwal piket belum diatur oleh pembina.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-xs sm:text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-400 font-semibold">
+                        <th className="py-2.5">Hari</th>
+                        <th className="py-2.5">Regu Putra</th>
+                        <th className="py-2.5">Regu Putri</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {piketData.map((p) => (
+                        <tr key={p.id} className="hover:bg-slate-50/50">
+                          <td className="py-3 font-bold text-slate-900">{p.hari}</td>
+                          <td className="py-3">{p.regu_putra || <span className="text-slate-400 italic">Belum diatur</span>}</td>
+                          <td className="py-3">{p.regu_putri || <span className="text-slate-400 italic">Belum diatur</span>}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </motion.div>
           )}
 

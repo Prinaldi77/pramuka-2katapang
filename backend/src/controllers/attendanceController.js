@@ -3,12 +3,9 @@ const { calculateDistance } = require('../utils/gpsHelper');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile } = require('../services/storageService');
 
-/**
- * Get current active GPS attendance agenda.
- */
+// Ambil agenda absensi GPS yang aktif
 const getCurrentActivity = async (req, res, next) => {
   try {
-    // Find active agenda absensi
     const { data: agenda, error } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -38,14 +35,12 @@ const getCurrentActivity = async (req, res, next) => {
   }
 };
 
-/**
- * Get student attendance status for current active activity.
- */
+// Ambil status absensi siswa untuk agenda aktif
 const getAttendanceStatus = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    // Retrieve siswa profile
+    // Ambil data siswa
     const { data: siswa, error: siswaErr } = await supabase
       .from('siswa')
       .select('id')
@@ -59,7 +54,7 @@ const getAttendanceStatus = async (req, res, next) => {
       });
     }
 
-    // Find current active agenda
+    // Cari agenda yang aktif
     const { data: agenda } = await supabase
       .from('agenda_absensi')
       .select('id')
@@ -76,7 +71,7 @@ const getAttendanceStatus = async (req, res, next) => {
       });
     }
 
-    // Check check-in log
+    // Periksa riwayat absen
     const { data: absensi, error } = await supabase
       .from('absensi')
       .select('created_at, status, keterangan')
@@ -113,9 +108,7 @@ const getAttendanceStatus = async (req, res, next) => {
   }
 };
 
-/**
- * Handle student GPS check-in (selfie + distance validation).
- */
+// Absensi GPS & Selfie Siswa
 const checkIn = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -125,7 +118,7 @@ const checkIn = async (req, res, next) => {
     const lngVal = parseFloat(longitude);
     const agendaId = parseInt(kegiatanId);
 
-    // Retrieve siswa profile
+    // Ambil data siswa
     const { data: siswa, error: siswaErr } = await supabase
       .from('siswa')
       .select('id')
@@ -136,7 +129,7 @@ const checkIn = async (req, res, next) => {
       return sendError(res, 'Profil siswa tidak ditemukan.', 404);
     }
 
-    // Retrieve agenda
+    // Ambil data agenda
     const { data: agenda, error: agendaErr } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -147,7 +140,7 @@ const checkIn = async (req, res, next) => {
       return sendError(res, 'Agenda absensi tidak ditemukan.', 404);
     }
 
-    // Calculate proximity distance
+    // Validasi jarak lokasi
     const distance = calculateDistance(latVal, lngVal, agenda.latitude, agenda.longitude);
 
     if (distance > agenda.radius) {
@@ -158,7 +151,7 @@ const checkIn = async (req, res, next) => {
       );
     }
 
-    // Handle selfie upload
+    // Unggah foto selfie
     let selfieUrl = null;
     if (req.file) {
       try {
@@ -168,7 +161,7 @@ const checkIn = async (req, res, next) => {
       }
     }
 
-    // Upsert absensi
+    // Simpan atau update absensi
     const { data: existing } = await supabase
       .from('absensi')
       .select('id')
@@ -218,9 +211,7 @@ const checkIn = async (req, res, next) => {
   }
 };
 
-/**
- * Handle student permission submissions (sakit/izin).
- */
+// Kirim permohonan izin/sakit
 const submitPermit = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -228,7 +219,7 @@ const submitPermit = async (req, res, next) => {
 
     const agendaId = parseInt(kegiatanId);
 
-    // Retrieve siswa profile
+    // Ambil data siswa
     const { data: siswa, error: siswaErr } = await supabase
       .from('siswa')
       .select('id')
@@ -239,7 +230,7 @@ const submitPermit = async (req, res, next) => {
       return sendError(res, 'Profil siswa tidak ditemukan.', 404);
     }
 
-    // Retrieve agenda
+    // Ambil data agenda
     const { data: agenda, error: agendaErr } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -250,7 +241,7 @@ const submitPermit = async (req, res, next) => {
       return sendError(res, 'Agenda absensi tidak ditemukan.', 404);
     }
 
-    // Handle document upload
+    // Unggah dokumen surat izin jika ada
     let docUrl = null;
     if (req.file) {
       try {
@@ -260,7 +251,7 @@ const submitPermit = async (req, res, next) => {
       }
     }
 
-    // Upsert permit
+    // Simpan surat izin
     const { data: existing } = await supabase
       .from('absensi')
       .select('id')
@@ -312,14 +303,12 @@ const submitPermit = async (req, res, next) => {
   }
 };
 
-/**
- * Retrieve student check-in log for today.
- */
+// Ambil riwayat absen hari ini
 const getTodayAttendance = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    // Retrieve siswa profile
+    // Ambil data siswa
     const { data: siswa } = await supabase
       .from('siswa')
       .select('id')
@@ -347,9 +336,7 @@ const getTodayAttendance = async (req, res, next) => {
   }
 };
 
-/**
- * Handle face selfie verification.
- */
+// Verifikasi foto selfie wajah
 const selfieVerification = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -359,7 +346,7 @@ const selfieVerification = async (req, res, next) => {
     const lngVal = parseFloat(longitude);
     const agendaId = parseInt(activityId);
 
-    // Retrieve active student profile
+    // Ambil data siswa aktif
     const { data: siswa, error: siswaErr } = await supabase
       .from('siswa')
       .select('id')
@@ -374,7 +361,7 @@ const selfieVerification = async (req, res, next) => {
       });
     }
 
-    // Retrieve active agenda
+    // Ambil agenda aktif
     const { data: agenda, error: agendaErr } = await supabase
       .from('agenda_absensi')
       .select('*')
@@ -389,7 +376,7 @@ const selfieVerification = async (req, res, next) => {
       });
     }
 
-    // Calculate proximity distance
+    // Hitung jarak lokasi
     const distance = calculateDistance(latVal, lngVal, agenda.latitude, agenda.longitude);
 
     if (distance > agenda.radius) {
@@ -400,7 +387,7 @@ const selfieVerification = async (req, res, next) => {
       });
     }
 
-    // Handle selfie upload directly to kegiatan bucket
+    // Unggah foto selfie ke storage
     let selfieUrl = null;
     if (req.file) {
       try {
@@ -418,7 +405,7 @@ const selfieVerification = async (req, res, next) => {
       });
     }
 
-    // Upsert absensi
+    // Simpan data absen
     const { data: existing } = await supabase
       .from('absensi')
       .select('id')

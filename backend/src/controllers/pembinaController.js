@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all pembinas list with user accounts details.
- */
+// Ambil semua daftar pembina beserta akun usernya
 const getPembina = async (req, res, next) => {
   try {
     const { data: pembinaList, error } = await supabase
@@ -19,9 +17,7 @@ const getPembina = async (req, res, next) => {
   }
 };
 
-/**
- * Get pembina by ID.
- */
+// Ambil data pembina berdasarkan ID
 const getPembinaById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -42,9 +38,7 @@ const getPembinaById = async (req, res, next) => {
   }
 };
 
-/**
- * Create pembina profile.
- */
+// Tambah data pembina baru
 const createPembina = async (req, res, next) => {
   try {
     const { user_id, jabatan } = req.body;
@@ -63,9 +57,7 @@ const createPembina = async (req, res, next) => {
   }
 };
 
-/**
- * Update pembina profile details by ID.
- */
+// Update data pembina berdasarkan ID
 const updatePembina = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -89,9 +81,7 @@ const updatePembina = async (req, res, next) => {
   }
 };
 
-/**
- * Delete pembina profile by ID.
- */
+// Hapus data pembina berdasarkan ID
 const deletePembina = async (req, res, next) => {
   try {
     const { id } = req.params;

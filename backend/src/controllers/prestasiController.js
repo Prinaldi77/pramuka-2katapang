@@ -2,9 +2,7 @@ const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
-/**
- * Get all achievements list.
- */
+// Ambil semua daftar prestasi
 const getPrestasi = async (req, res, next) => {
   try {
     const { data: prestasiList, error } = await supabase
@@ -20,9 +18,7 @@ const getPrestasi = async (req, res, next) => {
   }
 };
 
-/**
- * Get single achievement by ID.
- */
+// Ambil data prestasi berdasarkan ID
 const getPrestasiById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -43,9 +39,7 @@ const getPrestasiById = async (req, res, next) => {
   }
 };
 
-/**
- * Create a new achievement.
- */
+// Buat data prestasi baru beserta gambar
 const createPrestasi = async (req, res, next) => {
   try {
     const { nama_prestasi, deskripsi, tanggal } = req.body;
@@ -74,9 +68,7 @@ const createPrestasi = async (req, res, next) => {
   }
 };
 
-/**
- * Update achievement details by ID.
- */
+// Update data prestasi berdasarkan ID
 const updatePrestasi = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -101,7 +93,7 @@ const updatePrestasi = async (req, res, next) => {
       const gambarUrl = await uploadFile(req.file, 'prestasi');
       updates.gambar = gambarUrl;
 
-      // Delete old image
+      // Hapus gambar lama
       if (existingPrestasi.gambar) {
         await deleteFile(existingPrestasi.gambar, 'prestasi');
       }
@@ -122,9 +114,7 @@ const updatePrestasi = async (req, res, next) => {
   }
 };
 
-/**
- * Delete achievement by ID.
- */
+// Hapus prestasi berdasarkan ID
 const deletePrestasi = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -139,7 +129,7 @@ const deletePrestasi = async (req, res, next) => {
       return sendError(res, 'Prestasi tidak ditemukan.', 404);
     }
 
-    // Delete image from storage
+    // Hapus gambar dari storage
     if (prestasi.gambar) {
       await deleteFile(prestasi.gambar, 'prestasi');
     }

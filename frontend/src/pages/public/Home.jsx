@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { Calendar, ArrowRight, Award, Users, FileText, Image, Crown, Shield } from 'lucide-react';
-import heroBg from '../../assets/logo.png'; // fallback or design element
+import heroBg from '../../assets/logo.png';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
@@ -11,7 +11,7 @@ const Home = () => {
 
   const [kegiatan, setKegiatan] = useState([]);
   const [galeri, setGaleri] = useState([]);
-  const [stats, setStats] = useState({ siswa: 120, pembina: 6, pengurus: 0, kegiatan: 0 });
+  const [stats, setStats] = useState({ siswa: 0, pembina: 0, pengurus: 0, kegiatan: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -29,10 +29,10 @@ const Home = () => {
         setKegiatan(kegiatanRes.data.slice(0, 2));
         setGaleri(galeriRes.data.slice(0, 4));
         setStats({
-          siswa: siswaRes.data.length || 120,
-          pembina: pembinaRes.data.length || 6,
-          pengurus: pengurusRes.data.length || 0,
-          kegiatan: kegiatanRes.data.length || 0,
+          siswa: (siswaRes && siswaRes.data) ? siswaRes.data.length : 0,
+          pembina: (pembinaRes && pembinaRes.data) ? pembinaRes.data.length : 0,
+          pengurus: (pengurusRes && pengurusRes.data) ? pengurusRes.data.length : 0,
+          kegiatan: (kegiatanRes && kegiatanRes.data) ? kegiatanRes.data.length : 0,
         });
       } catch (err) {
         console.error('Error fetching landing data:', err);
@@ -47,9 +47,9 @@ const Home = () => {
   return (
     <div className="w-full bg-slate-50 min-h-screen">
       
-      {/* Hero Section */}
+      {/* Bagian Hero */}
       <section className="relative overflow-hidden bg-slate-900 text-white py-24 sm:py-32 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Curved BG graphics */}
+        {/* Grafis Latar Belakang */}
         <div className="absolute inset-0 bg-radial-gradient from-slate-800 to-slate-950 opacity-90 z-0"></div>
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl z-0"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl z-0"></div>
@@ -76,7 +76,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Statistics Section */}
+      {/* Bagian Statistik */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-10 relative z-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div data-aos="zoom-in" data-aos-delay="100" className="bg-white p-6 rounded-2xl border border-slate-200 shadow-soft flex items-center space-x-4">
@@ -110,7 +110,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Tentang Gudep Section */}
+      {/* Bagian Tentang Gudep */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div data-aos="fade-up" className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 shadow-soft grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
@@ -141,10 +141,10 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Latest News & Upcoming Events */}
+      {/* Bagian Berita Terkini & Agenda */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
         
-        {/* Struktur Kepemimpinan (Left Column) */}
+        {/* Kolom Kiri: Struktur Kepemimpinan */}
         <div data-aos="fade-up" className="lg:col-span-8 space-y-6">
           <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <h2 className="text-2xl font-bold text-slate-800">Struktur Kepemimpinan</h2>
@@ -154,7 +154,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {/* Card 1: Kamabigus */}
+            {/* Kartu Kamabigus */}
             <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
               <div className="mx-auto p-3 bg-emerald-50 text-emerald-600 rounded-2xl w-fit">
                 <Crown className="h-6 w-6" />
@@ -168,7 +168,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Card 2: Pembina */}
+            {/* Kartu Pembina */}
             <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
               <div className="mx-auto p-3 bg-blue-50 text-blue-600 rounded-2xl w-fit">
                 <Shield className="h-6 w-6" />
@@ -182,7 +182,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Card 3: Pratama */}
+            {/* Kartu Pratama */}
             <div className="bg-white border border-slate-200 p-5 rounded-2xl shadow-soft hover:shadow-md transition-shadow flex flex-col justify-between text-center space-y-4">
               <div className="mx-auto p-3 bg-amber-50 text-amber-600 rounded-2xl w-fit">
                 <Award className="h-6 w-6" />
@@ -198,7 +198,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Kegiatan Terdekat (Right Column) */}
+        {/* Kolom Kanan: Kegiatan Terdekat */}
         <div data-aos="fade-up" data-aos-delay="200" className="lg:col-span-4 space-y-6">
           <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <h2 className="text-2xl font-bold text-slate-800">Kegiatan Terdekat</h2>
@@ -236,7 +236,7 @@ const Home = () => {
 
       </section>
 
-      {/* Gallery Section */}
+      {/* Bagian Galeri */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" data-aos="fade-up">
         <div className="flex justify-between items-end border-b border-slate-200 pb-3 mb-6">
           <h2 className="text-2xl font-bold text-slate-800">Galeri Kegiatan</h2>

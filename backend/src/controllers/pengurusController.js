@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all board members (pengurus) list with student details.
- */
+// Ambil semua daftar dewan pengurus beserta profil siswanya
 const getPengurus = async (req, res, next) => {
   try {
     const { data: pengurusList, error } = await supabase
@@ -19,9 +17,7 @@ const getPengurus = async (req, res, next) => {
   }
 };
 
-/**
- * Get single board member by ID.
- */
+// Ambil data pengurus berdasarkan ID
 const getPengurusById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -42,9 +38,7 @@ const getPengurusById = async (req, res, next) => {
   }
 };
 
-/**
- * Add a new board member.
- */
+// Tambah anggota dewan pengurus baru
 const createPengurus = async (req, res, next) => {
   try {
     const { siswa_id, jabatan, periode } = req.body;
@@ -67,9 +61,7 @@ const createPengurus = async (req, res, next) => {
   }
 };
 
-/**
- * Update board member details by ID.
- */
+// Update data dewan pengurus berdasarkan ID
 const updatePengurus = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -95,9 +87,7 @@ const updatePengurus = async (req, res, next) => {
   }
 };
 
-/**
- * Delete board member by ID.
- */
+// Hapus pengurus berdasarkan ID
 const deletePengurus = async (req, res, next) => {
   try {
     const { id } = req.params;

@@ -37,7 +37,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
     navigate('/login');
   };
 
-  // Menu lists based on user role
+  // Daftar menu navigasi berdasarkan role user
   const menus = {
     admin: [
       { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -79,7 +79,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
   const sidebarContent = (
     <div className="flex flex-col h-full bg-slate-950 text-slate-100 border-r border-slate-900 select-none">
       
-      {/* Sidebar Header Brand */}
+      {/* Header Sidebar */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-900 h-16 flex-shrink-0">
         <div className="flex items-center space-x-3 overflow-hidden">
           <img src={logoImg} alt="Logo" className="h-10 w-10 bg-white p-0.5 rounded-lg flex-shrink-0 object-contain -my-2" />
@@ -90,7 +90,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             </div>
           )}
         </div>
-        {/* Toggle button on desktop/tablet */}
+        {/* Tombol toggle tampilan sidebar */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="hidden md:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
@@ -99,7 +99,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         </button>
       </div>
 
-      {/* Profile summary */}
+      {/* Ringkasan Profil */}
       {!isCollapsed && (
         <div className="p-4 mx-4 mt-4 bg-slate-900/40 border border-slate-900 rounded-xl flex items-center space-x-3">
           <div className="h-10 w-10 rounded-full bg-primary/20 text-primary-400 flex items-center justify-center font-bold">
@@ -112,7 +112,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         </div>
       )}
 
-      {/* Nav Menu Items */}
+      {/* Daftar Menu */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 no-scrollbar">
         {roleMenus.map((menu) => {
           const Icon = menu.icon;
@@ -135,7 +135,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         })}
       </div>
 
-      {/* Logout button */}
+      {/* Tombol Keluar */}
       <div className="p-3 border-t border-slate-900 mt-auto flex-shrink-0">
         <button
           onClick={handleLogout}
@@ -153,7 +153,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
 
   return (
     <>
-      {/* Tablet / Desktop Sidebar */}
+      {/* Sidebar Desktop */}
       <aside
         className={`hidden md:block h-screen fixed top-0 left-0 z-30 transition-all duration-300 flex-shrink-0 ${
           isCollapsed ? 'w-20' : 'w-64'
@@ -162,7 +162,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer Sidebar Overlay */}
+      {/* Sidebar Mobile Overlay */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div

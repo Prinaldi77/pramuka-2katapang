@@ -1,11 +1,6 @@
 import axios from 'axios';
 
-// Log for debugging URL (development only)
-if (import.meta.env.DEV) {
-  console.log('Current VITE_API_URL:', import.meta.env.VITE_API_URL);
-}
-
-// Base Axios instance
+// Inisialisasi axios client
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
@@ -13,7 +8,7 @@ const apiClient = axios.create({
   },
 });
 
-// Request Interceptor: Automatically inject JWT token from localStorage
+// Interceptor Request: Sisipkan token JWT ke header otomatis
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -25,10 +20,9 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Redirect to login on 401 Unauthorized, and unwrap response envelopes
+// Interceptor Response: Tangani error 401 dan ekstraksi data response
 apiClient.interceptors.response.use(
   (response) => {
-    // If response contains data and success is true, unwrap the data property
     if (response.data && response.data.success === true && response.data.data !== undefined) {
       response.data = response.data.data;
     }
@@ -50,25 +44,23 @@ apiClient.interceptors.response.use(
   }
 );
 
-// ==========================================
-// API SERVICES EXPORT
-// ==========================================
+// Layanan API
 export const api = {
-  // Auth API
+  // Autentikasi
   auth: {
     login: async (email, password) => {
-      // 1. Authenticate with email/password
+      // Login dengan email dan password
       const loginRes = await apiClient.post('/auth/login', { email, password });
       const { token, user } = loginRes.data;
       
-      // Save token temporarily so subsequent request carries it
+      // Simpan token ke localStorage
       localStorage.setItem('token', token);
       
-      // 2. Fetch full profile to get siswa/pembina association id
+      // Ambil profil lengkap untuk mendapatkan asosiasi siswa/pembina
       const profileRes = await apiClient.get('/auth/profile');
       const fullProfile = profileRes.data;
       
-      // Construct the local user object with appropriate IDs
+      // Susun data user lokal
       const mappedUser = {
         id: fullProfile.id,
         email: fullProfile.email,

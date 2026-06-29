@@ -58,7 +58,7 @@ const Kegiatan = () => {
     k.deskripsi.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Pagination Math for Kegiatan
+  // Pagging halaman kegiatan
   const totalPages = Math.ceil(filteredKegiatan.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -73,14 +73,14 @@ const Kegiatan = () => {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Header Block */}
+        {/* Header Halaman */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-slate-200 pb-6">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Kegiatan & Dokumentasi</h1>
             <p className="text-sm text-slate-500 mt-1">Lihat agenda latihan rutin, kemah bakti, serta dokumentasi foto keseruan pramuka.</p>
           </div>
 
-          {/* Search Input (Only shown on Kegiatan tab) */}
+          {/* Kolom Pencarian (Hanya di Tab Kegiatan) */}
           {activeTab === 'kegiatan' && (
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -95,7 +95,7 @@ const Kegiatan = () => {
           )}
         </div>
 
-        {/* Tab Navigation */}
+        {/* Menu Tab */}
         <div className="flex border-b border-slate-200 space-x-4">
           <button
             onClick={() => handleTabChange('kegiatan')}
@@ -125,7 +125,7 @@ const Kegiatan = () => {
           </button>
         </div>
 
-        {/* Content Section */}
+        {/* Daftar Konten */}
         {loading ? (
           <SkeletonLoader type="card" rows={6} />
         ) : error ? (
@@ -193,7 +193,7 @@ const Kegiatan = () => {
                       ))}
                     </div>
 
-                    {/* Pagination Controls */}
+                    {/* Kontrol Navigasi Halaman */}
                     {totalPages > 1 && (
                       <div className="flex items-center justify-center space-x-2 pt-6">
                         <button
@@ -242,7 +242,7 @@ const Kegiatan = () => {
                     description="Belum ada dokumentasi foto yang diunggah ke sistem."
                   />
                 ) : (
-                  /* Masonry Grid */
+                  /* Masonry Grid (Tata Letak Galeri) */
                   <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
                     {galeriList.map((item) => (
                       <div
@@ -255,7 +255,7 @@ const Kegiatan = () => {
                           alt={item.judul}
                           className="w-full h-auto object-cover max-h-96"
                         />
-                        {/* Hover Overlay */}
+                        {/* Overlay Detail Galeri */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-5 text-white">
                           <div className="self-end p-2 bg-white/20 rounded-full backdrop-blur-xs">
                             <ZoomIn className="h-4 w-4" />
@@ -274,7 +274,7 @@ const Kegiatan = () => {
           </AnimatePresence>
         )}
 
-        {/* Lightbox Modal (Zoomed Photo) */}
+        {/* Modal Lightbox */}
         {activeImage && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xs p-4 animate-in fade-in duration-200"

@@ -45,7 +45,7 @@ const Kontak = () => {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-12">
         
-        {/* Header Block */}
+        {/* Header Halaman */}
         <div className="border-b border-slate-200 pb-6 text-center">
           <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Hubungi Kami</h1>
           <p className="text-sm text-slate-500 mt-1">Kami senang mendengar pertanyaan, saran, atau tawaran kerja sama dari Anda.</p>
@@ -53,7 +53,7 @@ const Kontak = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Contact Info (Left 5 Cols) */}
+          {/* Detail Kontak */}
           <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-8 shadow-soft space-y-6">
             <h2 className="text-xl font-bold text-slate-800 flex items-center space-x-2">
               <MessageSquare className="h-5 w-5 text-primary" />
@@ -90,7 +90,7 @@ const Kontak = () => {
             </div>
           </div>
 
-          {/* Contact Form (Right 7 Cols) */}
+          {/* Formulir Kontak */}
           <form
             onSubmit={handleSubmit}
             className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-8 shadow-soft space-y-6"

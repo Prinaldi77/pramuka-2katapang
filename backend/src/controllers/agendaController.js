@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all attendance agendas.
- */
+// Ambil semua agenda absensi
 const getAgenda = async (req, res, next) => {
   try {
     const { data: agendaList, error } = await supabase
@@ -20,9 +18,7 @@ const getAgenda = async (req, res, next) => {
   }
 };
 
-/**
- * Get single agenda by ID.
- */
+// Ambil data agenda berdasarkan ID
 const getAgendaById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -43,9 +39,7 @@ const getAgendaById = async (req, res, next) => {
   }
 };
 
-/**
- * Create a new GPS attendance agenda.
- */
+// Buat agenda absensi GPS baru
 const createAgenda = async (req, res, next) => {
   try {
     const {
@@ -82,9 +76,7 @@ const createAgenda = async (req, res, next) => {
   }
 };
 
-/**
- * Update GPS attendance agenda details by ID.
- */
+// Update data agenda absensi berdasarkan ID
 const updateAgenda = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -124,9 +116,7 @@ const updateAgenda = async (req, res, next) => {
   }
 };
 
-/**
- * Delete attendance agenda by ID.
- */
+// Hapus agenda absensi berdasarkan ID
 const deleteAgenda = async (req, res, next) => {
   try {
     const { id } = req.params;

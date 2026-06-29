@@ -35,7 +35,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-40 w-full glass-nav shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo & Identity */}
+          {/* Logo & Identitas */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img src={logoImg} alt="Logo" className="h-20 w-auto object-contain -my-4 bg-white p-0.5 rounded-xl shadow-xs transition-transform group-hover:scale-105" />
             <div className="flex flex-col">
@@ -48,7 +48,7 @@ const Navbar = () => {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Navigasi Desktop */}
           <div className="hidden lg:flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
@@ -79,7 +79,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Hamburger Menu Button */}
+          {/* Tombol Menu Hamburger Mobile */}
           <div className="lg:hidden flex items-center">
             <button
               onClick={toggleMenu}
@@ -92,7 +92,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer Overlay */}
+      {/* Menu Overlay Mobile */}
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end" onClick={toggleMenu}>
           <div

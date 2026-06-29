@@ -1,14 +1,12 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get personal profile for logged-in user
- */
+// Ambil data profil pribadi user yang sedang login
 const getMe = async (req, res, next) => {
   try {
     const user = req.user;
     
-    // Fetch full profile detail based on role
+    // Susun data struktur profil default
     let profileData = {
       id: user.id,
       name: user.nama,
@@ -57,9 +55,7 @@ const getMe = async (req, res, next) => {
   }
 };
 
-/**
- * Update personal profile
- */
+// Update profil pribadi user yang sedang login
 const updateProfile = async (req, res, next) => {
   try {
     const user = req.user;
@@ -70,7 +66,7 @@ const updateProfile = async (req, res, next) => {
     const newKelas = kelas || gugusDepan;
     const newNis = nomorInduk || nis;
 
-    // 1. Update users table (name/nama)
+    // 1. Update tabel users (nama lengkap)
     if (newName) {
       const { error: userUpdateErr } = await supabase
         .from('users')
@@ -80,9 +76,9 @@ const updateProfile = async (req, res, next) => {
       if (userUpdateErr) throw userUpdateErr;
     }
 
-    // 2. Update specific table based on role
+    // 2. Update tabel spesifik berdasarkan role
     if (user.role === 'siswa') {
-      // Check if student profile row already exists in the 'siswa' table
+      // Periksa apakah profil siswa sudah ada di tabel siswa
       const { data: existingSiswa, error: fetchErr } = await supabase
         .from('siswa')
         .select('id')
@@ -97,7 +93,7 @@ const updateProfile = async (req, res, next) => {
       if (newPhone !== undefined) siswaUpdates.no_hp_ortu = newPhone;
 
       if (existingSiswa) {
-        // If it exists, perform an update
+        // Jika profil sudah ada, jalankan update
         const { error: siswaUpdateErr } = await supabase
           .from('siswa')
           .update(siswaUpdates)
@@ -105,7 +101,7 @@ const updateProfile = async (req, res, next) => {
 
         if (siswaUpdateErr) throw siswaUpdateErr;
       } else {
-        // If it does not exist (admin only created the User account, not the profile), perform an insert automatically
+        // Jika profil belum ada, jalankan insert otomatis
         siswaUpdates.user_id = user.id;
         const { error: siswaInsertErr } = await supabase
           .from('siswa')
@@ -114,7 +110,7 @@ const updateProfile = async (req, res, next) => {
         if (siswaInsertErr) throw siswaInsertErr;
       }
     } else if (user.role === 'pembina') {
-      // Check if pembina profile already exists
+      // Periksa apakah profil pembina sudah ada
       const { data: existingPembina, error: fetchErr } = await supabase
         .from('pembina')
         .select('id')
@@ -143,7 +139,7 @@ const updateProfile = async (req, res, next) => {
       }
     }
 
-    // 3. Fetch and return the updated profile details safely
+    // 3. Ambil data profil terbaru untuk dikembalikan ke client
     const { data: updatedUser } = await supabase
       .from('users')
       .select('*')

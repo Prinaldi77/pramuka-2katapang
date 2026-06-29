@@ -110,7 +110,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      {/* Title */}
+      {/* Judul Halaman */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center">
           <ShieldAlert className="h-6 w-6 text-primary mr-2" />
@@ -119,7 +119,7 @@ const Dashboard = () => {
         <p className="text-xs text-slate-500 mt-1">Status dan statistik terkini pengelolaan Sistem Informasi Pramuka.</p>
       </div>
 
-      {/* Grid Stats */}
+      {/* Kartu Statistik */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -149,14 +149,14 @@ const Dashboard = () => {
         })}
       </motion.div>
 
-      {/* Charts widgets */}
+      {/* Grafik Statistik */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-soft space-y-4">
         <div>
           <h3 className="font-bold text-slate-800 text-sm sm:text-base">Grafik Kehadiran Mingguan</h3>
           <p className="text-[10px] text-slate-400">Statistik jumlah penggalang yang melakukan absen GPS tiap harinya.</p>
         </div>
         
-        {/* Recharts container */}
+        {/* Container Recharts */}
         <div className="w-full h-80 pt-4">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

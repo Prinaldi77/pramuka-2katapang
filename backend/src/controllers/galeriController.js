@@ -2,9 +2,7 @@ const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
-/**
- * Get all gallery photos list.
- */
+// Ambil semua foto galeri
 const getGaleri = async (req, res, next) => {
   try {
     const { data: galeriList, error } = await supabase
@@ -20,9 +18,7 @@ const getGaleri = async (req, res, next) => {
   }
 };
 
-/**
- * Get gallery item by ID.
- */
+// Ambil item galeri berdasarkan ID
 const getGaleriById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -43,9 +39,7 @@ const getGaleriById = async (req, res, next) => {
   }
 };
 
-/**
- * Add new image to gallery.
- */
+// Tambah foto baru ke galeri
 const createGaleri = async (req, res, next) => {
   try {
     const { judul } = req.body;
@@ -66,7 +60,7 @@ const createGaleri = async (req, res, next) => {
       .single();
 
     if (error) {
-      // Clean up uploaded file from storage if insertion fails
+      // Hapus file dari storage jika insert gagal
       if (gambarUrl) await deleteFile(gambarUrl, 'galeri');
       throw error;
     }
@@ -77,9 +71,7 @@ const createGaleri = async (req, res, next) => {
   }
 };
 
-/**
- * Delete gallery image by ID.
- */
+// Hapus foto galeri berdasarkan ID
 const deleteGaleri = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -94,7 +86,7 @@ const deleteGaleri = async (req, res, next) => {
       return sendError(res, 'Item galeri tidak ditemukan.', 404);
     }
 
-    // Delete image from storage
+    // Hapus gambar dari storage
     if (galeri.gambar) {
       await deleteFile(galeri.gambar, 'galeri');
     }

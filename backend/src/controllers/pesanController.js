@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Public endpoint to submit contact form message.
- */
+// Kirim pesan baru via formulir kontak public
 const createPesan = async (req, res, next) => {
   try {
     const { nama, email, subjek, pesan } = req.body;
@@ -28,9 +26,7 @@ const createPesan = async (req, res, next) => {
   }
 };
 
-/**
- * Admin: Retrieve all contact messages.
- */
+// Ambil semua pesan masuk (akses Admin)
 const getPesan = async (req, res, next) => {
   try {
     const { data: pesanList, error } = await supabase
@@ -46,9 +42,7 @@ const getPesan = async (req, res, next) => {
   }
 };
 
-/**
- * Admin: Retrieve single message by ID.
- */
+// Ambil data pesan berdasarkan ID
 const getPesanById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -69,9 +63,7 @@ const getPesanById = async (req, res, next) => {
   }
 };
 
-/**
- * Admin: Delete message by ID.
- */
+// Hapus pesan berdasarkan ID
 const deletePesan = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -89,9 +81,7 @@ const deletePesan = async (req, res, next) => {
   }
 };
 
-/**
- * Admin: Mark a message as read.
- */
+// Tandai pesan sudah dibaca
 const markAsRead = async (req, res, next) => {
   try {
     const { id } = req.params;

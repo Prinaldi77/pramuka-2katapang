@@ -38,13 +38,13 @@ const Prestasi = () => {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* Header Block */}
+        {/* Header Halaman */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Galeri Prestasi Gudep</h1>
             <p className="text-sm text-slate-500 mt-1">Daftar pencapaian, piala, dan penghargaan yang berhasil diraih oleh Pramuka SMPN 2 Katapang.</p>
           </div>
-          {/* Search Input */}
+          {/* Kolom Pencarian */}
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input
@@ -57,7 +57,7 @@ const Prestasi = () => {
           </div>
         </div>
 
-        {/* Content Section */}
+        {/* Daftar Konten */}
         {loading ? (
           <SkeletonLoader type="card" rows={4} />
         ) : error ? (
@@ -78,7 +78,7 @@ const Prestasi = () => {
                 className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-soft transition-all duration-200 flex flex-col justify-between"
               >
                 <div>
-                  {/* Photo Section */}
+                  {/* Foto Prestasi */}
                   {p.gambar ? (
                     <div className="aspect-video w-full overflow-hidden bg-slate-100 relative">
                       <img src={p.gambar} alt={p.judul} className="w-full h-full object-cover" />
@@ -95,7 +95,7 @@ const Prestasi = () => {
                     </div>
                   )}
 
-                  {/* Text Section */}
+                  {/* Keterangan */}
                   <div className="p-6 space-y-3">
                     <span className="inline-flex items-center text-[10px] text-slate-400 font-semibold space-x-1 bg-slate-50 border border-slate-100 px-2.5 py-0.5 rounded-md">
                       <Calendar className="h-3.5 w-3.5 mr-1" />

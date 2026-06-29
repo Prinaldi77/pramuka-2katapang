@@ -12,16 +12,16 @@ const Pengurus = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  // Modals state
+  // Status pop-up modal
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState('add');
   const [selectedPengurus, setSelectedPengurus] = useState(null);
 
-  // Form fields
+  // Field input form
   const [formData, setFormData] = useState({ nama: '', jabatan: '', kelas: '' });
   const [formLoading, setFormLoading] = useState(false);
 
-  // Deletion checks
+  // Status proses hapus data
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [pengurusIdToDelete, setPengurusIdToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -109,7 +109,7 @@ const Pengurus = () => {
   return (
     <div className="space-y-6">
       
-      {/* Header Panel */}
+      {/* Bagian Judul */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
@@ -126,7 +126,7 @@ const Pengurus = () => {
         </button>
       </div>
 
-      {/* Control panel */}
+      {/* Bagian Pencarian */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-soft flex items-center">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -140,7 +140,7 @@ const Pengurus = () => {
         </div>
       </div>
 
-      {/* Table view */}
+      {/* Tampilan Tabel */}
       {loading ? (
         <SkeletonLoader type="table" rows={4} />
       ) : filteredPengurus.length === 0 ? (
@@ -192,12 +192,12 @@ const Pengurus = () => {
         </div>
       )}
 
-      {/* CRUD Form Modal */}
+      {/* Modal Form CRUD */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4">
           <div className="w-full h-full sm:h-auto sm:max-w-md bg-white sm:rounded-2xl shadow-xl flex flex-col justify-between overflow-hidden animate-in fade-in duration-200">
             
-            {/* Header */}
+            {/* Header Modal */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
               <h3 className="font-bold text-slate-800">
                 {modalType === 'add' ? 'Registrasi Pengurus Baru' : 'Edit Jabatan Pengurus'}
@@ -207,7 +207,7 @@ const Pengurus = () => {
               </button>
             </div>
 
-            {/* Body */}
+            {/* Form Input */}
             <div className="p-6 overflow-y-auto flex-1 text-sm space-y-4">
               <form id="pengurusForm" onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1">
@@ -248,7 +248,7 @@ const Pengurus = () => {
               </form>
             </div>
 
-            {/* Footer */}
+            {/* Tombol Simpan */}
             <div className="flex px-6 py-4 border-t border-slate-100 bg-slate-50 justify-end space-x-3">
               <button
                 type="button"
@@ -271,7 +271,7 @@ const Pengurus = () => {
         </div>
       )}
 
-      {/* Delete Dialog */}
+      {/* Dialog Konfirmasi Hapus */}
       <ConfirmDialog
         isOpen={deleteOpen}
         title="Hapus Jabatan Pengurus"

@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all students list with user accounts details.
- */
+// Ambil semua daftar siswa beserta akun usernya
 const getSiswa = async (req, res, next) => {
   try {
     const { data: siswaList, error } = await supabase
@@ -19,9 +17,7 @@ const getSiswa = async (req, res, next) => {
   }
 };
 
-/**
- * Get student by ID.
- */
+// Ambil data siswa berdasarkan ID
 const getSiswaById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -42,9 +38,7 @@ const getSiswaById = async (req, res, next) => {
   }
 };
 
-/**
- * Create student profile details.
- */
+// Tambah data siswa baru
 const createSiswa = async (req, res, next) => {
   try {
     const {
@@ -81,9 +75,7 @@ const createSiswa = async (req, res, next) => {
   }
 };
 
-/**
- * Update student profile details by ID.
- */
+// Update data siswa berdasarkan ID
 const updateSiswa = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -121,9 +113,7 @@ const updateSiswa = async (req, res, next) => {
   }
 };
 
-/**
- * Delete student profile by ID.
- */
+// Hapus data siswa berdasarkan ID
 const deleteSiswa = async (req, res, next) => {
   try {
     const { id } = req.params;

@@ -1,9 +1,7 @@
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Get all duty schedules (Senin - Jumat)
- */
+// Ambil semua jadwal piket
 const getPiket = async (req, res, next) => {
   try {
     const { data: piketList, error } = await supabase
@@ -19,9 +17,7 @@ const getPiket = async (req, res, next) => {
   }
 };
 
-/**
- * Update duty schedule by ID
- */
+// Update jadwal piket berdasarkan ID
 const updatePiket = async (req, res, next) => {
   try {
     const { id } = req.params;

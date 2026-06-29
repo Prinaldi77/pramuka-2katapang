@@ -15,7 +15,7 @@ const Kalender = () => {
     const fetchAgendas = async () => {
       try {
         const res = await api.agenda.getAll();
-        // Sort agendas by date ascending
+        // Urutkan agenda berdasarkan tanggal (terdekat dahulu)
         const sorted = (res.data || []).sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
         setAgendas(sorted);
       } catch (err) {
@@ -31,7 +31,7 @@ const Kalender = () => {
   return (
     <div className="space-y-6">
       
-      {/* Title */}
+      {/* Judul Halaman */}
       <div>
         <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
           <CalendarIcon className="h-6 w-6 text-primary mr-2" />
@@ -40,7 +40,7 @@ const Kalender = () => {
         <p className="text-xs text-slate-500 mt-1">Jadwal lengkap agenda latihan rutin, pelantikan, dan kegiatan luar ruangan.</p>
       </div>
 
-      {/* Timeline view */}
+      {/* Tampilan Timeline */}
       {loading ? (
         <SkeletonLoader type="card" rows={4} />
       ) : agendas.length === 0 ? (
@@ -58,14 +58,14 @@ const Kalender = () => {
               transition={{ delay: idx * 0.05 }}
               className="relative"
             >
-              {/* Timeline marker */}
+              {/* Penanda Linimasa */}
               <span className={`absolute -left-[35px] top-1.5 flex items-center justify-center w-6 h-6 rounded-full border-4 border-white shadow-sm ${
                 a.status === 'aktif' ? 'bg-primary animate-pulse' : 'bg-slate-300'
               }`}>
                 <Clock className="h-3 w-3 text-white" />
               </span>
 
-              {/* Agenda card */}
+              {/* Kartu Informasi Agenda */}
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-soft hover:border-primary/30 transition-colors space-y-4 max-w-xl">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center space-x-1 text-[10px] text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded">

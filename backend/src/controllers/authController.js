@@ -3,14 +3,12 @@ const jwt = require('jsonwebtoken');
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
-/**
- * Handle user login.
- */
+// Proses login user
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Fetch user from DB
+    // Ambil data user dari database
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -21,20 +19,20 @@ const login = async (req, res, next) => {
       return sendError(res, 'Email atau password salah.', 401);
     }
 
-    // Verify password
+    // Verifikasi password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return sendError(res, 'Email atau password salah.', 401);
     }
 
-    // Generate JWT token
+    // Buat token JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '24h' }
     );
 
-    // Strip password out of response
+    // Hapus password dari objek response
     delete user.password;
 
     return sendSuccess(res, 'Login berhasil.', {
@@ -47,23 +45,18 @@ const login = async (req, res, next) => {
   }
 };
 
-/**
- * Handle user logout (Stateless JWT logout is just client-side, 
- * but we provide an endpoint to clear headers or confirm logout).
- */
+// Proses logout user
 const logout = async (req, res) => {
   return sendSuccess(res, 'Logout berhasil.', {});
 };
 
-/**
- * Retrieve current logged-in user profile.
- */
+// Ambil data profil user yang sedang login
 const getProfile = async (req, res, next) => {
   try {
     const user = req.user;
     let fullProfile = { ...user };
 
-    // Fetch related profile based on user role
+    // Ambil detail profil berdasarkan role
     if (user.role === 'siswa') {
       const { data: siswaData } = await supabase
         .from('siswa')

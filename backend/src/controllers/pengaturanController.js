@@ -2,9 +2,7 @@ const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
-/**
- * Get website settings (singleton pattern).
- */
+// Ambil pengaturan website
 const getPengaturan = async (req, res, next) => {
   try {
     const { data: configList, error } = await supabase
@@ -21,14 +19,12 @@ const getPengaturan = async (req, res, next) => {
   }
 };
 
-/**
- * Update website settings, supporting logo and favicon uploads.
- */
+// Update pengaturan website (mendukung unggah logo & favicon)
 const updatePengaturan = async (req, res, next) => {
   try {
     const { nama_aplikasi, footer } = req.body;
 
-    // Retrieve existing configuration
+    // Ambil data konfigurasi yang sudah ada
     const { data: configList, error: fetchError } = await supabase
       .from('pengaturan')
       .select('*')
@@ -42,25 +38,25 @@ const updatePengaturan = async (req, res, next) => {
     if (nama_aplikasi !== undefined) updates.nama_aplikasi = nama_aplikasi;
     if (footer !== undefined) updates.footer = footer;
 
-    // Check if files were uploaded via multer.fields
+    // Periksa apakah file diunggah
     if (req.files) {
-      // Handle website logo file upload
+      // Unggah file logo website
       if (req.files.logo && req.files.logo[0]) {
         const logoUrl = await uploadFile(req.files.logo[0], 'pengaturan');
         updates.logo = logoUrl;
 
-        // Delete old logo
+        // Hapus logo lama
         if (existingConfig && existingConfig.logo) {
           await deleteFile(existingConfig.logo, 'pengaturan');
         }
       }
 
-      // Handle website favicon file upload
+      // Unggah file favicon website
       if (req.files.favicon && req.files.favicon[0]) {
         const faviconUrl = await uploadFile(req.files.favicon[0], 'pengaturan');
         updates.favicon = faviconUrl;
 
-        // Delete old favicon
+        // Hapus favicon lama
         if (existingConfig && existingConfig.favicon) {
           await deleteFile(existingConfig.favicon, 'pengaturan');
         }
@@ -70,7 +66,7 @@ const updatePengaturan = async (req, res, next) => {
     let resultData;
 
     if (existingConfig) {
-      // Update existing configurations
+      // Update konfigurasi
       const { data, error } = await supabase
         .from('pengaturan')
         .update(updates)
@@ -81,7 +77,7 @@ const updatePengaturan = async (req, res, next) => {
       if (error) throw error;
       resultData = data;
     } else {
-      // Insert first configuration record
+      // Simpan konfigurasi awal jika belum ada
       if (!updates.nama_aplikasi) {
         updates.nama_aplikasi = 'Sistem Informasi Pramuka SMPN 2 Katapang';
       }

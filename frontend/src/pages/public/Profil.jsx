@@ -48,7 +48,7 @@ const Profil = () => {
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-12">
         
-        {/* Header Block */}
+        {/* Ringkasan Profil */}
         <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 shadow-soft flex flex-col md:flex-row items-center md:space-x-8 text-center md:text-left">
           <img src={profile.logo || logoImg} alt="Logo" className="h-28 w-28 md:h-36 md:w-36 bg-slate-50 p-3 rounded-2xl border border-slate-200 object-contain flex-shrink-0 mb-6 md:mb-0" />
           <div className="space-y-4">
@@ -64,7 +64,7 @@ const Profil = () => {
           </div>
         </div>
 
-        {/* Visi & Misi Block */}
+        {/* Visi & Misi */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-soft space-y-4">
             <div className="flex items-center space-x-2 text-primary-800">
@@ -86,7 +86,7 @@ const Profil = () => {
           </div>
         </div>
 
-        {/* Contact Block */}
+        {/* Informasi Kontak */}
         <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-soft">
           <h2 className="text-xl font-bold text-slate-800 mb-6 pb-2 border-b border-slate-100">Informasi Sekretariat</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

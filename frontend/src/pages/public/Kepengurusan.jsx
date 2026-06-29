@@ -64,7 +64,7 @@ const Kepengurusan = () => {
     );
   }
 
-  // Find Pratama (Ketua Dewan Penggalang) if exists
+  // Filter pengurus harian (Pratama, Sekretaris, Bendahara)
   const dewanHarian = pengurusList.filter(p => 
     p.jabatan.toLowerCase().includes('pratama') || 
     p.jabatan.toLowerCase().includes('sekretaris') || 
@@ -79,7 +79,7 @@ const Kepengurusan = () => {
     <div className="min-h-screen bg-slate-50 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-16">
         
-        {/* Page Header */}
+        {/* Header Halaman */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-primary-800 border border-emerald-200">
             Satria Batara Organisasi
@@ -92,7 +92,7 @@ const Kepengurusan = () => {
           </p>
         </div>
 
-        {/* 1. Pelindung / Penasehat (Mabigus) */}
+        {/* 1. Majelis Pembimbing Gugus Depan (Mabigus) */}
         <div className="space-y-6">
           <div className="flex items-center justify-center space-x-2.5">
             <Shield className="h-6 w-6 text-emerald-600" />
@@ -115,7 +115,7 @@ const Kepengurusan = () => {
           </div>
         </div>
 
-        {/* 2. Majelis Pembina (Kakak Pembina) */}
+        {/* 2. Pembina Gugus Depan */}
         <div className="space-y-8">
           <div className="flex items-center justify-center space-x-2.5">
             <Users className="h-6 w-6 text-emerald-600" />
@@ -163,7 +163,7 @@ const Kepengurusan = () => {
           )}
         </div>
 
-        {/* 3. Dewan Pengurus Penggalang (Siswa/Dewan Galang) */}
+        {/* 3. Dewan Kerja Penggalang (Dewan Galang) */}
         <div className="space-y-8">
           <div className="flex items-center justify-center space-x-2.5">
             <Award className="h-6 w-6 text-emerald-600" />
@@ -175,7 +175,7 @@ const Kepengurusan = () => {
           ) : (
             <div className="space-y-10">
               
-              {/* Dewan Pengurus Harian (Pratama, Sekretaris, Bendahara) */}
+              {/* Dewan Pengurus Harian */}
               {dewanHarian.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-center text-xs font-bold uppercase tracking-wider text-slate-400">Pengurus Harian</h3>
@@ -221,7 +221,7 @@ const Kepengurusan = () => {
                 </div>
               )}
 
-              {/* Dewan Seksi / Krida / Bidang Kerja */}
+              {/* Dewan Seksi Bidang */}
               {dewanSeksi.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-center text-xs font-bold uppercase tracking-wider text-slate-400">Seksi / Koordinator Bidang</h3>
