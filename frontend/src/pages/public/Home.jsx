@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { Calendar, ArrowRight, Award, Users, FileText, Image, Crown, Shield } from 'lucide-react';
-import heroBg from '../../assets/logo.png';
+import heroBg from '../../assets/OPEN_RECTRUITMEN.jpg';
+import tentangGudepImg from '../../assets/tentang_gudep.jpg';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { useDocumentMetadata } from '../../hooks/useDocumentMetadata';
 
@@ -137,7 +138,9 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div data-aos="fade-left" className="rounded-2xl overflow-hidden aspect-video border border-slate-200 shadow-inner">          </div>
+          <div data-aos="fade-left" className="rounded-2xl overflow-hidden aspect-video border border-slate-200 shadow-soft">
+            <img src={tentangGudepImg} alt="Anggota Pramuka Penggalang" className="w-full h-full object-cover" />
+          </div>
         </div>
       </section>
 
