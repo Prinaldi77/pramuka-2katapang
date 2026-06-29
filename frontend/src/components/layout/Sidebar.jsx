@@ -23,7 +23,8 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
-  Smartphone
+  Smartphone,
+  X
 } from 'lucide-react';
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
@@ -73,47 +74,66 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
 
   const roleMenus = menus[user?.role] || [];
 
-  const activeClass = 'bg-primary-800 text-white font-medium';
-  const inactiveClass = 'text-slate-300 hover:bg-slate-800/50 hover:text-white';
+  // Kelas gaya aktif dan tidak aktif dengan sentuhan futuristik
+  const activeClass = 'bg-gradient-to-r from-emerald-950/60 to-slate-900/40 text-emerald-400 border-l-4 border-emerald-500 font-semibold pl-[9px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.02),0_0_12px_-3px_rgba(16,185,129,0.15)]';
+  const inactiveClass = 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-100 border-l-4 border-transparent';
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-100 border-r border-slate-900 select-none">
+    <div className="flex flex-col h-full bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 border-r border-slate-900 select-none">
       
       {/* Header Sidebar */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-slate-900 h-16 flex-shrink-0">
         <div className="flex items-center space-x-3 overflow-hidden">
-          <img src={logoImg} alt="Logo" className="h-10 w-10 bg-white p-0.5 rounded-lg flex-shrink-0 object-contain -my-2" />
+          <img 
+            src={logoImg} 
+            alt="Logo" 
+            className="h-10 w-10 bg-white/95 p-0.5 rounded-xl flex-shrink-0 object-contain -my-2 shadow-[0_0_10px_rgba(16,185,129,0.25)]" 
+          />
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="font-bold text-white text-sm tracking-tight leading-none uppercase">Satria Batara</span>
-              <span className="text-[10px] text-slate-500 font-medium mt-1">SMPN 2 Katapang</span>
+              <span className="font-extrabold text-white text-xs tracking-wider leading-none uppercase bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                Satria Batara
+              </span>
+              <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">
+                SMPN 2 Katapang
+              </span>
             </div>
           )}
         </div>
-        {/* Tombol toggle tampilan sidebar */}
+
+        {/* Tombol Lipat Sidebar (Desktop) */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+          className="hidden md:flex p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all duration-200"
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
+
+        {/* Tombol Tutup Sidebar (Mobile) */}
+        <button
+          onClick={() => setIsMobileOpen(false)}
+          className="md:hidden p-1.5 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-400 hover:text-white transition-all duration-200"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
-      {/* Ringkasan Profil */}
+      {/* Panel Profil Pengguna (Gaya ID Card) */}
       {!isCollapsed && (
-        <div className="p-4 mx-4 mt-4 bg-slate-900/40 border border-slate-900 rounded-xl flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-primary/20 text-primary-400 flex items-center justify-center font-bold">
+        <div className="p-4 mx-4 mt-4 bg-gradient-to-br from-slate-900/50 to-slate-950/40 border border-slate-800/60 rounded-2xl flex items-center space-x-3 backdrop-blur-xs relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full blur-xl pointer-events-none"></div>
+          <div className="h-10 w-10 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold ring-2 ring-emerald-500/20 shadow-inner group-hover:ring-emerald-500/40 transition-all duration-300">
             {user?.name?.charAt(0).toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{user?.name}</p>
-            <p className="text-[10px] text-slate-500 capitalize">{user?.role}</p>
+            <p className="text-xs font-bold text-white truncate tracking-wide">{user?.name}</p>
+            <p className="text-[9px] text-slate-500 font-extrabold uppercase tracking-widest mt-0.5">{user?.role}</p>
           </div>
         </div>
       )}
 
-      {/* Daftar Menu */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5 no-scrollbar">
+      {/* Menu Navigasi Utama */}
+      <div className="flex-1 overflow-y-auto px-3 py-6 space-y-1 no-scrollbar">
         {roleMenus.map((menu) => {
           const Icon = menu.icon;
           return (
@@ -122,32 +142,33 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
               to={menu.path}
               onClick={() => setIsMobileOpen(false)}
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-3 py-3 rounded-lg text-sm transition-all duration-150 ${
+                `flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm transition-all duration-200 ${
                   isActive ? activeClass : inactiveClass
-                } ${isCollapsed ? 'justify-center' : ''}`
+                } ${isCollapsed ? 'justify-center pl-0 border-l-0' : ''}`
               }
               title={menu.name}
             >
-              <Icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && <span className="truncate">{menu.name}</span>}
+              <Icon className="h-4.5 w-4.5 flex-shrink-0 transition-transform duration-200 group-hover:scale-110" />
+              {!isCollapsed && <span className="truncate tracking-wide">{menu.name}</span>}
             </NavLink>
           );
         })}
       </div>
 
-      {/* Tombol Keluar */}
-      <div className="p-3 border-t border-slate-900 mt-auto flex-shrink-0">
+      {/* Footer / Tombol Logout */}
+      <div className="p-3 border-t border-slate-900/60 mt-auto flex-shrink-0">
         <button
           onClick={handleLogout}
-          className={`flex items-center space-x-3 px-3 py-3 rounded-lg text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all duration-150 w-full min-h-[44px] ${
+          className={`flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm text-red-400 hover:bg-red-500/5 hover:text-red-300 transition-all duration-200 w-full min-h-[44px] ${
             isCollapsed ? 'justify-center' : ''
           }`}
           title="Keluar"
         >
-          <LogOut className="h-5 w-5 flex-shrink-0" />
-          {!isCollapsed && <span>Keluar</span>}
+          <LogOut className="h-4.5 w-4.5 flex-shrink-0" />
+          {!isCollapsed && <span className="tracking-wide">Keluar</span>}
         </button>
       </div>
+
     </div>
   );
 
@@ -162,7 +183,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         {sidebarContent}
       </aside>
 
-      {/* Sidebar Mobile Overlay */}
+      {/* Sidebar Mobile Overlay (Glassmorphism) */}
       <AnimatePresence>
         {isMobileOpen && (
           <motion.div
@@ -170,7 +191,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex"
+            className="md:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex"
             onClick={() => setIsMobileOpen(false)}
           >
             <motion.div
