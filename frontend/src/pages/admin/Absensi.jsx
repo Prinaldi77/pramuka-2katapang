@@ -116,27 +116,58 @@ const Absensi = () => {
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {filteredLogs.map((log) => {
                   const agendaItem = agendas.find((a) => a.id === log.agenda_id);
+                  const rawJudul = agendaItem?.judul || 'Sesi Latihan';
+                  const agendaTitle = rawJudul.split('||')[0];
+                  
+                  // Format waktu absen secara lokal dari created_at
+                  let displayWaktu = '-';
+                  if (log.created_at) {
+                    const d = new Date(log.created_at);
+                    displayWaktu = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                  }
+
+                  // Hitung status absensi secara dinamis
+                  let calculatedStatus = 'HADIR';
+                  if (agendaItem && log.created_at) {
+                    const titleParts = agendaItem.judul.split('||');
+                    const toleransi = titleParts[1] ? Number(titleParts[1]) : 0;
+                    
+                    const checkIn = new Date(log.created_at);
+                    const [h, m] = agendaItem.jam_mulai.split(':');
+                    const start = new Date(agendaItem.tanggal);
+                    start.setHours(Number(h), Number(m), 0, 0);
+                    
+                    const diffMins = Math.floor((checkIn - start) / 60000);
+                    if (diffMins > toleransi) {
+                      calculatedStatus = 'TELAT';
+                    }
+                  }
+
                   return (
                     <tr key={log.id} className="hover:bg-slate-50/50">
                       <td className="px-6 py-4">
-                        <div className="font-bold text-slate-900">{log.nama_siswa}</div>
+                        <div className="font-bold text-slate-900">{log.nama_siswa || log.siswa?.users?.nama || 'Siswa'}</div>
                         <div className="text-[10px] text-slate-400 mt-0.5">ID: {log.siswa_id}</div>
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-medium">
-                        {agendaItem?.judul || 'Sesi Latihan'}
+                        {agendaTitle}
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-400">
-                        {log.waktu_absen}
+                        {displayWaktu}
                       </td>
                       <td className="px-6 py-4 text-xs font-mono">
                         {log.latitude?.toFixed(6)}, {log.longitude?.toFixed(6)}
                       </td>
                       <td className="px-6 py-4 text-xs font-semibold text-primary">
-                        {log.distance || '-'}
+                        {log.jarak !== undefined ? `${log.jarak}m` : (log.distance || '-')}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          {log.status}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                          calculatedStatus === 'HADIR'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-amber-50 text-amber-800 border-amber-200'
+                        }`}>
+                          {calculatedStatus}
                         </span>
                       </td>
                     </tr>

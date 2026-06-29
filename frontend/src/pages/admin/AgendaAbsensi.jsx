@@ -22,6 +22,7 @@ const AgendaAbsensi = () => {
   // Form fields
   const [formData, setFormData] = useState({
     judul: '',
+    toleransi: 0,
     tanggal: '',
     jam_mulai: '',
     jam_selesai: '',
@@ -57,6 +58,7 @@ const AgendaAbsensi = () => {
   const handleOpenAdd = () => {
     setFormData({
       judul: '',
+      toleransi: 15, // Default toleransi keterlambatan 15 menit
       tanggal: new Date().toISOString().split('T')[0],
       jam_mulai: '14:00',
       jam_selesai: '17:00',
@@ -70,9 +72,11 @@ const AgendaAbsensi = () => {
   };
 
   const handleOpenEdit = (a) => {
+    const parts = a.judul.split('||');
     setSelectedAgenda(a);
     setFormData({
-      judul: a.judul,
+      judul: parts[0],
+      toleransi: parts[1] ? Number(parts[1]) : 0,
       tanggal: a.tanggal,
       jam_mulai: a.jam_mulai,
       jam_selesai: a.jam_selesai,
@@ -114,11 +118,19 @@ const AgendaAbsensi = () => {
 
     setFormLoading(true);
     try {
+      const realJudul = formData.judul.split('||')[0].trim();
+      const toleransiVal = Math.max(0, parseInt(formData.toleransi) || 0);
+      const combinedJudul = `${realJudul}||${toleransiVal}`;
+
       const cleanedData = {
-        ...formData,
+        judul: combinedJudul,
+        tanggal: formData.tanggal,
+        jam_mulai: formData.jam_mulai,
+        jam_selesai: formData.jam_selesai,
         latitude: parseFloat(String(formData.latitude).replace(',', '.')),
         longitude: parseFloat(String(formData.longitude).replace(',', '.')),
         radius: parseFloat(String(formData.radius).replace(',', '.')),
+        status: formData.status,
       };
 
       if (isNaN(cleanedData.latitude) || isNaN(cleanedData.longitude) || isNaN(cleanedData.radius)) {
@@ -209,8 +221,21 @@ const AgendaAbsensi = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-slate-800 text-base leading-tight">{a.judul}</h3>
-                  <p className="text-xs text-slate-400 mt-1 flex items-center">
+                  {(() => {
+                    const parts = a.judul.split('||');
+                    const realJudul = parts[0];
+                    const toleransiVal = parts[1] || 0;
+                    return (
+                      <>
+                        <h3 className="font-bold text-slate-800 text-base leading-tight">{realJudul}</h3>
+                        <p className="text-[11px] text-amber-600 font-semibold mt-1 bg-amber-50 border border-amber-200/50 rounded-lg px-2 py-0.5 inline-flex items-center">
+                          <Clock className="h-3.5 w-3.5 mr-1 text-amber-500" />
+                          Toleransi Telat: {toleransiVal} menit
+                        </p>
+                      </>
+                    );
+                  })()}
+                  <p className="text-xs text-slate-400 mt-2 flex items-center">
                     <Clock className="h-3.5 w-3.5 mr-1 text-slate-400" />
                     Waktu Latihan: {a.jam_mulai} - {a.jam_selesai} WIB
                   </p>
@@ -280,6 +305,19 @@ const AgendaAbsensi = () => {
                       value={formData.judul}
                       onChange={(e) => setFormData(prev => ({ ...prev, judul: e.target.value }))}
                       placeholder="Latihan Sandi Kotak & Sandi Morse"
+                      className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="toleransi" className="text-xs font-semibold text-slate-700">Toleransi Keterlambatan (Menit)</label>
+                    <input
+                      type="number"
+                      id="toleransi"
+                      min="0"
+                      value={formData.toleransi}
+                      onChange={(e) => setFormData(prev => ({ ...prev, toleransi: e.target.value }))}
+                      placeholder="Masukkan toleransi menit (misal: 15)"
                       className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-primary min-h-[44px]"
                       required
                     />

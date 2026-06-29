@@ -82,7 +82,12 @@ const Kalender = () => {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className="font-bold text-slate-800 text-base">{a.judul || 'Agenda Kegiatan'}</h3>
+                  <h3 className="font-bold text-slate-800 text-base">{(a.judul || 'Agenda Kegiatan').split('||')[0]}</h3>
+                  {a.judul && a.judul.includes('||') && (
+                    <p className="text-[10px] text-amber-600 font-semibold mt-0.5">
+                      Toleransi Keterlambatan: {a.judul.split('||')[1]} menit
+                    </p>
+                  )}
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 pt-1.5">
                     <span className="flex items-center space-x-1">
                       <Clock className="h-3.5 w-3.5 text-slate-400" />

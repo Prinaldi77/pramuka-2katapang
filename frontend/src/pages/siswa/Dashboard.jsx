@@ -314,7 +314,14 @@ const Dashboard = () => {
                 {alreadyCheckedIn ? 'Absensi Selesai: Sudah Terdaftar' : 'Ada Latihan Aktif: Harap Absen'}
               </p>
               <p className="text-xs text-slate-500 mt-1 max-w-lg">
-                Agenda "{activeAgenda.judul}" sedang berlangsung hari ini. 
+                Agenda "{activeAgenda.judul.split('||')[0]}" sedang berlangsung hari ini.
+                {(() => {
+                  const toleransi = activeAgenda.judul.split('||')[1];
+                  if (toleransi && Number(toleransi) > 0) {
+                    return ` (Toleransi telat: ${toleransi} menit).`;
+                  }
+                  return '';
+                })()}
                 {alreadyCheckedIn ? ' Anda telah melakukan check-in lokasi.' : ' Lakukan absensi langsung menggunakan pemindai wajah dan verifikasi lokasi GPS.'}
               </p>
             </div>

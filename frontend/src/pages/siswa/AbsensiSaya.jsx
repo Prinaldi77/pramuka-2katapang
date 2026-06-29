@@ -268,16 +268,47 @@ const AbsensiSaya = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {absensiLogs.map((log) => {
+                 {absensiLogs.map((log) => {
                   const agendaItem = agendas.find(a => a.id === log.agenda_id);
+                  const rawJudul = agendaItem?.judul || 'Sesi Latihan';
+                  const agendaTitle = rawJudul.split('||')[0];
+                  
+                  // Format waktu absen secara lokal dari created_at
+                  let displayWaktu = '-';
+                  if (log.created_at) {
+                    const d = new Date(log.created_at);
+                    displayWaktu = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                  }
+
+                  // Hitung status absensi secara dinamis
+                  let calculatedStatus = 'HADIR';
+                  if (agendaItem && log.created_at) {
+                    const titleParts = agendaItem.judul.split('||');
+                    const toleransi = titleParts[1] ? Number(titleParts[1]) : 0;
+                    
+                    const checkIn = new Date(log.created_at);
+                    const [h, m] = agendaItem.jam_mulai.split(':');
+                    const start = new Date(agendaItem.tanggal);
+                    start.setHours(Number(h), Number(m), 0, 0);
+                    
+                    const diffMins = Math.floor((checkIn - start) / 60000);
+                    if (diffMins > toleransi) {
+                      calculatedStatus = 'TELAT';
+                    }
+                  }
+
                   return (
                     <tr key={log.id}>
-                      <td className="px-6 py-4 font-bold text-slate-900">{agendaItem?.judul || 'Sesi Latihan'}</td>
-                      <td className="px-6 py-4">{log.waktu_absen}</td>
-                      <td className="px-6 py-4">{log.distance || '-'}</td>
+                      <td className="px-6 py-4 font-bold text-slate-900">{agendaTitle}</td>
+                      <td className="px-6 py-4">{displayWaktu}</td>
+                      <td className="px-6 py-4">{log.jarak !== undefined ? `${log.jarak}m` : (log.distance || '-')}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          {log.status}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+                          calculatedStatus === 'HADIR'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : 'bg-amber-50 text-amber-800 border-amber-200'
+                        }`}>
+                          {calculatedStatus}
                         </span>
                       </td>
                     </tr>
