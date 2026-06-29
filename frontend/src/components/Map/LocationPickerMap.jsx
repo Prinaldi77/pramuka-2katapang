@@ -1,5 +1,64 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Save } from 'lucide-react';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Circle, useMap, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Definisikan ikon penanda kustom untuk menghindari bug ikon Leaflet yang hilang di Vite
+const customMarkerIcon = new L.Icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Komponen penolong untuk mengubah fokus kamera peta secara dinamis
+const ChangeView = ({ center }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center);
+  }, [center, map]);
+  return null;
+};
+
+// Komponen penolong untuk mendeteksi event klik di peta
+const MapEventsHandler = ({ onMapClick }) => {
+  useMapEvents({
+    click(e) {
+      onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+};
+
+// Komponen marker seret (draggable)
+const DraggableMarker = ({ position, onDragEnd }) => {
+  const markerRef = useRef(null);
+  const eventHandlers = React.useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          const latLng = marker.getLatLng();
+          onDragEnd(latLng.lat, latLng.lng);
+        }
+      },
+    }),
+    [onDragEnd],
+  );
+
+  return (
+    <L.Marker
+      draggable={true}
+      eventHandlers={eventHandlers}
+      position={position}
+      icon={customMarkerIcon}
+      ref={markerRef}
+    />
+  );
+};
 
 const LocationPickerMap = ({
   latitude,
@@ -7,15 +66,15 @@ const LocationPickerMap = ({
   radius,
   onChange,
 }) => {
-  const mapContainerRef = useRef(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
   const [presets, setPresets] = useState([]);
   const [presetName, setPresetName] = useState('');
-  const mapRef = useRef(null);
-  const markerRef = useRef(null);
-  const circleRef = useRef(null);
 
-  // Load presets on mount
+  const latVal = Number(latitude) || -7.0278;
+  const lngVal = Number(longitude) || 107.5756;
+  const radVal = Number(radius) || 100;
+  const position = [latVal, lngVal];
+
+  // Muat lokasi favorit dari localStorage saat komponen dipasang
   useEffect(() => {
     const saved = localStorage.getItem('agenda_location_presets');
     if (saved) {
@@ -25,7 +84,7 @@ const LocationPickerMap = ({
         console.error(e);
       }
     } else {
-      // Default presets
+      // Lokasi default
       const defaults = [
         { name: 'SMPN 2 Katapang (Pangkalan)', lat: -7.0278, lng: 107.5756 },
         { name: 'Buper Kiara Payung', lat: -6.9042, lng: 107.7667 },
@@ -34,112 +93,6 @@ const LocationPickerMap = ({
       setPresets(defaults);
     }
   }, []);
-
-  // Load Google Maps SDK Script
-  useEffect(() => {
-    const loadScript = () => {
-      if (window.google && window.google.maps) {
-        setMapLoaded(true);
-        return;
-      }
-      const existing = document.getElementById('google-maps-script');
-      if (existing) {
-        const check = setInterval(() => {
-          if (window.google && window.google.maps) {
-            clearInterval(check);
-            setMapLoaded(true);
-          }
-        }, 100);
-        return;
-      }
-      const script = document.createElement('script');
-      script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_KEY || 'AIzaSyA0qPgb21JTzpe0EruEbfLkYrPGSMvM6Co'}`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => setMapLoaded(true);
-      document.head.appendChild(script);
-    };
-
-    loadScript();
-  }, []);
-
-  // Initialize Map
-  useEffect(() => {
-    if (!mapLoaded || !mapContainerRef.current) return;
-
-    const latVal = Number(latitude) || -7.0278;
-    const lngVal = Number(longitude) || 107.5756;
-    const radVal = Number(radius) || 100;
-    const pos = { lat: latVal, lng: lngVal };
-
-    // Create Map instance
-    const map = new window.google.maps.Map(mapContainerRef.current, {
-      center: pos,
-      zoom: 16,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: false,
-    });
-    mapRef.current = map;
-
-    // Create Draggable Marker
-    const marker = new window.google.maps.Marker({
-      position: pos,
-      map: map,
-      draggable: true,
-      icon: {
-        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
-      }
-    });
-    markerRef.current = marker;
-
-    // Create Geofence Circle
-    const circle = new window.google.maps.Circle({
-      strokeColor: '#4c1d95',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      fillColor: '#8b5cf6',
-      fillOpacity: 0.15,
-      map: map,
-      center: pos,
-      radius: radVal,
-    });
-    circleRef.current = circle;
-
-    // Map Click Listener
-    map.addListener('click', (e) => {
-      const lat = e.latLng.lat();
-      const lng = e.latLng.lng();
-      updatePosition(lat, lng);
-    });
-
-    // Marker Drag Listener
-    marker.addListener('dragend', (e) => {
-      const lat = e.latLng.lat();
-      const lng = e.latLng.lng();
-      updatePosition(lat, lng);
-    });
-
-  }, [mapLoaded]);
-
-  // Handle external coordinate changes or preset selections
-  useEffect(() => {
-    if (!mapLoaded || !mapRef.current) return;
-    const latVal = Number(latitude) || -7.0278;
-    const lngVal = Number(longitude) || 107.5756;
-    const radVal = Number(radius) || 100;
-    const pos = { lat: latVal, lng: lngVal };
-
-    if (markerRef.current) {
-      markerRef.current.setPosition(pos);
-    }
-    if (circleRef.current) {
-      circleRef.current.setCenter(pos);
-      circleRef.current.setRadius(radVal);
-    }
-    mapRef.current.panTo(pos);
-  }, [latitude, longitude, radius, mapLoaded]);
 
   const updatePosition = (lat, lng) => {
     onChange(lat, lng);
@@ -152,8 +105,8 @@ const LocationPickerMap = ({
     }
     const newPreset = {
       name: presetName.trim(),
-      lat: Number(latitude),
-      lng: Number(longitude),
+      lat: latVal,
+      lng: lngVal,
     };
     const updated = [...presets, newPreset];
     localStorage.setItem('agenda_location_presets', JSON.stringify(updated));
@@ -176,7 +129,7 @@ const LocationPickerMap = ({
   return (
     <div className="space-y-3 font-sans">
       
-      {/* Preset List Dropdown / Selector */}
+      {/* Pilihan Lokasi Favorit */}
       <div className="space-y-2">
         <label className="text-xs font-semibold text-slate-700 block">Pilih dari Lokasi Favorit</label>
         <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto p-1.5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -189,7 +142,7 @@ const LocationPickerMap = ({
                 type="button"
                 onClick={() => selectPreset(p)}
                 className={`inline-flex items-center space-x-1 px-2.5 py-1 text-xs rounded-lg transition-colors border ${
-                  Math.abs(p.lat - latitude) < 0.0001 && Math.abs(p.lng - longitude) < 0.0001
+                  Math.abs(p.lat - latVal) < 0.0001 && Math.abs(p.lng - lngVal) < 0.0001
                     ? 'bg-primary text-white border-primary'
                     : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
                 }`}
@@ -209,15 +162,38 @@ const LocationPickerMap = ({
         </div>
       </div>
 
-      {/* The Interactive Map */}
+      {/* Peta Interaktif Leaflet (OpenStreetMap) */}
       <div className="w-full h-60 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative z-0">
-        <div ref={mapContainerRef} className="w-full h-full" />
+        <MapContainer
+          center={position}
+          zoom={16}
+          scrollWheelZoom={true}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <ChangeView center={position} />
+          <MapEventsHandler onMapClick={updatePosition} />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <Circle
+            center={position}
+            radius={radVal}
+            pathOptions={{
+              color: '#4c1d95',
+              fillColor: '#8b5cf6',
+              fillOpacity: 0.15,
+              weight: 2
+            }}
+          />
+          <DraggableMarker position={position} onDragEnd={updatePosition} />
+        </MapContainer>
       </div>
 
-      {/* Coords & Save Preset Input */}
+      {/* Tampilan Koordinat & Input Simpan Favorit */}
       <div className="flex flex-col sm:flex-row gap-2 items-end sm:items-center justify-between pt-1">
         <span className="text-[10px] font-mono text-slate-400">
-          Koordinat Terpilih: {Number(latitude).toFixed(6)}, {Number(longitude).toFixed(6)}
+          Koordinat Terpilih: {latVal.toFixed(6)}, {lngVal.toFixed(6)}
         </span>
         <div className="flex items-center space-x-2 w-full sm:w-auto">
           <input

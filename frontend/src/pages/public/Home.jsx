@@ -119,7 +119,7 @@ const Home = () => {
               Membangun Karakter Melalui Gerakan Pramuka
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Gugus Depan Pramuka di SMP Negeri 2 Katapang menanamkan kedisiplinan dan keterampilan kepanduan yang diadaptasi dari SKU (Syarat Kecakapan Umum) Pramuka Penggalang. Melalui latihan terstruktur mingguan, perkemahan, penjelajahan, dan bakti sosial, para penggalang dididik untuk cinta tanah air, mandiri, peduli sesama, tanggap darurat, dan menjunjung asas kepramukaan.
+              Gugus Depan Pramuka di SMP Negeri 2 Katapang menanamkan kedisiplinan dan keterampilan kepanduan yang diadaptasi dari SKU (Syarat Kecakapan Umum) Pramuka Penggalang. Melalui latihan terstruktur mingguan, perkemahan, penjelajahan, dan bakti sosial, para penggalang di didik untuk cinta tanah air, mandiri, peduli sesama, tanggap darurat, dan menjunjung asas kepramukaan.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-start space-x-2">
@@ -133,7 +133,7 @@ const Home = () => {
                 <Award className="h-5 w-5 text-primary mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-slate-800 text-sm">Kecakapan Hidup</h4>
-                  <p className="text-xs text-slate-500 mt-0.5">Pionering, navigasi, dan PPGD.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Pionering, navigasi,LKBB.</p>
                 </div>
               </div>
             </div>
