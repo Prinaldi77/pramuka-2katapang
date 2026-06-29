@@ -148,7 +148,7 @@ const Navbar = () => {
                   className="flex items-center justify-center w-full px-4 py-3 text-base font-semibold text-white bg-primary rounded-lg hover:bg-primary-700 transition-colors shadow-sm min-h-[44px]"
                 >
                   <LogIn className="h-5 w-5 mr-2" />
-                  Login Anggota
+                  Login
                 </Link>
               )}
             </div>
