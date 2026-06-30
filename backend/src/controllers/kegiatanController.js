@@ -12,32 +12,7 @@ const getKegiatan = async (req, res, next) => {
 
     if (kegError) throw kegError;
 
-    // Ambil data agenda absensi untuk digabungkan ke list kegiatan
-    const { data: agendaList, error: agendaError } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .order('tanggal', { ascending: false });
-
-    if (agendaError) throw agendaError;
-
-    const formattedAgendas = (agendaList || []).map(agenda => ({
-      id: agenda.id,
-      nama_kegiatan: agenda.judul,
-      deskripsi: `Latihan Absensi GPS. Radius: ${agenda.radius}m. Jam: ${agenda.jam_mulai} - ${agenda.jam_selesai}`,
-      tanggal: agenda.tanggal,
-      lokasi: 'Pangkalan SMPN 2 Katapang',
-      gambar: null,
-      kategori: 'Absensi',
-      latitude: agenda.latitude,
-      longitude: agenda.longitude,
-      radius: agenda.radius,
-      waktu_mulai: agenda.jam_mulai
-    }));
-
-    const combined = [...(kegiatanList || []), ...formattedAgendas];
-    combined.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-
-    return sendSuccess(res, 'Data kegiatan berhasil diambil.', combined);
+    return sendSuccess(res, 'Data kegiatan berhasil diambil.', kegiatanList);
   } catch (error) {
     next(error);
   }
