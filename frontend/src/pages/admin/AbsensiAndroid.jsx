@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
-import { Smartphone, Search, Compass, AlertTriangle } from 'lucide-react';
+import { Smartphone, Search, Compass, AlertTriangle, Printer } from 'lucide-react';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import EmptyState from '../../components/common/EmptyState';
 
@@ -48,17 +48,54 @@ const AbsensiAndroid = () => {
   return (
     <div className="space-y-6">
       
-      {/* Title */}
-      <div>
-        <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
-          <Smartphone className="h-6 w-6 text-emerald-600 mr-2" />
-          Rekap Absensi (Aplikasi Android)
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">Data absensi ini diambil secara *real-time* dari Database aplikasi Android Scoutify.</p>
+      {/* CSS untuk Pencetakan Template PDF */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #print-template, #print-template * {
+            visibility: visible;
+          }
+          #print-template {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: block !important;
+            color: #000000 !important;
+            background-color: #ffffff !important;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 1.5cm;
+          }
+        }
+      `}</style>
+
+      {/* Title & Cetak Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
+        <div>
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight flex items-center">
+            <Smartphone className="h-6 w-6 text-emerald-600 mr-2" />
+            Rekap Absensi (Aplikasi Android)
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">Data absensi ini diambil secara *real-time* dari Database aplikasi Android Scoutify.</p>
+        </div>
+
+        {filteredLogs.length > 0 && (
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center justify-center px-4 py-2.5 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-sm min-h-[44px]"
+          >
+            <Printer className="h-4 w-4 mr-2" />
+            Cetak Rekap PDF
+          </button>
+        )}
       </div>
 
       {/* Filters bar */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-soft grid grid-cols-1 sm:grid-cols-2 gap-4 no-print">
         
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -97,7 +134,7 @@ const AbsensiAndroid = () => {
           description={search || selectedKegiatanFilter ? 'Tidak ada data absensi cocok dengan filter.' : 'Belum ada absensi yang masuk dari Android.'}
         />
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-soft">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-soft no-print">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-sm whitespace-nowrap">
               <thead>
@@ -150,6 +187,74 @@ const AbsensiAndroid = () => {
           </div>
         </div>
       )}
+
+      {/* TEMPLATE PRINT FORMAL PDF (Disembunyikan di layar, hanya muncul saat dicetak) */}
+      <div id="print-template" className="hidden text-black p-8 font-serif leading-relaxed">
+        {/* Kop Surat Gerakan Pramuka */}
+        <div className="text-center border-b-4 border-double border-black pb-3 mb-6">
+          <h2 className="text-xl font-bold tracking-wide uppercase">Gerakan Pramuka</h2>
+          <h1 className="text-2xl font-black tracking-wider uppercase mt-1">Gugus Depan 28.065 - 28.066</h1>
+          <h3 className="text-sm font-bold uppercase mt-0.5">Pangkalan SMP Negeri 2 Katapang</h3>
+          <p className="text-[10px] italic text-slate-600 mt-1">
+            Alamat: Jl. Terusan Kopo No. 1, Katapang, Kec. Katapang, Kab. Bandung, Jawa Barat
+          </p>
+        </div>
+
+        {/* Info Dokumen */}
+        <div className="text-center space-y-2 mb-6">
+          <h3 className="text-base font-bold uppercase underline tracking-wide">Laporan Rekapitulasi Absensi Android (Scoutify)</h3>
+          <p className="text-[11px] font-medium text-slate-700">
+            Kegiatan: {selectedKegiatanFilter ? kegiatans.find(k => k.id === Number(selectedKegiatanFilter))?.title : 'Semua Kegiatan Android'}
+          </p>
+          <p className="text-[10px] text-slate-500">
+            Tanggal Cetak: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+
+        {/* Tabel Rekap Absensi */}
+        <table className="w-full border-collapse border border-black text-[11px]">
+          <thead>
+            <tr className="bg-slate-100 text-center font-bold">
+              <th className="border border-black px-2.5 py-2 w-8">No</th>
+              <th className="border border-black px-5 py-2 text-left">Nama Siswa</th>
+              <th className="border border-black px-3 py-2">Regu / Kelas</th>
+              <th className="border border-black px-4 py-2 text-left">Agenda Kegiatan</th>
+              <th className="border border-black px-3 py-2">Waktu Absen</th>
+              <th className="border border-black px-3 py-2">Proksimitas</th>
+              <th className="border border-black px-3 py-2">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredLogs.map((log, idx) => (
+              <tr key={log.id} className="text-center hover:bg-slate-50">
+                <td className="border border-black px-2.5 py-1.5">{idx + 1}</td>
+                <td className="border border-black px-5 py-1.5 text-left font-bold">{log.nama_siswa || 'Siswa'}</td>
+                <td className="border border-black px-3 py-1.5">{log.regu}</td>
+                <td className="border border-black px-4 py-1.5 text-left">{log.judul_agenda}</td>
+                <td className="border border-black px-3 py-1.5">{log.waktu_absen}</td>
+                <td className="border border-black px-3 py-1.5">{log.jarak ? `${Math.round(log.jarak)}m` : '-'}</td>
+                <td className="border border-black px-3 py-1.5 font-bold">{log.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Ringkasan Data & Tanda Tangan */}
+        <div className="mt-8 flex justify-between items-start text-[11px] font-bold">
+          <div className="space-y-1">
+            <p>Total Kehadiran Android: {filteredLogs.length} Siswa</p>
+            <p>Jumlah Hadir: {filteredLogs.filter(l => l.status === 'HADIR').length} Siswa</p>
+            <p>Jumlah Terlambat: {filteredLogs.filter(l => l.status === 'TELAT').length} Siswa</p>
+          </div>
+
+          <div className="text-center w-64 space-y-12">
+            <p>Bandung, {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="font-semibold leading-relaxed">Mengetahui,<br/>Pembina Gugus Depan</p>
+            <div className="h-12"></div>
+            <p className="font-bold underline tracking-wider">(.......................................)</p>
+          </div>
+        </div>
+      </div>
 
     </div>
   );
