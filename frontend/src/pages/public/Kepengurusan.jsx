@@ -167,7 +167,7 @@ const Kepengurusan = () => {
         <div className="space-y-8">
           <div className="flex items-center justify-center space-x-2.5">
             <Award className="h-6 w-6 text-emerald-600" />
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">Dewan Kerja Penggalang (Dewan Galang)</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">Dewan Kerja Penggalang</h2>
           </div>
 
           {pengurusList.length === 0 ? (

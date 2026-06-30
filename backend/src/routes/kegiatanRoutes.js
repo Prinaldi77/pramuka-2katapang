@@ -8,6 +8,7 @@ const { verifyToken, verifyPembina } = require('../middleware/authMiddleware');
 
 // Get events details (Public)
 router.get('/', kegiatanController.getKegiatan);
+router.get('/stats', kegiatanController.getPublicStats);
 router.get('/:id', kegiatanController.getKegiatanById);
 
 // Create, Update, Delete events details (Pembina or Admin allowed)

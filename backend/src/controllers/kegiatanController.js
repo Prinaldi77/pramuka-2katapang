@@ -149,10 +149,34 @@ const deleteKegiatan = async (req, res, next) => {
   }
 };
 
+// Ambil statistik publik (untuk landing page luar)
+const getPublicStats = async (req, res, next) => {
+  try {
+    const [siswaRes, pembinaRes, pengurusRes, kegiatanRes] = await Promise.all([
+      supabase.from('siswa').select('*', { count: 'exact', head: true }),
+      supabase.from('pembina').select('*', { count: 'exact', head: true }),
+      supabase.from('pengurus').select('*', { count: 'exact', head: true }),
+      supabase.from('kegiatan').select('*', { count: 'exact', head: true }),
+    ]);
+
+    const stats = {
+      siswa: siswaRes.count || 0,
+      pembina: pembinaRes.count || 0,
+      pengurus: pengurusRes.count || 0,
+      kegiatan: kegiatanRes.count || 0
+    };
+
+    return sendSuccess(res, 'Statistik publik berhasil diambil.', stats);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getKegiatan,
   getKegiatanById,
   createKegiatan,
   updateKegiatan,
-  deleteKegiatan
+  deleteKegiatan,
+  getPublicStats
 };

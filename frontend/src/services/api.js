@@ -313,6 +313,9 @@ export const api = {
     getAll: async () => {
       return apiClient.get('/kegiatan');
     },
+    getPublicStats: async () => {
+      return apiClient.get('/kegiatan/stats');
+    },
     getById: async (id) => {
       return apiClient.get(`/kegiatan/${id}`);
     },

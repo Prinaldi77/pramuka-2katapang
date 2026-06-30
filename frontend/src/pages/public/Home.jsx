@@ -19,21 +19,21 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [kegiatanRes, galeriRes, siswaRes, pembinaRes, pengurusRes] = await Promise.all([
+        const [kegiatanRes, galeriRes, statsRes] = await Promise.all([
           api.kegiatan.getAll(),
           api.galeri.getAll(),
-          api.siswa.getAll().catch(() => ({ data: [] })),
-          api.pembina.getAll().catch(() => ({ data: [] })),
-          api.pengurus.getAll().catch(() => ({ data: [] })),
+          api.kegiatan.getPublicStats().catch(() => ({ data: { siswa: 0, pembina: 0, pengurus: 0, kegiatan: 0 } })),
         ]);
 
         setKegiatan(kegiatanRes.data.slice(0, 2));
         setGaleri(galeriRes.data.slice(0, 4));
+        
+        const publicStats = statsRes.data || { siswa: 0, pembina: 0, pengurus: 0, kegiatan: 0 };
         setStats({
-          siswa: (siswaRes && siswaRes.data) ? siswaRes.data.length : 0,
-          pembina: (pembinaRes && pembinaRes.data) ? pembinaRes.data.length : 0,
-          pengurus: (pengurusRes && pengurusRes.data) ? pengurusRes.data.length : 0,
-          kegiatan: (kegiatanRes && kegiatanRes.data) ? kegiatanRes.data.length : 0,
+          siswa: publicStats.siswa,
+          pembina: publicStats.pembina,
+          pengurus: publicStats.pengurus,
+          kegiatan: publicStats.kegiatan,
         });
       } catch (err) {
         console.error('Error fetching landing data:', err);
@@ -180,7 +180,7 @@ const Home = () => {
                 <h3 className="font-extrabold text-slate-800 text-sm">Kakak Pembina</h3>
                 <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Pembina Gudep</p>
                 <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                  Pembina utama Gugus Depan 11.083 - 11.084.
+                  Pembina utama Gugus Depan 28.065 - 28.066.
                 </p>
               </div>
             </div>
