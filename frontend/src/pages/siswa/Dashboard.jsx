@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { Compass, GraduationCap, Calendar, Award, ChevronRight, AlertCircle, Eye, Camera, MapPin, X } from 'lucide-react';
+import { Compass, GraduationCap, Calendar, Award, ChevronRight, AlertCircle, Eye, Camera, MapPin, X, User } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { motion, AnimatePresence } from 'framer-motion';
 
