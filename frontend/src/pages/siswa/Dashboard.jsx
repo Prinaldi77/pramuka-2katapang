@@ -151,9 +151,8 @@ const Dashboard = () => {
           setOutOfRadius(true);
           toast.warning('Anda berada di luar radius lokasi latihan!');
         } else {
-          // Jika berada di dalam radius, lanjutkan ke tahap verifikasi wajah
-          setAbsenStep('face');
-          startFaceVerification();
+          // Berada di dalam radius, langsung kirim absensi tanpa verifikasi wajah di website
+          submitAttendanceDirectly(studentCoords);
         }
       },
       (error) => {
@@ -163,6 +162,29 @@ const Dashboard = () => {
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+  };
+
+  // Fungsi pengiriman absensi langsung tanpa verifikasi wajah
+  const submitAttendanceDirectly = async (studentCoords) => {
+    setGpsLoading(true);
+    try {
+      await api.absensi.submit({
+        agenda_id: activeAgenda.id,
+        siswa_id: user.siswaId || 101,
+        nama_siswa: user.name || user.nama || '',
+        latitude: studentCoords.latitude,
+        longitude: studentCoords.longitude,
+      });
+      toast.success('Absensi lokasi berhasil terekam!');
+      setAbsenStep('success');
+      fetchDashboardData();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Gagal mengirim absensi.');
+      setAbsenModalOpen(false);
+    } finally {
+      setGpsLoading(false);
+    }
   };
 
   // Memulai pemindaian wajah
