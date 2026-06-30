@@ -47,7 +47,10 @@ const Dashboard = () => {
         ]);
 
         const today = new Date().toISOString().split('T')[0];
-        const todayAbs = absensiRes.data.filter((a) => a.waktu_absen.startsWith(today)).length;
+        const todayAbs = (absensiRes.data || []).filter((a) => {
+          const dateStr = a.created_at || a.waktu_absen || '';
+          return dateStr.startsWith(today);
+        }).length;
 
         setStats({
           siswa: siswaRes.data.length,
@@ -59,7 +62,7 @@ const Dashboard = () => {
 
         const attendanceCountByDay = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
         (absensiRes.data || []).forEach(item => {
-          const date = new Date(item.waktu_absen || item.created_at);
+          const date = new Date(item.created_at || item.waktu_absen);
           const dayIndex = date.getDay();
           attendanceCountByDay[dayIndex] = (attendanceCountByDay[dayIndex] || 0) + 1;
         });
