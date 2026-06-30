@@ -6,7 +6,6 @@ import { useToast } from '../../context/ToastContext';
 import { Compass, GraduationCap, Calendar, Award, ChevronRight, AlertCircle, Eye, Camera, MapPin, X } from 'lucide-react';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { motion, AnimatePresence } from 'framer-motion';
-import CountUp from 'react-countup';
 
 // Rumus Haversine untuk menghitung jarak dalam satuan meter
 const getDistance = (lat1, lon1, lat2, lon2) => {
@@ -277,7 +276,7 @@ const Dashboard = () => {
           <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl"><Compass className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              <CountUp end={attendedCount} duration={1.2} />
+              {attendedCount}
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Kehadiran Latihan</p>
           </div>
@@ -286,7 +285,7 @@ const Dashboard = () => {
           <div className="p-4 bg-blue-50 text-blue-600 rounded-xl"><Calendar className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              <CountUp end={attendanceRate} duration={1.2} suffix="%" />
+              {attendanceRate}%
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Persentase Hadir</p>
           </div>
@@ -295,7 +294,7 @@ const Dashboard = () => {
           <div className="p-4 bg-amber-50 text-amber-600 rounded-xl"><GraduationCap className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              {rapor?.rata_rata ? <CountUp end={rapor.rata_rata} duration={1.2} /> : '-'}
+              {rapor?.rata_rata ? rapor.rata_rata : '-'}
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Rata-Rata Karakter</p>
           </div>

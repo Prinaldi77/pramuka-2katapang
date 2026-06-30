@@ -6,7 +6,6 @@ import { Users, Compass, Clock, GraduationCap, Users2, ChevronRight, AlertCircle
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import CountUp from 'react-countup';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -106,7 +105,7 @@ const Dashboard = () => {
           <div className="p-4 bg-emerald-50 text-primary rounded-xl"><Users className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              <CountUp end={stats.siswa} duration={1.2} />
+              {stats.siswa}
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Siswa Terdaftar</p>
           </div>
@@ -119,7 +118,7 @@ const Dashboard = () => {
           <div className="p-4 bg-blue-50 text-blue-600 rounded-xl"><Clock className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              <CountUp end={stats.agenda} duration={1.2} />
+              {stats.agenda}
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Agenda Absensi</p>
           </div>
@@ -132,7 +131,7 @@ const Dashboard = () => {
           <div className="p-4 bg-rose-50 text-rose-600 rounded-xl"><Compass className="h-6 w-6" /></div>
           <div>
             <p className="text-2xl font-extrabold text-slate-800">
-              <CountUp end={stats.absensi} duration={1.2} />
+              {stats.absensi}
             </p>
             <p className="text-xs text-slate-400 font-semibold uppercase mt-0.5">Log Absensi GPS</p>
           </div>
