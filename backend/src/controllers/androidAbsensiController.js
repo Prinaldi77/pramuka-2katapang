@@ -12,8 +12,6 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
         longitude,
         jarak,
         foto_absen,
-        status,
-        keterangan,
         created_at,
         siswa:siswa_id (
           nis,
@@ -22,7 +20,8 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
         ),
         agenda_absensi:agenda_id (
           judul,
-          tanggal
+          tanggal,
+          jam_mulai
         )
       `)
       .order('created_at', { ascending: false });
@@ -40,13 +39,31 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
       const studentId = siswa.nis || log.siswa_id;
       
       const agenda = log.agenda_absensi || {};
-      const activityTitle = agenda.judul || 'Kegiatan Tidak Diketahui';
+      // Bersihkan judul agenda dari separator
+      const activityTitle = (agenda.judul || 'Kegiatan Tidak Diketahui').split('||')[0];
 
       // Formatting date time
       let formattedTime = log.created_at;
       if (formattedTime) {
         const d = new Date(formattedTime);
         formattedTime = d.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+      }
+
+      // Hitung status secara dinamis berdasarkan jam_mulai dan toleransi
+      let calculatedStatus = 'HADIR';
+      if (agenda && agenda.jam_mulai && log.created_at) {
+        const titleParts = (agenda.judul || '').split('||');
+        const toleransi = titleParts[1] ? Number(titleParts[1]) : 0;
+        
+        const checkIn = new Date(log.created_at);
+        const [h, m] = agenda.jam_mulai.split(':');
+        const start = new Date(agenda.tanggal);
+        start.setHours(Number(h), Number(m), 0, 0);
+        
+        const diffMins = Math.floor((checkIn - start) / 60000);
+        if (diffMins > toleransi) {
+          calculatedStatus = 'TELAT';
+        }
       }
 
       return {
@@ -61,7 +78,7 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
         longitude: log.longitude,
         jarak: log.jarak,
         foto_absen: log.foto_absen,
-        status: log.status || 'HADIR'
+        status: calculatedStatus
       };
     });
 
