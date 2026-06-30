@@ -233,7 +233,7 @@ const Dashboard = () => {
     }, 500);
   };
 
-  // Pengiriman formulir izin (Dikirim sebagai pesan masuk untuk review Pembina)
+  // Pengiriman formulir izin (Dikirim langsung ke rekap absensi untuk review Pembina)
   const handleLeaveSubmit = async (e) => {
     e.preventDefault();
     if (!leaveReason.trim()) {
@@ -243,22 +243,22 @@ const Dashboard = () => {
 
     setLeaveSubmitting(true);
     try {
-      const payload = {
-        nama: user.name || 'Siswa',
-        email: user.email || 'siswa@gmail.com',
-        subjek: `Absensi [${leaveType.toUpperCase()}] - ${activeAgenda?.judul || 'Latihan'}`,
-        pesan: `Siswa ${user.name} mengajukan izin absen dengan keterangan: "${leaveReason.trim()}". (Dikirim otomatis dari aplikasi Android karena posisi di luar radius / waktu habis).`,
-      };
+      const formData = new FormData();
+      formData.append('kegiatanId', activeAgenda.id);
+      formData.append('type', leaveType); // 'izin' | 'sakit' | 'lainnya'
+      formData.append('reason', leaveReason.trim());
 
-      // Kirim pesan ke endpoint pesan masuk pembina
-      await api.pesan.create(payload);
-      toast.success('Keterangan ketidakhadiran berhasil dikirim ke Pembina!');
+      // Kirim permohonan izin langsung ke rekap absensi
+      await api.absensi.submitPermit(formData);
+      
+      toast.success('Permohonan izin ketidakhadiran terekam ke Rekap Absensi!');
       setLeaveModalOpen(false);
       setAbsenModalOpen(false);
       setLeaveReason('');
+      fetchDashboardData();
     } catch (err) {
       console.error(err);
-      toast.error('Gagal mengirim alasan izin.');
+      toast.error(err.response?.data?.message || 'Gagal mengirim permohonan izin.');
     } finally {
       setLeaveSubmitting(false);
     }

@@ -429,6 +429,13 @@ export const api = {
     submit: async (data) => {
       return apiClient.post('/absensi', data);
     },
+    submitPermit: async (formData) => {
+      return apiClient.post('/attendance/permit', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    },
   },
 
   // Penilaian Siswa
