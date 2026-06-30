@@ -90,10 +90,15 @@
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 1);
   border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+@media (min-width: 1024px) {
+  .glass-nav {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
 }
 
 /* Leaflet map responsiveness container */
@@ -124,4 +129,60 @@
 
 .pulse-loading {
   animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Premium Floating 3D Ornaments */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0) rotate(12deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(15deg);
+  }
+}
+@keyframes float-slower {
+  0%, 100% {
+    transform: translateY(0) rotate(-12deg);
+  }
+  50% {
+    transform: translateY(15px) rotate(-15deg);
+  }
+}
+.animate-float-slow {
+  animation: float-slow 15s ease-in-out infinite;
+}
+.animate-float-slower {
+  animation: float-slower 20s ease-in-out infinite;
+}
+
+/* Premium Micro-Zoom Hover Animation for Images */
+.bento-card img,
+.shadow-soft img,
+.gallery-img,
+article img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s ease;
+}
+.bento-card img:hover,
+.shadow-soft img:hover,
+.gallery-img:hover,
+article img:hover {
+  transform: scale(1.05) translateY(-2px);
+  filter: brightness(1.03);
+}
+
+/* Lenis smooth scroll standard styling */
+html.lenis, html.lenis-smooth {
+  height: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }

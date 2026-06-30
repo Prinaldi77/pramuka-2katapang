@@ -81,7 +81,7 @@ const Prestasi = () => {
                   {/* Foto Prestasi */}
                   {p.gambar ? (
                     <div className="aspect-video w-full overflow-hidden bg-slate-100 relative">
-                      <img src={p.gambar} alt={p.judul} className="w-full h-full object-cover" />
+                      <img src={p.gambar} alt={p.judul} className="w-full h-full object-contain bg-slate-950" />
                       <div className="absolute top-3 left-3 px-2.5 py-1 bg-amber-500 text-white rounded-lg flex items-center space-x-1.5 shadow-sm">
                         <Award className="h-4 w-4" />
                         <span className="text-[10px] font-bold tracking-wider uppercase">Prestasi</span>

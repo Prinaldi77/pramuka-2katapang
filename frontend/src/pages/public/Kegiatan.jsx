@@ -159,7 +159,7 @@ const Kegiatan = () => {
                         >
                           <div>
                             <div className="aspect-video w-full overflow-hidden bg-slate-100 border-b border-slate-100">
-                              <img src={k.gambar} alt={k.nama_kegiatan} className="w-full h-full object-cover" />
+                              <img src={k.gambar} alt={k.nama_kegiatan} className="w-full h-full object-contain bg-slate-950" />
                             </div>
                             <div className="p-6 space-y-3">
                               <div className="flex flex-wrap gap-3 text-[10px] font-semibold text-slate-400">

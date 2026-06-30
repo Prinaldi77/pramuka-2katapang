@@ -69,22 +69,22 @@ const Kontak = () => {
                 <div>
                   <h4 className="font-semibold text-slate-800 text-sm">Alamat Sekretariat</h4>
                   <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                    Jl. Terusan Katapang Kulon No. 45, Kecamatan Katapang, Kabupaten Bandung, Jawa Barat
+                     Komplek Gading Junti Asri, Desa Sangkanhurip, Kecamatan Katapang, Kabupaten Bandung, Jawa Barat
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <div className="p-3 bg-emerald-50 text-primary rounded-xl flex-shrink-0"><Phone className="h-5 w-5" /></div>
                 <div>
-                  <h4 className="font-semibold text-slate-800 text-sm">Saluran Telepon</h4>
-                  <p className="text-xs text-slate-500 mt-1">(022) 5891234</p>
+                  <h4 className="font-semibold text-slate-800 text-sm">No. Telepon/WhatsApp</h4>
+                  <p className="text-xs text-slate-500 mt-1">087825056256</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
                 <div className="p-3 bg-emerald-50 text-primary rounded-xl flex-shrink-0"><Mail className="h-5 w-5" /></div>
                 <div>
-                  <h4 className="font-semibold text-slate-800 text-sm">Surat Elektronik (Email)</h4>
-                  <p className="text-xs text-slate-500 mt-1">gudep@smpn2katapang.sch.id</p>
+                  <h4 className="font-semibold text-slate-800 text-sm">Email</h4>
+                  <p className="text-xs text-slate-500 mt-1">pramukasmpn2katapang@gmail.com</p>
                 </div>
               </div>
             </div>

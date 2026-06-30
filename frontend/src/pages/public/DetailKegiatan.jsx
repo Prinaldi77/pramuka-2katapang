@@ -57,7 +57,7 @@ const DetailKegiatan = () => {
         
         {/* Banner image */}
         <div className="w-full aspect-[21/9] bg-slate-100 overflow-hidden relative">
-          <img src={kegiatan.gambar} alt={kegiatan.nama_kegiatan} className="w-full h-full object-cover" />
+          <img src={kegiatan.gambar} alt={kegiatan.nama_kegiatan} className="w-full h-full object-contain bg-slate-950" />
           <div className="absolute top-4 left-4">
             <button
               onClick={() => navigate(-1)}

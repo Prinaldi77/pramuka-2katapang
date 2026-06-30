@@ -32,15 +32,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full glass-nav shadow-sm">
+    <nav className="sticky top-0 z-50 w-full glass-nav shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Identitas */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <img src={logoImg} alt="Logo" className="h-20 w-auto object-contain -my-4 bg-white p-0.5 rounded-xl shadow-xs transition-transform group-hover:scale-105" />
+            <img src={logoImg} alt="Logo" className="h-14 w-auto object-contain bg-white p-0.5 rounded-xl shadow-xs transition-transform group-hover:scale-105" />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-sm md:text-base leading-tight tracking-tight uppercase">
-                Satria Batara
+                Pramuka
               </span>
               <span className="text-[10px] text-slate-500 font-medium">
                 SMPN 2 Katapang
@@ -94,7 +94,7 @@ const Navbar = () => {
 
       {/* Menu Overlay Mobile */}
       {isOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex justify-end" onClick={toggleMenu}>
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/50 flex justify-end" onClick={toggleMenu}>
           <div
             className="w-4/5 max-w-xs bg-white h-full p-6 shadow-xl flex flex-col justify-between transform transition-transform duration-300 animate-in slide-in-from-right"
             onClick={(e) => e.stopPropagation()}
@@ -102,8 +102,8 @@ const Navbar = () => {
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-slate-100">
                 <div className="flex items-center space-x-2">
-                  <img src={logoImg} alt="Logo" className="h-18 w-auto object-contain bg-white p-0.5 rounded-lg border border-slate-100" />
-                  <span className="font-bold text-slate-800 text-sm">Satria Batara</span>
+                  <img src={logoImg} alt="Logo" className="h-12 w-auto object-contain bg-white p-0.5 rounded-lg border border-slate-100" />
+                  <span className="font-bold text-slate-800 text-sm">Pramuka</span>
                 </div>
                 <button
                   onClick={toggleMenu}

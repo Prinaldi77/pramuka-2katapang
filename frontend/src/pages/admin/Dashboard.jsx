@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 import { Users, UserCheck, FileText, Calendar, Compass, ShieldAlert, Users2 } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
@@ -162,16 +162,37 @@ const Dashboard = () => {
         {/* Container Recharts */}
         <div className="w-full h-80 pt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-              <XAxis dataKey="day" stroke="#94a3b8" fontSize={11} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorHadir" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#2a4a29" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="#2a4a29" stopOpacity={0.0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.6)" />
+              <XAxis dataKey="day" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+              <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={false} dx={-10} />
               <Tooltip
-                contentStyle={{ background: '#0f172a', borderRadius: '8px', color: '#fff', border: 'none', fontSize: '12px' }}
-                cursor={{ fill: 'rgba(42,74,41,0.04)' }}
+                contentStyle={{ 
+                  backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px', 
+                  color: '#fff', 
+                  fontSize: '12px',
+                  boxShadow: '0 10px 25px -5px rgba(0,0,0,0.2)' 
+                }}
               />
-              <Bar dataKey="Hadir" fill="#2a4a29" radius={[4, 4, 0, 0]} barSize={32} />
-            </BarChart>
+              <Area 
+                type="monotone" 
+                dataKey="Hadir" 
+                stroke="#2a4a29" 
+                strokeWidth={3}
+                fillOpacity={1} 
+                fill="url(#colorHadir)" 
+                activeDot={{ r: 6, stroke: '#d97706', strokeWidth: 2, fill: '#fff' }}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>

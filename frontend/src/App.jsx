@@ -4,6 +4,7 @@ import { router } from './routes';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import AOS from 'aos';
+import { ReactLenis } from 'lenis/react';
 
 function App() {
   useEffect(() => {
@@ -15,11 +16,13 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
-    </AuthProvider>
+    <ReactLenis root>
+      <AuthProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </AuthProvider>
+    </ReactLenis>
   );
 }
 
