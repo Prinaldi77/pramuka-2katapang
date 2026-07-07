@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
 import { sendContactMessageAction } from '@/app/actions/pesan';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { 
@@ -17,7 +17,8 @@ import {
   Layers, 
   Info,
   Shield,
-  Heart
+  Heart,
+  X
 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -42,6 +43,40 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [isSending, startSending] = useTransition();
+
+  const [activeDetail, setActiveDetail] = useState<{
+    type: 'kegiatan' | 'prestasi';
+    title: string;
+    description: string;
+    date: string;
+    locationOrTingkat?: string;
+    gambar?: string;
+  } | null>(null);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (activeDetail) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [activeDetail]);
+
+  // Close on ESC key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveDetail(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -231,15 +266,30 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
               return (
                 <div 
                   key={item.id || idx} 
-                  className="w-[85vw] lg:w-[45vw] timeline-card flex-shrink-0 p-8 border border-[#D1C9BC] rounded-2xl mr-4 lg:mr-8 bg-white/90 backdrop-blur-md flex flex-col justify-between h-80 shadow-md hover:border-primary transition-all text-left snap-center lg:snap-align-none"
+                  onClick={() => setActiveDetail({
+                    type: 'kegiatan',
+                    title: item.nama_kegiatan,
+                    description: item.deskripsi || 'Tidak ada deskripsi.',
+                    date: item.tanggal,
+                    locationOrTingkat: item.lokasi || 'SMPN 2 Katapang',
+                    gambar: item.gambar
+                  })}
+                  className="w-[85vw] lg:w-[45vw] timeline-card flex-shrink-0 p-8 border border-[#D1C9BC] rounded-2xl mr-4 lg:mr-8 bg-white/90 backdrop-blur-md flex flex-row justify-between h-80 shadow-md hover:border-primary transition-all text-left snap-center lg:snap-align-none cursor-pointer group"
                 >
-                  <span className="text-5xl font-serif italic text-accent font-light">{year}</span>
-                  <div>
-                    <h3 className="font-serif font-bold text-lg text-primary">{item.nama_kegiatan}</h3>
-                    <p className="text-sm text-gray-700 mt-2 leading-relaxed line-clamp-3">
-                      {item.deskripsi}
-                    </p>
+                  <div className="flex flex-col justify-between flex-1 pr-4">
+                    <span className="text-5xl font-serif italic text-accent font-light">{year}</span>
+                    <div>
+                      <h3 className="font-serif font-bold text-lg text-primary group-hover:text-accent transition-colors">{item.nama_kegiatan}</h3>
+                      <p className="text-sm text-gray-700 mt-2 leading-relaxed line-clamp-3">
+                        {item.deskripsi}
+                      </p>
+                    </div>
                   </div>
+                  {item.gambar && (
+                    <div className="w-1/3 h-full rounded-xl overflow-hidden border border-[#D1C9BC]/40 bg-slate-50 flex-shrink-0">
+                      <img src={item.gambar} alt={item.nama_kegiatan} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -274,6 +324,14 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
                   key={item.id || idx}
                   whileHover={isDesktop ? { y: -8, rotateZ: idx % 2 === 0 ? 1 : -1 } : {}}
                   whileTap={{ scale: 0.98 }}
+                  onClick={() => setActiveDetail({
+                    type: 'prestasi',
+                    title: item.nama_prestasi,
+                    description: item.deskripsi || 'Deskripsi perolehan piala kejuaraan belum dicatat.',
+                    date: item.tanggal,
+                    locationOrTingkat: item.tingkat || 'Ranting',
+                    gambar: item.gambar
+                  })}
                   className="bg-white border border-[#D1C9BC] rounded-2xl overflow-hidden shadow-sm flex flex-col h-96 cursor-pointer hover:border-accent transition-colors"
                 >
                   {/* Photo at the top if exists */}
@@ -519,6 +577,72 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
           </div>
         </div>
       </footer>
+
+      <AnimatePresence>
+        {activeDetail && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveDetail(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md cursor-pointer"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#FBF9F6] border border-[#D1C9BC] rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl relative cursor-default flex flex-col"
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setActiveDetail(null)}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-gray-700 shadow-md hover:text-black transition-all cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              {/* Image Header if exists */}
+              {activeDetail.gambar && (
+                <div className="h-64 sm:h-80 w-full overflow-hidden shrink-0 border-b border-[#D1C9BC]/40 bg-slate-100 relative">
+                  <img src={activeDetail.gambar} alt={activeDetail.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+
+              {/* Modal Body */}
+              <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[9px] font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    {activeDetail.type === 'prestasi' ? 'Prestasi Kejuaraan' : 'Kegiatan / Sejarah'}
+                  </span>
+                  {activeDetail.locationOrTingkat && (
+                    <span className="text-[9px] font-mono text-accent bg-accent/10 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                      {activeDetail.locationOrTingkat}
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-primary leading-tight">
+                  {activeDetail.title}
+                </h3>
+
+                <div className="flex flex-wrap gap-4 text-xs font-mono text-gray-500 pt-1 border-y border-[#D1C9BC]/30 py-3">
+                  <div className="flex items-center">
+                    <Calendar className="mr-1.5 h-3.5 w-3.5 text-accent" />
+                    Tanggal: {activeDetail.date}
+                  </div>
+                </div>
+
+                <div className="prose max-w-none pt-2">
+                  <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-sans whitespace-pre-wrap">
+                    {activeDetail.description}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
