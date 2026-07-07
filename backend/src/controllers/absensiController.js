@@ -7,6 +7,20 @@ const { sendSuccess, sendError } = require('../utils/responseHelper');
 const createAbsensi = async (req, res, next) => {
   try {
     const { siswa_id, agenda_id, latitude, longitude } = req.body;
+    const user = req.user;
+
+    // Authorization check to prevent IDOR check-ins
+    if (user.role === 'siswa') {
+      const { data: siswa, error: siswaErr } = await supabase
+        .from('siswa')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (siswaErr || !siswa || siswa.id !== parseInt(siswa_id)) {
+        return sendError(res, 'Akses ditolak. Anda hanya diperbolehkan mengirim data absensi untuk diri Anda sendiri.', 403);
+      }
+    }
 
     // Ambil detail agenda
     const { data: agenda, error: agendaError } = await supabase
@@ -112,10 +126,23 @@ const getAbsensiById = async (req, res, next) => {
   }
 };
 
-// Ambil data absensi berdasarkan ID siswa
 const getAbsensiBySiswa = async (req, res, next) => {
   try {
     const { siswaId } = req.params;
+    const user = req.user;
+
+    // Authorization check to prevent IDOR
+    if (user.role === 'siswa') {
+      const { data: siswa, error: siswaErr } = await supabase
+        .from('siswa')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (siswaErr || !siswa || siswa.id !== parseInt(siswaId)) {
+        return sendError(res, 'Akses ditolak. Anda hanya diperbolehkan melihat data absensi Anda sendiri.', 403);
+      }
+    }
 
     const { data: absensiList, error } = await supabase
       .from('absensi')

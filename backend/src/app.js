@@ -34,7 +34,21 @@ const app = express();
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
-app.use(cors());
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',') 
+  : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:4173'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, postman, curl)
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Akses ditolak oleh CORS Policy server.'));
+    }
+  },
+  credentials: true
+}));
 
 // Batasan limit request
 const apiLimiter = rateLimit({
@@ -48,6 +62,19 @@ const apiLimiter = rateLimit({
   }
 });
 app.use('/api', apiLimiter);
+
+// Batasan limit login untuk mencegah brute force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 menit
+  max: 15, // Maksimal 15 percobaan login per 15 menit dari satu IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Terlalu banyak percobaan masuk dari IP ini, silakan coba lagi setelah 15 menit.'
+  }
+});
+app.use('/api/auth/login', authLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

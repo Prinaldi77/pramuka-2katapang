@@ -11,7 +11,11 @@ const verifyToken = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    if (!process.env.JWT_SECRET) {
+      console.error('FATAL SECURITY ERROR: JWT_SECRET is not defined in environment variables!');
+      return sendError(res, 'Konfigurasi keamanan server tidak valid.', 500);
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Cari user di database
     const { data: user, error } = await supabase

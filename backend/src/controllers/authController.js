@@ -25,10 +25,15 @@ const login = async (req, res, next) => {
       return sendError(res, 'Email atau password salah.', 401);
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error('FATAL SECURITY ERROR: JWT_SECRET is not defined in environment variables!');
+      return sendError(res, 'Konfigurasi keamanan server tidak valid.', 500);
+    }
+
     // Buat token JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
+      process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 

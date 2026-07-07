@@ -25,6 +25,7 @@ const AdminPembina = lazy(() => import('../pages/admin/Pembina'));
 const AdminProfilGudep = lazy(() => import('../pages/admin/ProfilGudep'));
 const AdminKegiatan = lazy(() => import('../pages/admin/Kegiatan'));
 const AdminPrestasi = lazy(() => import('../pages/admin/Prestasi'));
+const AdminBerita = lazy(() => import('../pages/admin/Berita'));
 // const AdminGaleri = lazy(() => import('../pages/admin/Galeri'));
 const AdminPesan = lazy(() => import('../pages/admin/Pesan'));
 const AdminAgenda = lazy(() => import('../pages/admin/AgendaAbsensi'));
@@ -84,6 +85,7 @@ export const router = createBrowserRouter([
       { path: 'siswa', element: <AdminSiswa /> },
       { path: 'pembina', element: <AdminPembina /> },
       { path: 'profil', element: <AdminProfilGudep /> },
+      { path: 'berita', element: <AdminBerita /> },
       { path: 'kegiatan', element: <AdminKegiatan /> },
       { path: 'prestasi', element: <AdminPrestasi /> },
       { path: 'galeri', element: <Navigate to="/admin/kegiatan" replace /> },
