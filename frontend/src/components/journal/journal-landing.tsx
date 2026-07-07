@@ -153,7 +153,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
         <div className="max-w-5xl text-center space-y-8 z-10 flex flex-col items-center">
           <img src="/logo.png" alt="Logo Satria Batara" className="h-28 w-28 object-contain drop-shadow-md" />
           <span className="hero-reveal inline-flex items-center px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider bg-secondary text-primary border border-primary/20">
-            ★ GUDEP 28.065 - 28.066 ★
+             GUDEP 28.065 - 28.066 
           </span>
           <h1 className="hero-reveal text-5xl md:text-7xl font-serif font-black text-primary leading-none tracking-tight">
             Satyaku Kudarmakan,<br/>
@@ -398,7 +398,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
                   <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Pangkalan Gudep</span>
                   <p className="font-serif font-bold text-base text-primary mt-0.5">SMP Negeri 2 Katapang</p>
                   <p className="text-xs text-gray-500 mt-1 font-sans leading-relaxed">
-                    SMP Negeri 2 Katapang, Jl. Terusan Kopo No.KM.13, Kec. Katapang, Kabupaten Bandung, Jawa Barat 40971
+                    Komplek Gading Junti Asri, Desa Sangkanhurip, Kecamatan Katapang, Kabupaten Bandung, Jawa Barat 40971
                   </p>
                 </div>
               </div>
@@ -411,7 +411,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
                   <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">Jam Layanan Sekretariat</span>
                   <p className="font-serif font-bold text-base text-primary mt-0.5">Setiap Hari Latihan</p>
                   <p className="text-xs text-gray-500 mt-1 font-sans">
-                    Jumat: 13.30 WIB - 17.00 WIB
+                    Jumat: 08.00 WIB - 15.00 WIB
                   </p>
                 </div>
               </div>
@@ -498,14 +498,14 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
           <div className="md:col-span-3 space-y-4">
             <h4 className="font-mono text-xs text-accent uppercase font-bold tracking-widest">[ ALAMAT SEKRETARIAT ]</h4>
             <p className="text-xs text-[#C8C2B7] leading-relaxed">
-              SMP Negeri 2 Katapang, Jl. Terusan Kopo No.KM.13, Kec. Katapang, Kabupaten Bandung, Jawa Barat 40971
+              Komplek Gading Junti Asri, Desa Sangkanhurip, Kecamatan Katapang, Kabupaten Bandung, Jawa Barat 40971
             </p>
           </div>
 
           <div className="md:col-span-4 space-y-4">
             <h4 className="font-mono text-xs text-accent uppercase font-bold tracking-widest">[ HUBUNGI KAMI ]</h4>
             <p className="text-xs text-[#C8C2B7] leading-relaxed space-y-1">
-              <span>Email: <a href="mailto:gudep@smpn2katapang.sch.id" className="text-white hover:text-accent transition-colors">gudep@smpn2katapang.sch.id</a></span><br/>
+              <span>Email: <a href="mailto:pramuka2katapang@gmail.com" className="text-white hover:text-accent transition-colors">pramuka2katapang@gmail.com</a></span><br/>
               <span>WhatsApp: <a href="https://wa.me/6287825056256" target="_blank" rel="noopener noreferrer" className="text-white hover:text-accent transition-colors">+62 878-2505-6256</a></span>
             </p>
           </div>
@@ -513,7 +513,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
         </div>
 
         <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row justify-between items-center text-xs text-[#C8C2B7]/60">
-          <p>© {new Date().getFullYear()} SMP Negeri 2 Katapang. Dibuat dengan semangat kepanduan.</p>
+          <p>© {new Date().getFullYear()} Pramuka SMP Negeri 2 Katapang.</p>
           <div className="flex space-x-6 mt-4 sm:mt-0 font-mono text-[10px]">
             <span className="uppercase">Gudep 28.065 - 28.066</span>
           </div>
