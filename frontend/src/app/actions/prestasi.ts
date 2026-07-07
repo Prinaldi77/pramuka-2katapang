@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { getSession } from '@/lib/session';
 import { revalidatePath } from 'next/cache';
 
+import heicConvert from 'heic-convert';
+
 export async function createPrestasiAction(formData: FormData) {
   const session = await getSession();
   if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
@@ -27,21 +29,45 @@ export async function createPrestasiAction(formData: FormData) {
   let gambarUrl = '';
 
   try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+    let buffer = Buffer.from(await file.arrayBuffer());
+    let fileExt = file.name ? file.name.split('.').pop() || 'jpg' : 'jpg';
+    let fileType = file.type;
+
+    const isHEIC = 
+      fileExt.toLowerCase() === 'heic' || 
+      fileExt.toLowerCase() === 'heif' || 
+      fileType === 'image/heic' || 
+      fileType === 'image/heif';
+
+    if (isHEIC) {
+      console.log('Converting HEIC file to JPEG...');
+      try {
+        const converted = await heicConvert({
+          buffer: buffer,
+          format: 'JPEG',
+          quality: 0.8
+        });
+        buffer = Buffer.from(converted);
+        fileExt = 'jpg';
+        fileType = 'image/jpeg';
+      } catch (conversionError) {
+        console.error('Failed to convert HEIC to JPEG:', conversionError);
+      }
+    }
+
     const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`;
     
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('prestasi')
       .upload(fileName, buffer, {
-        contentType: file.type,
+        contentType: fileType,
         upsert: true,
       });
 
     if (uploadError) {
       console.warn('Bucket upload error, falling back to base64 encoding:', uploadError.message);
       const base64Data = buffer.toString('base64');
-      gambarUrl = `data:${file.type};base64,${base64Data}`;
+      gambarUrl = `data:${fileType};base64,${base64Data}`;
     } else {
       const { data: publicUrlData } = supabase.storage
         .from('prestasi')
