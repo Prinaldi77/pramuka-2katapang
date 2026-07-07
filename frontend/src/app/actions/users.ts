@@ -20,6 +20,19 @@ export async function createUserAction(formData: FormData) {
     throw new Error('Semua input pendaftaran anggota wajib diisi!');
   }
 
+  if (password.length < 8) {
+    throw new Error('Kata sandi minimal 8 karakter!');
+  }
+
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+    throw new Error('Kata sandi harus mengandung minimal satu huruf besar, satu huruf kecil, satu angka, dan satu karakter khusus/simbol!');
+  }
+
   try {
     // 1. Hash password
     const salt = await bcrypt.genSalt(10);

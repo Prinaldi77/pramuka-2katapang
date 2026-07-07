@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { sendError } = require('../utils/responseHelper');
 const supabase = require('../config/supabase');
+const tokenBlacklist = require('../utils/tokenBlacklist');
 
 // Verifikasi token JWT
 const verifyToken = async (req, res, next) => {
@@ -11,6 +12,12 @@ const verifyToken = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
+    
+    // Check if token is blacklisted
+    if (tokenBlacklist.hasToken(token)) {
+      return sendError(res, 'Akses ditolak. Token telah dinonaktifkan (silakan login kembali).', 401);
+    }
+
     if (!process.env.JWT_SECRET) {
       console.error('FATAL SECURITY ERROR: JWT_SECRET is not defined in environment variables!');
       return sendError(res, 'Konfigurasi keamanan server tidak valid.', 500);

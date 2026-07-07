@@ -28,7 +28,11 @@ const createUserValidation = [
     }),
   body('password')
     .notEmpty().withMessage('Password wajib diisi')
-    .isLength({ min: 6 }).withMessage('Password minimal 6 karakter'),
+    .isLength({ min: 8 }).withMessage('Password minimal 8 karakter')
+    .matches(/[A-Z]/).withMessage('Password harus mengandung minimal 1 huruf besar')
+    .matches(/[a-z]/).withMessage('Password harus mengandung minimal 1 huruf kecil')
+    .matches(/[0-9]/).withMessage('Password harus mengandung minimal 1 angka')
+    .matches(/[^A-Za-z0-9]/).withMessage('Password harus mengandung minimal 1 karakter khusus (simbol)'),
   body('role')
     .notEmpty().withMessage('Role wajib diisi')
     .isIn(['admin', 'pembina', 'siswa']).withMessage('Role tidak valid (harus admin, pembina, atau siswa)')
@@ -59,7 +63,11 @@ const updateUserValidation = [
     }),
   body('password')
     .optional()
-    .isLength({ min: 6 }).withMessage('Password minimal 6 karakter'),
+    .isLength({ min: 8 }).withMessage('Password minimal 8 karakter')
+    .matches(/[A-Z]/).withMessage('Password harus mengandung minimal 1 huruf besar')
+    .matches(/[a-z]/).withMessage('Password harus mengandung minimal 1 huruf kecil')
+    .matches(/[0-9]/).withMessage('Password harus mengandung minimal 1 angka')
+    .matches(/[^A-Za-z0-9]/).withMessage('Password harus mengandung minimal 1 karakter khusus (simbol)'),
   body('role')
     .optional()
     .isIn(['admin', 'pembina', 'siswa']).withMessage('Role tidak valid (harus admin, pembina, atau siswa)')

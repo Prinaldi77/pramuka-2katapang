@@ -140,6 +140,31 @@ const checkIn = async (req, res, next) => {
       return sendError(res, 'Agenda absensi tidak ditemukan.', 404);
     }
 
+    // Deteksi Fake GPS berbasis Anomali Kecepatan (Velocity check)
+    const { data: lastAbsensi } = await supabase
+      .from('absensi')
+      .select('latitude, longitude, created_at')
+      .eq('siswa_id', siswa.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (lastAbsensi && lastAbsensi.latitude !== 0 && lastAbsensi.longitude !== 0) {
+      const distFromLast = calculateDistance(latVal, lngVal, lastAbsensi.latitude, lastAbsensi.longitude);
+      const timeDiffMins = (new Date() - new Date(lastAbsensi.created_at)) / (1000 * 60);
+
+      if (timeDiffMins > 0 && timeDiffMins < 60) {
+        const speedKmh = (distFromLast / 1000) / (timeDiffMins / 60);
+        if (speedKmh > 120) {
+          return sendError(
+            res,
+            `Absensi ditolak. Terdeteksi aktivitas mencurigakan: Perpindahan lokasi Anda terlalu cepat (${speedKmh.toFixed(1)} km/jam). Harap matikan Fake GPS.`,
+            400
+          );
+        }
+      }
+    }
+
     // Validasi jarak lokasi
     const distance = calculateDistance(latVal, lngVal, agenda.latitude, agenda.longitude);
 

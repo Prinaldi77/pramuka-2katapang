@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const supabase = require('../config/supabase');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
+const tokenBlacklist = require('../utils/tokenBlacklist');
 
 // Proses login user
 const login = async (req, res, next) => {
@@ -52,6 +53,11 @@ const login = async (req, res, next) => {
 
 // Proses logout user
 const logout = async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    tokenBlacklist.addToken(token);
+  }
   return sendSuccess(res, 'Logout berhasil.', {});
 };
 
