@@ -13,15 +13,20 @@ export async function createGaleriAction(formData: FormData) {
   const judul = formData.get('judul') as string;
   const file = formData.get('gambar') as File;
 
-  if (!judul || !file || file.size === 0) {
-    throw new Error('Judul dan file foto galeri wajib diisi!');
+  if (!judul) {
+    throw new Error('Judul galeri wajib diisi!');
+  }
+
+  if (!file || typeof file === 'string' || file.size === 0) {
+    throw new Error('File foto galeri wajib diisi!');
   }
 
   let gambarUrl = '';
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${file.name}`;
+    const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${fileExt}`;
     
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('galeri')

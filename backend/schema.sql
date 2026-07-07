@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS prestasi (
     id SERIAL PRIMARY KEY,
     nama_prestasi VARCHAR(255) NOT NULL,
     deskripsi TEXT,
+    tingkat VARCHAR(50),
     tanggal DATE NOT NULL,
     gambar TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

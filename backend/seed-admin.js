@@ -117,6 +117,44 @@ async function seed() {
       }
     }
 
+    // 4. Seed default kegiatan as Sejarah milestones
+    console.log('Seeding default milestones into kegiatan table...');
+    await supabase.from('kegiatan').delete().neq('id', 0); // Delete all
+    const { error: kegiatanErr } = await supabase
+      .from('kegiatan')
+      .insert([
+        {
+          nama_kegiatan: 'Pendirian Gugus Depan',
+          tanggal: '1998-01-01',
+          deskripsi: 'Pangkalan pramuka SMPN 2 Katapang secara resmi didirikan sebagai wadah pendidikan kepanduan berkarakter bagi penggalang.',
+          lokasi: 'SMPN 2 Katapang'
+        },
+        {
+          nama_kegiatan: 'Juara Umum Cabang',
+          tanggal: '2012-08-17',
+          deskripsi: 'Regu penggalang Satria Batara meraih prestasi gemilang sebagai juara umum dalam lomba LKBB dan ketangkasan pionering.',
+          lokasi: 'Kabupaten Bandung'
+        },
+        {
+          nama_kegiatan: 'Penerapan Modul Digital',
+          tanggal: '2020-10-28',
+          deskripsi: 'Memulai digitalisasi administrasi gudep dan pencatatan riwayat penjelajahan anggota secara digital.',
+          lokasi: 'SMPN 2 Katapang'
+        },
+        {
+          nama_kegiatan: 'Ekspedisi Modern',
+          tanggal: '2026-07-07',
+          deskripsi: 'Redesign sistem informasi terintegrasi menggunakan Next.js 15, Geofence GPS mandiri, dan portfolio digital SKU/SKK.',
+          lokasi: 'SMPN 2 Katapang'
+        }
+      ]);
+
+    if (kegiatanErr) {
+      console.error('Gagal seeding kegiatan:', kegiatanErr.message);
+    } else {
+      console.log('✔ Sukses membuat default milestones ke kegiatan');
+    }
+
     console.log('\n=============================================================');
     console.log(' SEEDING SELESAI DENGAN SUKSES!');
     console.log(' Silakan gunakan akun berikut untuk login di website Anda:');
