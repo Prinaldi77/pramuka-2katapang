@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+:root {
+  --background: #FBF9F6; /* Warm vintage paper background */
+  --foreground: #111827; /* Near black slate */
+  
+  --primary: #1E3F20; /* Scout Forest Green */
+  --primary-foreground: #E6DFD3; /* Warm Khaki / Sand */
+  
+  --secondary: #E6DFD3;
+  --secondary-foreground: #1E3F20;
+  
+  --accent: #D97706; /* Golden Amber */
+  --accent-foreground: #FBF9F6;
+  
+  --muted-brown: #5C3D2E; /* Scout Timber Brown */
+  
+  --card: #FDFDFD;
+  --card-foreground: #111827;
+  
+  --border: #D1C9BC;
+  
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-muted-brown: var(--muted-brown);
+  --color-border: var(--border);
+  
+  --font-serif: "Playfair Display", "Georgia", serif;
+  --font-sans: "Outfit", "Inter", "system-ui", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0D160E; /* Dark Forest Green tint background */
+    --foreground: #E6DFD3; /* Warm Sand foreground */
+    
+    --primary: #1E3F20;
+    --primary-foreground: #E6DFD3;
+    
+    --secondary: #182819; /* Muted Dark Green */
+    --secondary-foreground: #E6DFD3;
+    
+    --accent: #D97706;
+    --accent-foreground: #FBF9F6;
+    
+    --muted-brown: #5C3D2E;
+    
+    --card: #111D12;
+    --card-foreground: #E6DFD3;
+    
+    --border: #1B2E1D;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
