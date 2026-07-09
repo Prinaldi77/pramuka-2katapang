@@ -1,17 +1,11 @@
-const supabase = require('../config/supabase');
+const PrestasiModel = require('../models/prestasiModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
 // Ambil semua daftar prestasi
 const getPrestasi = async (req, res, next) => {
   try {
-    const { data: prestasiList, error } = await supabase
-      .from('prestasi')
-      .select('*')
-      .order('tanggal', { ascending: false });
-
-    if (error) throw error;
-
+    const prestasiList = await PrestasiModel.findAll();
     return sendSuccess(res, 'Data prestasi berhasil diambil.', prestasiList);
   } catch (error) {
     next(error);
@@ -22,14 +16,9 @@ const getPrestasi = async (req, res, next) => {
 const getPrestasiById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const prestasi = await PrestasiModel.findById(id);
 
-    const { data: prestasi, error } = await supabase
-      .from('prestasi')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !prestasi) {
+    if (!prestasi) {
       return sendError(res, 'Prestasi tidak ditemukan.', 404);
     }
 
@@ -49,18 +38,12 @@ const createPrestasi = async (req, res, next) => {
       gambarUrl = await uploadFile(req.file, 'prestasi');
     }
 
-    const { data: prestasi, error } = await supabase
-      .from('prestasi')
-      .insert([{
-        nama_prestasi,
-        deskripsi,
-        tanggal,
-        gambar: gambarUrl
-      }])
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const prestasi = await PrestasiModel.create({
+      nama_prestasi,
+      deskripsi,
+      tanggal,
+      gambar: gambarUrl
+    });
 
     return sendSuccess(res, 'Prestasi berhasil ditambahkan.', prestasi, 201);
   } catch (error) {
@@ -74,13 +57,9 @@ const updatePrestasi = async (req, res, next) => {
     const { id } = req.params;
     const { nama_prestasi, deskripsi, tanggal } = req.body;
 
-    const { data: existingPrestasi, error: fetchError } = await supabase
-      .from('prestasi')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const existingPrestasi = await PrestasiModel.findById(id);
 
-    if (fetchError || !existingPrestasi) {
+    if (!existingPrestasi) {
       return sendError(res, 'Prestasi tidak ditemukan.', 404);
     }
 
@@ -99,14 +78,7 @@ const updatePrestasi = async (req, res, next) => {
       }
     }
 
-    const { data: prestasi, error } = await supabase
-      .from('prestasi')
-      .update(updates)
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const prestasi = await PrestasiModel.update(id, updates);
 
     return sendSuccess(res, 'Prestasi berhasil diperbarui.', prestasi);
   } catch (error) {
@@ -119,13 +91,9 @@ const deletePrestasi = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const { data: prestasi, error: fetchError } = await supabase
-      .from('prestasi')
-      .select('gambar')
-      .eq('id', id)
-      .maybeSingle();
+    const prestasi = await PrestasiModel.findById(id);
 
-    if (fetchError || !prestasi) {
+    if (!prestasi) {
       return sendError(res, 'Prestasi tidak ditemukan.', 404);
     }
 
@@ -134,12 +102,7 @@ const deletePrestasi = async (req, res, next) => {
       await deleteFile(prestasi.gambar, 'prestasi');
     }
 
-    const { error } = await supabase
-      .from('prestasi')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await PrestasiModel.destroy(id);
 
     return sendSuccess(res, 'Prestasi berhasil dihapus.', {});
   } catch (error) {

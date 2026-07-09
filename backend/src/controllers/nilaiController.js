@@ -1,30 +1,20 @@
-const supabase = require('../config/supabase');
+const NilaiModel = require('../models/nilaiModel');
+const AgendaModel = require('../models/agendaModel');
+const AbsensiModel = require('../models/absensiModel');
+const SiswaModel = require('../models/siswaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua data nilai siswa
 const getNilai = async (req, res, next) => {
   try {
     // Ambil data nilai mentah
-    const { data: rawGrades, error: gradesError } = await supabase
-      .from('nilai')
-      .select('id, siswa_id, kategori_nilai_id, nilai')
-      .order('id', { ascending: true });
-
-    if (gradesError) throw gradesError;
+    const rawGrades = await NilaiModel.findAllRaw();
 
     // Ambil jumlah seluruh agenda kegiatan
-    const { count: totalAgenda, error: agendaError } = await supabase
-      .from('agenda_absensi')
-      .select('id', { count: 'exact', head: true });
+    const totalAgenda = await AgendaModel.count();
 
-    if (agendaError) throw agendaError;
-
-    // Ambil data riwayat absensi (hanya siswa_id)
-    const { data: absensiLogs, error: absensiError } = await supabase
-      .from('absensi')
-      .select('siswa_id');
-
-    if (absensiError) throw absensiError;
+    // Ambil data riwayat absensi
+    const absensiLogs = await AbsensiModel.findAll();
 
     // Kelompokkan nilai per siswa
     const gradesBySiswa = {};
@@ -66,14 +56,7 @@ const getNilai = async (req, res, next) => {
 const getNilaiBySiswa = async (req, res, next) => {
   try {
     const { siswaId } = req.params;
-
-    const { data: nilaiList, error } = await supabase
-      .from('nilai')
-      .select('*, kategori_nilai(*)')
-      .eq('siswa_id', siswaId)
-      .order('id', { ascending: true });
-
-    if (error) throw error;
+    const nilaiList = await NilaiModel.findBySiswaId(siswaId);
 
     return sendSuccess(res, 'Data nilai siswa berhasil diambil.', nilaiList);
   } catch (error) {
@@ -87,41 +70,19 @@ const createNilai = async (req, res, next) => {
     const { siswa_id, kategori_nilai_id, nilai } = req.body;
 
     // Periksa apakah nilai untuk kategori ini sudah ada
-    const { data: existingNilai, error: checkError } = await supabase
-      .from('nilai')
-      .select('id')
-      .eq('siswa_id', siswa_id)
-      .eq('kategori_nilai_id', kategori_nilai_id)
-      .maybeSingle();
-
-    if (checkError) throw checkError;
+    const existingNilai = await NilaiModel.findSpecific(siswa_id, kategori_nilai_id);
 
     let result;
     if (existingNilai) {
       // Update nilai jika sudah ada
-      const { data, error } = await supabase
-        .from('nilai')
-        .update({ nilai: parseInt(nilai) })
-        .eq('id', existingNilai.id)
-        .select('*, siswa(*, users(nama)), kategori_nilai(*)')
-        .single();
-      
-      if (error) throw error;
-      result = data;
+      result = await NilaiModel.update(existingNilai.id, { nilai: parseInt(nilai) });
     } else {
       // Tambah nilai baru
-      const { data, error } = await supabase
-        .from('nilai')
-        .insert([{
-          siswa_id: parseInt(siswa_id),
-          kategori_nilai_id: parseInt(kategori_nilai_id),
-          nilai: parseInt(nilai)
-        }])
-        .select('*, siswa(*, users(nama)), kategori_nilai(*)')
-        .single();
-
-      if (error) throw error;
-      result = data;
+      result = await NilaiModel.create({
+        siswa_id: parseInt(siswa_id),
+        kategori_nilai_id: parseInt(kategori_nilai_id),
+        nilai: parseInt(nilai)
+      });
     }
 
     return sendSuccess(res, 'Nilai berhasil disimpan.', result, existingNilai ? 200 : 201);
@@ -136,14 +97,7 @@ const updateNilai = async (req, res, next) => {
     const { id } = req.params;
     const { nilai } = req.body;
 
-    const { data: updatedNilai, error } = await supabase
-      .from('nilai')
-      .update({ nilai: parseInt(nilai) })
-      .eq('id', id)
-      .select('*, siswa(*, users(nama)), kategori_nilai(*)')
-      .single();
-
-    if (error) throw error;
+    const updatedNilai = await NilaiModel.update(id, { nilai: parseInt(nilai) });
 
     return sendSuccess(res, 'Nilai berhasil diperbarui.', updatedNilai);
   } catch (error) {
@@ -155,13 +109,7 @@ const updateNilai = async (req, res, next) => {
 const deleteNilai = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('nilai')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await NilaiModel.destroy(id);
 
     return sendSuccess(res, 'Nilai berhasil dihapus.', {});
   } catch (error) {
@@ -175,42 +123,24 @@ const getRaporSiswa = async (req, res, next) => {
     const { siswaId } = req.params;
 
     // Pastikan siswa terdaftar
-    const { data: siswa, error: siswaErr } = await supabase
-      .from('siswa')
-      .select('id, user_id, nis, users(nama)')
-      .eq('id', siswaId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findById(siswaId);
 
-    if (siswaErr || !siswa) {
+    if (!siswa) {
       return sendError(res, 'Siswa tidak ditemukan.', 404);
     }
 
     // Hitung kehadiran secara dinamis
-    const { count: totalAgenda, error: agendaErr } = await supabase
-      .from('agenda_absensi')
-      .select('*', { count: 'exact', head: true });
-
-    if (agendaErr) throw agendaErr;
+    const totalAgenda = await AgendaModel.count();
 
     // Hitung total absen hadir
-    const { count: totalHadir, error: hadirErr } = await supabase
-      .from('absensi')
-      .select('*', { count: 'exact', head: true })
-      .eq('siswa_id', siswaId);
-
-    if (hadirErr) throw hadirErr;
+    const totalHadir = await NilaiModel.countSiswaAttendance(siswaId);
 
     const scoreKehadiran = totalAgenda && totalAgenda > 0
       ? Math.round((totalHadir / totalAgenda) * 100)
       : 0;
 
     // Ambil kriteria nilai lainnya
-    const { data: gradesList, error: gradesErr } = await supabase
-      .from('nilai')
-      .select('*, kategori_nilai(nama_kategori)')
-      .eq('siswa_id', siswaId);
-
-    if (gradesErr) throw gradesErr;
+    const gradesList = await NilaiModel.findWithCategoryName(siswaId);
 
     const rapor = {
       kehadiran: scoreKehadiran,

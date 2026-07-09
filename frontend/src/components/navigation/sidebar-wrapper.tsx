@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Users, Calendar, Award, LogOut, CheckSquare, Layers, BookOpen, Mail, Image as ImageIcon } from 'lucide-react';
+import { Menu, X, Users, Calendar, Award, LogOut, CheckSquare, Layers, BookOpen, Mail, Image as ImageIcon, User } from 'lucide-react';
 import { logoutAction } from '@/app/actions/auth';
 
 interface SidebarWrapperProps {
@@ -31,6 +31,9 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
       <Link href="/siswa/absensi" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
         <Calendar className="h-4 w-4" /> <span>Absensi GPS</span>
       </Link>
+      <Link href="/profil" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+        <User className="h-4 w-4" /> <span>Edit Profil</span>
+      </Link>
     </>
   ) : (
     <>
@@ -57,6 +60,9 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
       </Link>
       <Link href="/admin/pesan" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
         <Mail className="h-4 w-4" /> <span>Pesan Masuk</span>
+      </Link>
+      <Link href="/profil" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors border-t border-white/10 pt-4 mt-2">
+        <User className="h-4 w-4" /> <span>Edit Profil</span>
       </Link>
     </>
   );

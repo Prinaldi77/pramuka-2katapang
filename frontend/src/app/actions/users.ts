@@ -8,7 +8,7 @@ import bcrypt from 'bcryptjs';
 export async function createUserAction(formData: FormData) {
   const session = await getSession();
   if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
-    throw new Error('Akses ditolak. Anda tidak memiliki wewenang.');
+    return { success: false, error: 'Akses ditolak. Anda tidak memiliki wewenang.' };
   }
 
   const nama = formData.get('nama') as string;
@@ -17,20 +17,11 @@ export async function createUserAction(formData: FormData) {
   const role = formData.get('role') as string;
 
   if (!nama || !email || !password || !role) {
-    throw new Error('Semua input pendaftaran anggota wajib diisi!');
+    return { success: false, error: 'Semua input pendaftaran anggota wajib diisi!' };
   }
 
   if (password.length < 8) {
-    throw new Error('Kata sandi minimal 8 karakter!');
-  }
-
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecial = /[^A-Za-z0-9]/.test(password);
-
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-    throw new Error('Kata sandi harus mengandung minimal satu huruf besar, satu huruf kecil, satu angka, dan satu karakter khusus/simbol!');
+    return { success: false, error: 'Kata sandi minimal 8 karakter!' };
   }
 
   try {
@@ -52,7 +43,12 @@ export async function createUserAction(formData: FormData) {
       .select('*')
       .single();
 
-    if (userError) throw userError;
+    if (userError) {
+      if (userError.message.includes('unique') || userError.message.includes('already exists')) {
+        return { success: false, error: 'Email sudah terdaftar.' };
+      }
+      throw userError;
+    }
 
     // 3. If role is siswa, seed basic profile matching database schema
     if (role === 'siswa' && newUser) {
@@ -69,10 +65,25 @@ export async function createUserAction(formData: FormData) {
       if (profileError) console.error('Error seeding siswa profile:', profileError.message);
     }
 
+    // 4. If role is pembina, seed basic profile matching database schema
+    if (role === 'pembina' && newUser) {
+      const { error: pembinaProfileError } = await supabase
+        .from('pembina')
+        .insert([
+          {
+            user_id: newUser.id,
+            jabatan: 'Pembina Utama'
+          },
+        ]);
+      if (pembinaProfileError) console.error('Error seeding pembina profile:', pembinaProfileError.message);
+    }
+
     revalidatePath('/admin/users');
+    revalidatePath('/');
+    return { success: true };
   } catch (err: any) {
     console.error('Create user action error:', err);
-    throw err;
+    return { success: false, error: err.message || 'Terjadi kesalahan internal.' };
   }
 }
 

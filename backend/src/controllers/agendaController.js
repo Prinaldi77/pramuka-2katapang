@@ -1,17 +1,10 @@
-const supabase = require('../config/supabase');
+const AgendaModel = require('../models/agendaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua agenda absensi
 const getAgenda = async (req, res, next) => {
   try {
-    const { data: agendaList, error } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .order('tanggal', { ascending: false })
-      .order('jam_mulai', { ascending: false });
-
-    if (error) throw error;
-
+    const agendaList = await AgendaModel.findAll();
     return sendSuccess(res, 'Data agenda absensi berhasil diambil.', agendaList);
   } catch (error) {
     next(error);
@@ -22,14 +15,9 @@ const getAgenda = async (req, res, next) => {
 const getAgendaById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const agenda = await AgendaModel.findById(id);
 
-    const { data: agenda, error } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !agenda) {
+    if (!agenda) {
       return sendError(res, 'Agenda tidak ditemukan.', 404);
     }
 
@@ -53,22 +41,16 @@ const createAgenda = async (req, res, next) => {
       status
     } = req.body;
 
-    const { data: agenda, error } = await supabase
-      .from('agenda_absensi')
-      .insert([{
-        judul,
-        tanggal,
-        jam_mulai,
-        jam_selesai,
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
-        radius: parseFloat(radius),
-        status: status || 'aktif'
-      }])
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const agenda = await AgendaModel.create({
+      judul,
+      tanggal,
+      jam_mulai,
+      jam_selesai,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      radius: parseFloat(radius),
+      status: status || 'aktif'
+    });
 
     return sendSuccess(res, 'Agenda berhasil ditambahkan.', agenda, 201);
   } catch (error) {
@@ -101,14 +83,7 @@ const updateAgenda = async (req, res, next) => {
     if (radius !== undefined) updates.radius = parseFloat(radius);
     if (status !== undefined) updates.status = status;
 
-    const { data: agenda, error } = await supabase
-      .from('agenda_absensi')
-      .update(updates)
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const agenda = await AgendaModel.update(id, updates);
 
     return sendSuccess(res, 'Agenda berhasil diperbarui.', agenda);
   } catch (error) {
@@ -120,13 +95,7 @@ const updateAgenda = async (req, res, next) => {
 const deleteAgenda = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('agenda_absensi')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await AgendaModel.destroy(id);
 
     return sendSuccess(res, 'Agenda berhasil dihapus.', {});
   } catch (error) {

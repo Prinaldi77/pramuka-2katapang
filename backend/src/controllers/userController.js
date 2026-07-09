@@ -1,17 +1,11 @@
 const bcrypt = require('bcryptjs');
-const supabase = require('../config/supabase');
+const UserModel = require('../models/userModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua daftar user
 const getUsers = async (req, res, next) => {
   try {
-    const { data: users, error } = await supabase
-      .from('users')
-      .select('id, nama, email, role, created_at')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
+    const users = await UserModel.findAll();
     return sendSuccess(res, 'Data user berhasil diambil.', users);
   } catch (error) {
     next(error);
@@ -22,14 +16,9 @@ const getUsers = async (req, res, next) => {
 const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const user = await UserModel.findById(id);
 
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('id, nama, email, role, created_at')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !user) {
+    if (!user) {
       return sendError(res, 'User tidak ditemukan.', 404);
     }
 
@@ -50,13 +39,12 @@ const createUser = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Simpan user ke database
-    const { data: user, error } = await supabase
-      .from('users')
-      .insert([{ nama: nameValue, email, password: hashedPassword, role }])
-      .select('id, nama, email, role, created_at')
-      .single();
-
-    if (error) throw error;
+    const user = await UserModel.create({
+      nama: nameValue,
+      email,
+      password: hashedPassword,
+      role
+    });
 
     return sendSuccess(res, 'User berhasil dibuat.', user, 201);
   } catch (error) {
@@ -80,14 +68,7 @@ const updateUser = async (req, res, next) => {
       updates.password = await bcrypt.hash(password, salt);
     }
 
-    const { data: user, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', id)
-      .select('id, nama, email, role, created_at')
-      .single();
-
-    if (error) throw error;
+    const user = await UserModel.update(id, updates);
 
     return sendSuccess(res, 'User berhasil diperbarui.', user);
   } catch (error) {
@@ -99,13 +80,7 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await UserModel.destroy(id);
 
     return sendSuccess(res, 'User berhasil dihapus.', {});
   } catch (error) {

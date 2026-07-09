@@ -1,16 +1,10 @@
-const supabase = require('../config/supabase');
+const PembinaModel = require('../models/pembinaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua daftar pembina beserta akun usernya
 const getPembina = async (req, res, next) => {
   try {
-    const { data: pembinaList, error } = await supabase
-      .from('pembina')
-      .select('*, users(nama, email, role)')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
+    const pembinaList = await PembinaModel.findAll();
     return sendSuccess(res, 'Data pembina berhasil diambil.', pembinaList);
   } catch (error) {
     next(error);
@@ -21,14 +15,9 @@ const getPembina = async (req, res, next) => {
 const getPembinaById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const pembina = await PembinaModel.findById(id);
 
-    const { data: pembina, error } = await supabase
-      .from('pembina')
-      .select('*, users(nama, email, role)')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !pembina) {
+    if (!pembina) {
       return sendError(res, 'Pembina tidak ditemukan.', 404);
     }
 
@@ -42,14 +31,7 @@ const getPembinaById = async (req, res, next) => {
 const createPembina = async (req, res, next) => {
   try {
     const { user_id, jabatan } = req.body;
-
-    const { data: pembina, error } = await supabase
-      .from('pembina')
-      .insert([{ user_id, jabatan }])
-      .select('*, users(nama, email, role)')
-      .single();
-
-    if (error) throw error;
+    const pembina = await PembinaModel.create({ user_id, jabatan });
 
     return sendSuccess(res, 'Data pembina berhasil ditambahkan.', pembina, 201);
   } catch (error) {
@@ -66,14 +48,7 @@ const updatePembina = async (req, res, next) => {
     const updates = {};
     if (jabatan !== undefined) updates.jabatan = jabatan;
 
-    const { data: pembina, error } = await supabase
-      .from('pembina')
-      .update(updates)
-      .eq('id', id)
-      .select('*, users(nama, email, role)')
-      .single();
-
-    if (error) throw error;
+    const pembina = await PembinaModel.update(id, updates);
 
     return sendSuccess(res, 'Data pembina berhasil diperbarui.', pembina);
   } catch (error) {
@@ -85,13 +60,7 @@ const updatePembina = async (req, res, next) => {
 const deletePembina = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('pembina')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await PembinaModel.destroy(id);
 
     return sendSuccess(res, 'Data pembina berhasil dihapus.', {});
   } catch (error) {

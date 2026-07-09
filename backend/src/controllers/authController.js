@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const supabase = require('../config/supabase');
+const UserModel = require('../models/userModel');
+const SiswaModel = require('../models/siswaModel');
+const PembinaModel = require('../models/pembinaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const tokenBlacklist = require('../utils/tokenBlacklist');
 
@@ -10,13 +12,9 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     // Ambil data user dari database
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email)
-      .single();
+    const user = await UserModel.findByEmail(email);
 
-    if (error || !user) {
+    if (!user) {
       return sendError(res, 'Email atau password salah.', 401);
     }
 
@@ -69,20 +67,10 @@ const getProfile = async (req, res, next) => {
 
     // Ambil detail profil berdasarkan role
     if (user.role === 'siswa') {
-      const { data: siswaData } = await supabase
-        .from('siswa')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
+      const siswaData = await SiswaModel.findByUserId(user.id);
       fullProfile.siswa = siswaData || null;
     } else if (user.role === 'pembina') {
-      const { data: pembinaData } = await supabase
-        .from('pembina')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
+      const pembinaData = await PembinaModel.findByUserId(user.id);
       fullProfile.pembina = pembinaData || null;
     }
 

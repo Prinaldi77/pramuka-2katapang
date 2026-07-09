@@ -1,16 +1,10 @@
-const supabase = require('../config/supabase');
+const SiswaModel = require('../models/siswaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua daftar siswa beserta akun usernya
 const getSiswa = async (req, res, next) => {
   try {
-    const { data: siswaList, error } = await supabase
-      .from('siswa')
-      .select('*, users(nama, email, role)')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
+    const siswaList = await SiswaModel.findAll();
     return sendSuccess(res, 'Data siswa berhasil diambil.', siswaList);
   } catch (error) {
     next(error);
@@ -21,14 +15,9 @@ const getSiswa = async (req, res, next) => {
 const getSiswaById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const siswa = await SiswaModel.findById(id);
 
-    const { data: siswa, error } = await supabase
-      .from('siswa')
-      .select('*, users(nama, email, role)')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !siswa) {
+    if (!siswa) {
       return sendError(res, 'Siswa tidak ditemukan.', 404);
     }
 
@@ -52,22 +41,16 @@ const createSiswa = async (req, res, next) => {
       no_hp_ortu
     } = req.body;
 
-    const { data: siswa, error } = await supabase
-      .from('siswa')
-      .insert([{
-        user_id,
-        nis,
-        kelas,
-        jenis_kelamin,
-        tempat_lahir,
-        tanggal_lahir,
-        nama_ortu,
-        no_hp_ortu
-      }])
-      .select('*, users(nama, email, role)')
-      .single();
-
-    if (error) throw error;
+    const siswa = await SiswaModel.create({
+      user_id,
+      nis,
+      kelas,
+      jenis_kelamin,
+      tempat_lahir,
+      tanggal_lahir,
+      nama_ortu,
+      no_hp_ortu
+    });
 
     return sendSuccess(res, 'Data siswa berhasil ditambahkan.', siswa, 201);
   } catch (error) {
@@ -98,14 +81,7 @@ const updateSiswa = async (req, res, next) => {
     if (nama_ortu !== undefined) updates.nama_ortu = nama_ortu;
     if (no_hp_ortu !== undefined) updates.no_hp_ortu = no_hp_ortu;
 
-    const { data: siswa, error } = await supabase
-      .from('siswa')
-      .update(updates)
-      .eq('id', id)
-      .select('*, users(nama, email, role)')
-      .single();
-
-    if (error) throw error;
+    const siswa = await SiswaModel.update(id, updates);
 
     return sendSuccess(res, 'Data siswa berhasil diperbarui.', siswa);
   } catch (error) {
@@ -117,13 +93,7 @@ const updateSiswa = async (req, res, next) => {
 const deleteSiswa = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('siswa')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await SiswaModel.destroy(id);
 
     return sendSuccess(res, 'Data siswa berhasil dihapus.', {});
   } catch (error) {

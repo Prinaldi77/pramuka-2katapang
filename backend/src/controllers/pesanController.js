@@ -1,4 +1,4 @@
-const supabase = require('../config/supabase');
+const PesanModel = require('../models/pesanModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Kirim pesan baru via formulir kontak public
@@ -6,19 +6,13 @@ const createPesan = async (req, res, next) => {
   try {
     const { nama, email, subjek, pesan } = req.body;
 
-    const { data: savedPesan, error } = await supabase
-      .from('pesan')
-      .insert([{
-        nama,
-        email,
-        subjek,
-        pesan,
-        is_read: false
-      }])
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const savedPesan = await PesanModel.create({
+      nama,
+      email,
+      subjek,
+      pesan,
+      is_read: false
+    });
 
     return sendSuccess(res, 'Pesan berhasil dikirim.', savedPesan, 201);
   } catch (error) {
@@ -29,13 +23,7 @@ const createPesan = async (req, res, next) => {
 // Ambil semua pesan masuk (akses Admin)
 const getPesan = async (req, res, next) => {
   try {
-    const { data: pesanList, error } = await supabase
-      .from('pesan')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
+    const pesanList = await PesanModel.findAll();
     return sendSuccess(res, 'Data pesan berhasil diambil.', pesanList);
   } catch (error) {
     next(error);
@@ -46,14 +34,9 @@ const getPesan = async (req, res, next) => {
 const getPesanById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const pesan = await PesanModel.findById(id);
 
-    const { data: pesan, error } = await supabase
-      .from('pesan')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !pesan) {
+    if (!pesan) {
       return sendError(res, 'Pesan tidak ditemukan.', 404);
     }
 
@@ -67,13 +50,7 @@ const getPesanById = async (req, res, next) => {
 const deletePesan = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('pesan')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await PesanModel.destroy(id);
 
     return sendSuccess(res, 'Pesan berhasil dihapus.', {});
   } catch (error) {
@@ -85,15 +62,9 @@ const deletePesan = async (req, res, next) => {
 const markAsRead = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const pesan = await PesanModel.update(id, { is_read: true });
 
-    const { data: pesan, error } = await supabase
-      .from('pesan')
-      .update({ is_read: true })
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error || !pesan) {
+    if (!pesan) {
       return sendError(res, 'Pesan tidak ditemukan.', 404);
     }
 

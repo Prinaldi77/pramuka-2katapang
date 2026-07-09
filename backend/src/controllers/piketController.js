@@ -1,16 +1,10 @@
-const supabase = require('../config/supabase');
+const PiketModel = require('../models/piketModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua jadwal piket
 const getPiket = async (req, res, next) => {
   try {
-    const { data: piketList, error } = await supabase
-      .from('jadwal_piket')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
+    const piketList = await PiketModel.findAll();
     return sendSuccess(res, 'Data jadwal piket berhasil diambil.', piketList);
   } catch (error) {
     next(error);
@@ -23,17 +17,8 @@ const updatePiket = async (req, res, next) => {
     const { id } = req.params;
     const { regu_putra, regu_putri } = req.body;
 
-    const { data: updatedPiket, error } = await supabase
-      .from('jadwal_piket')
-      .update({
-        regu_putra,
-        regu_putri
-      })
-      .eq('id', id)
-      .select('*')
-      .maybeSingle();
+    const updatedPiket = await PiketModel.update(id, { regu_putra, regu_putri });
 
-    if (error) throw error;
     if (!updatedPiket) {
       return sendError(res, 'Jadwal piket tidak ditemukan.', 404);
     }

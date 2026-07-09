@@ -33,9 +33,10 @@ interface JournalLandingProps {
   kegiatan: any[];
   prestasi: any[];
   galeri: any[];
+  kepengurusan: any[];
 }
 
-export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: JournalLandingProps) {
+export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepengurusan }: JournalLandingProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLDivElement>(null);
@@ -163,6 +164,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
         </Link>
         <nav className="hidden lg:flex items-center space-x-8 font-mono text-xs font-bold uppercase tracking-wider">
           <a href="#tentang" className="hover:text-accent transition-colors">Tentang Gudep</a>
+          <a href="#kepengurusan" className="hover:text-accent transition-colors">Kepengurusan</a>
           <a href="#prestasi" className="hover:text-accent transition-colors">Prestasi</a>
           <a href="#dokumentasi" className="hover:text-accent transition-colors">Galeri Kegiatan</a>
           <a href="#kontak" className="hover:text-accent transition-colors">Kontak</a>
@@ -294,6 +296,138 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri }: Jo
               );
             })
           )}
+        </div>
+      </section>
+
+      {/* KEPENGURUSAN SECTION */}
+      <section 
+        id="kepengurusan"
+        className="py-24 px-6 md:px-12 border-b border-[#D1C9BC] bg-[#E6DFD3]/15 text-left scroll-mt-24"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-xl mx-auto mb-16">
+            <span className="text-xs font-mono tracking-widest text-[#5C3D2E] uppercase font-bold">[ STRUKTUR ORGANISASI ]</span>
+            <h2 className="text-4xl font-serif font-bold text-primary mt-2">Susunan Kepengurusan Gudep</h2>
+            <p className="text-sm text-gray-600 mt-4 leading-relaxed">
+              Mulai dari Majelis Pembimbing Gugus Depan, Pembina Satuan, hingga Dewan Penggalang Utama (Pratama, Sekretaris, dan Bendahara).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {(() => {
+              const defaultKepengurusan = [
+                {
+                  id: 'fallback-kamabigus',
+                  nama: 'Drs. H. Maman Santoso, M.Pd.',
+                  jabatan: 'Kamabigus',
+                  foto_profil: '',
+                  type: 'pembina',
+                  periode: ''
+                },
+                {
+                  id: 'fallback-pembinaputra',
+                  nama: 'Kak Ahmad Dahlan, S.Pd.',
+                  jabatan: 'Pembina Putra',
+                  foto_profil: '',
+                  type: 'pembina',
+                  periode: ''
+                },
+                {
+                  id: 'fallback-pembinaputri',
+                  nama: 'Kak Siti Nurhaliza, S.Pd.',
+                  jabatan: 'Pembina Putri',
+                  foto_profil: '',
+                  type: 'pembina',
+                  periode: ''
+                },
+                {
+                  id: 'fallback-pratamaputra',
+                  nama: 'Rafi Ahmad Fauzi',
+                  jabatan: 'Pratama Putra',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                },
+                {
+                  id: 'fallback-pratamaputri',
+                  nama: 'Nabila Syakieb',
+                  jabatan: 'Pratama Putri',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                },
+                {
+                  id: 'fallback-sekre1',
+                  nama: 'Andi Wijaya',
+                  jabatan: 'Sekretaris 1',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                },
+                {
+                  id: 'fallback-sekre2',
+                  nama: 'Cinta Laura',
+                  jabatan: 'Sekretaris 2',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                },
+                {
+                  id: 'fallback-bendahara1',
+                  nama: 'Denny Sumargo',
+                  jabatan: 'Bendahara 1',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                },
+                {
+                  id: 'fallback-bendahara2',
+                  nama: 'Gita Gutawa',
+                  jabatan: 'Bendahara 2',
+                  foto_profil: '',
+                  type: 'siswa',
+                  periode: '2025/2026'
+                }
+              ];
+
+              const finalKepengurusan = defaultKepengurusan.map(def => {
+                const normDef = def.jabatan.toLowerCase().trim();
+                const dbRecord = kepengurusan.find(k => {
+                  const normK = k.jabatan.toLowerCase().trim();
+                  return normK === normDef || normK.includes(normDef) || normDef.includes(normK);
+                });
+                return dbRecord || def;
+              });
+
+              return finalKepengurusan.map((item, idx) => (
+                <div 
+                  key={item.id || idx}
+                  className="bg-white border border-[#D1C9BC] p-6 rounded-2xl flex items-center space-x-4 shadow-sm hover:border-accent transition-colors"
+                >
+                  <div className="w-16 h-16 rounded-full border-2 border-primary overflow-hidden shrink-0 bg-[#FBF9F6] flex items-center justify-center">
+                    {item.foto_profil ? (
+                      <img src={item.foto_profil} alt={item.nama} className="w-full h-full object-cover" />
+                    ) : (
+                      <Compass className="h-8 w-8 text-primary/45" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[9px] font-mono text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                      {item.jabatan}
+                    </span>
+                    <h4 className="font-serif font-bold text-base text-primary mt-2 truncate" title={item.nama}>
+                      {item.nama}
+                    </h4>
+                    {item.periode && (
+                      <p className="text-[10px] font-mono text-gray-400 mt-1">
+                        Periode: {item.periode}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
         </div>
       </section>
 

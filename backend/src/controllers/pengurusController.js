@@ -1,16 +1,10 @@
-const supabase = require('../config/supabase');
+const PengurusModel = require('../models/pengurusModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil semua daftar dewan pengurus beserta profil siswanya
 const getPengurus = async (req, res, next) => {
   try {
-    const { data: pengurusList, error } = await supabase
-      .from('pengurus')
-      .select('*, siswa(*, users(nama, email))')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
+    const pengurusList = await PengurusModel.findAll();
     return sendSuccess(res, 'Data pengurus berhasil diambil.', pengurusList);
   } catch (error) {
     next(error);
@@ -21,14 +15,9 @@ const getPengurus = async (req, res, next) => {
 const getPengurusById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const pengurus = await PengurusModel.findById(id);
 
-    const { data: pengurus, error } = await supabase
-      .from('pengurus')
-      .select('*, siswa(*, users(nama, email))')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !pengurus) {
+    if (!pengurus) {
       return sendError(res, 'Pengurus tidak ditemukan.', 404);
     }
 
@@ -42,18 +31,7 @@ const getPengurusById = async (req, res, next) => {
 const createPengurus = async (req, res, next) => {
   try {
     const { siswa_id, jabatan, periode } = req.body;
-
-    const { data: pengurus, error } = await supabase
-      .from('pengurus')
-      .insert([{
-        siswa_id,
-        jabatan,
-        periode
-      }])
-      .select('*, siswa(*, users(nama, email))')
-      .single();
-
-    if (error) throw error;
+    const pengurus = await PengurusModel.create({ siswa_id, jabatan, periode });
 
     return sendSuccess(res, 'Pengurus berhasil ditambahkan.', pengurus, 201);
   } catch (error) {
@@ -72,14 +50,7 @@ const updatePengurus = async (req, res, next) => {
     if (jabatan !== undefined) updates.jabatan = jabatan;
     if (periode !== undefined) updates.periode = periode;
 
-    const { data: pengurus, error } = await supabase
-      .from('pengurus')
-      .update(updates)
-      .eq('id', id)
-      .select('*, siswa(*, users(nama, email))')
-      .single();
-
-    if (error) throw error;
+    const pengurus = await PengurusModel.update(id, updates);
 
     return sendSuccess(res, 'Pengurus berhasil diperbarui.', pengurus);
   } catch (error) {
@@ -91,13 +62,7 @@ const updatePengurus = async (req, res, next) => {
 const deletePengurus = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const { error } = await supabase
-      .from('pengurus')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await PengurusModel.destroy(id);
 
     return sendSuccess(res, 'Pengurus berhasil dihapus.', {});
   } catch (error) {

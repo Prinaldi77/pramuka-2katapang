@@ -1,19 +1,11 @@
-const supabase = require('../config/supabase');
+const ProfilModel = require('../models/profilModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
 // Ambil profil organisasi Gudep
 const getProfil = async (req, res, next) => {
   try {
-    const { data: profilList, error } = await supabase
-      .from('profil')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
-    // Ambil data pertama (pola singleton)
-    const profil = profilList && profilList.length > 0 ? profilList[0] : {};
+    const profil = await ProfilModel.findFirst() || {};
     return sendSuccess(res, 'Data profil berhasil diambil.', profil);
   } catch (error) {
     next(error);
@@ -26,14 +18,7 @@ const updateProfil = async (req, res, next) => {
     const { nama_gudep, deskripsi, visi, misi, alamat, email, telepon } = req.body;
 
     // Ambil profil yang sudah ada untuk memeriksa operasi insert/update
-    const { data: profilList, error: fetchError } = await supabase
-      .from('profil')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (fetchError) throw fetchError;
-
-    const existingProfil = profilList && profilList.length > 0 ? profilList[0] : null;
+    const existingProfil = await ProfilModel.findFirst();
 
     const updates = {};
     if (nama_gudep !== undefined) updates.nama_gudep = nama_gudep;
@@ -61,29 +46,14 @@ const updateProfil = async (req, res, next) => {
 
     if (existingProfil) {
       // Update profil yang sudah ada
-      const { data, error } = await supabase
-        .from('profil')
-        .update(updates)
-        .eq('id', existingProfil.id)
-        .select('*')
-        .single();
-      
-      if (error) throw error;
-      resultData = data;
+      resultData = await ProfilModel.update(existingProfil.id, updates);
     } else {
       // Buat data profil baru
       if (!updates.nama_gudep) {
         updates.nama_gudep = 'Gudep SMPN 2 Katapang';
       }
 
-      const { data, error } = await supabase
-        .from('profil')
-        .insert([updates])
-        .select('*')
-        .single();
-
-      if (error) throw error;
-      resultData = data;
+      resultData = await ProfilModel.create(updates);
     }
 
     return sendSuccess(res, 'Profil Gudep berhasil diperbarui.', resultData);

@@ -1,35 +1,9 @@
-const supabase = require('../config/supabase');
+const AbsensiModel = require('../models/absensiModel');
+const AgendaModel = require('../models/agendaModel');
 
 exports.getAndroidAbsensiLogs = async (req, res) => {
   try {
-    const { data: attendanceData, error } = await supabase
-      .from('absensi')
-      .select(`
-        id,
-        siswa_id,
-        agenda_id,
-        latitude,
-        longitude,
-        jarak,
-        foto_absen,
-        created_at,
-        siswa:siswa_id (
-          nis,
-          kelas,
-          users(nama)
-        ),
-        agenda_absensi:agenda_id (
-          judul,
-          tanggal,
-          jam_mulai
-        )
-      `)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching Android attendance:', error);
-      return res.status(500).json({ message: 'Gagal mengambil data absensi Android', error: error.message });
-    }
+    const attendanceData = await AbsensiModel.findAndroidLogs();
 
     // Format the data so the frontend can easily consume it
     const formattedData = (attendanceData || []).map(log => {
@@ -91,15 +65,7 @@ exports.getAndroidAbsensiLogs = async (req, res) => {
 
 exports.getAndroidKegiatanList = async (req, res) => {
   try {
-    const { data: kegiatanData, error } = await supabase
-      .from('agenda_absensi')
-      .select('id, judul, tanggal')
-      .order('tanggal', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching Android kegiatan:', error);
-      return res.status(500).json({ message: 'Gagal mengambil data kegiatan Android', error: error.message });
-    }
+    const kegiatanData = await AgendaModel.findAll();
 
     const formattedKegiatans = (kegiatanData || []).map(k => ({
       id: k.id,

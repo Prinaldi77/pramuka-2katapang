@@ -1,4 +1,6 @@
-const supabase = require('../config/supabase');
+const SiswaModel = require('../models/siswaModel');
+const PembinaModel = require('../models/pembinaModel');
+const UserModel = require('../models/userModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 // Ambil data profil pribadi user yang sedang login
@@ -15,7 +17,7 @@ const getMe = async (req, res, next) => {
       phone: '',
       rank: '',
       regu: '',
-      avatar: '',
+      avatar: user.foto_profil || '',
       gugusDepan: '',
       nomorInduk: '',
       jabatan: '',
@@ -24,11 +26,7 @@ const getMe = async (req, res, next) => {
     };
 
     if (user.role === 'siswa') {
-      const { data: siswa, error } = await supabase
-        .from('siswa')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const siswa = await SiswaModel.findByUserId(user.id);
 
       if (siswa) {
         profileData.nomorInduk = siswa.nis || '';
@@ -38,11 +36,7 @@ const getMe = async (req, res, next) => {
         profileData.jabatan = 'Siswa';
       }
     } else if (user.role === 'pembina') {
-      const { data: pembina, error } = await supabase
-        .from('pembina')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const pembina = await PembinaModel.findByUserId(user.id);
 
       if (pembina) {
         profileData.jabatan = pembina.jabatan || 'Pembina';
@@ -59,33 +53,33 @@ const getMe = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const user = req.user;
-    const { fullName, name, phoneNumber, phone, gugusDepan, kelas, nomorInduk, nis, jabatan } = req.body;
+    const { fullName, name, phoneNumber, phone, gugusDepan, kelas, nomorInduk, nis, jabatan, avatar, foto_profil, password } = req.body;
 
     const newName = fullName || name;
     const newPhone = phoneNumber || phone;
     const newKelas = kelas || gugusDepan;
     const newNis = nomorInduk || nis;
+    const newAvatar = avatar || foto_profil;
 
-    // 1. Update tabel users (nama lengkap)
-    if (newName) {
-      const { error: userUpdateErr } = await supabase
-        .from('users')
-        .update({ nama: newName })
-        .eq('id', user.id);
-      
-      if (userUpdateErr) throw userUpdateErr;
+    const userUpdates = {};
+    if (newName) userUpdates.nama = newName;
+    if (newAvatar !== undefined) userUpdates.foto_profil = newAvatar;
+
+    if (password) {
+      const bcrypt = require('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      userUpdates.password = await bcrypt.hash(password, salt);
+    }
+
+    // 1. Update tabel users (nama, foto_profil, password jika ada)
+    if (Object.keys(userUpdates).length > 0) {
+      await UserModel.update(user.id, userUpdates);
     }
 
     // 2. Update tabel spesifik berdasarkan role
     if (user.role === 'siswa') {
       // Periksa apakah profil siswa sudah ada di tabel siswa
-      const { data: existingSiswa, error: fetchErr } = await supabase
-        .from('siswa')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (fetchErr) throw fetchErr;
+      const existingSiswa = await SiswaModel.findByUserId(user.id);
 
       const siswaUpdates = {};
       if (newNis !== undefined) siswaUpdates.nis = newNis;
@@ -94,57 +88,29 @@ const updateProfile = async (req, res, next) => {
 
       if (existingSiswa) {
         // Jika profil sudah ada, jalankan update
-        const { error: siswaUpdateErr } = await supabase
-          .from('siswa')
-          .update(siswaUpdates)
-          .eq('user_id', user.id);
-
-        if (siswaUpdateErr) throw siswaUpdateErr;
+        await SiswaModel.update(existingSiswa.id, siswaUpdates);
       } else {
         // Jika profil belum ada, jalankan insert otomatis
         siswaUpdates.user_id = user.id;
-        const { error: siswaInsertErr } = await supabase
-          .from('siswa')
-          .insert([siswaUpdates]);
-
-        if (siswaInsertErr) throw siswaInsertErr;
+        await SiswaModel.create(siswaUpdates);
       }
     } else if (user.role === 'pembina') {
       // Periksa apakah profil pembina sudah ada
-      const { data: existingPembina, error: fetchErr } = await supabase
-        .from('pembina')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      
-      if (fetchErr) throw fetchErr;
+      const existingPembina = await PembinaModel.findByUserId(user.id);
 
       const pembinaUpdates = {};
       if (jabatan !== undefined) pembinaUpdates.jabatan = jabatan;
 
       if (existingPembina) {
-        const { error: pembinaUpdateErr } = await supabase
-          .from('pembina')
-          .update(pembinaUpdates)
-          .eq('user_id', user.id);
-
-        if (pembinaUpdateErr) throw pembinaUpdateErr;
+        await PembinaModel.update(existingPembina.id, pembinaUpdates);
       } else {
         pembinaUpdates.user_id = user.id;
-        const { error: pembinaInsertErr } = await supabase
-          .from('pembina')
-          .insert([pembinaUpdates]);
-
-        if (pembinaInsertErr) throw pembinaInsertErr;
+        await PembinaModel.create(pembinaUpdates);
       }
     }
 
     // 3. Ambil data profil terbaru untuk dikembalikan ke client
-    const { data: updatedUser } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    const updatedUser = await UserModel.findById(user.id);
 
     let profileData = {
       id: updatedUser.id,
@@ -154,7 +120,7 @@ const updateProfile = async (req, res, next) => {
       phone: '',
       rank: '',
       regu: '',
-      avatar: '',
+      avatar: updatedUser.foto_profil || '',
       gugusDepan: '',
       nomorInduk: '',
       jabatan: '',
@@ -163,11 +129,7 @@ const updateProfile = async (req, res, next) => {
     };
 
     if (updatedUser.role === 'siswa') {
-      const { data: siswa } = await supabase
-        .from('siswa')
-        .select('*')
-        .eq('user_id', updatedUser.id)
-        .maybeSingle();
+      const siswa = await SiswaModel.findByUserId(updatedUser.id);
       
       if (siswa) {
         profileData.nomorInduk = siswa.nis || '';
@@ -176,6 +138,11 @@ const updateProfile = async (req, res, next) => {
         profileData.phone = siswa.no_hp_ortu || '';
       }
       profileData.jabatan = 'Siswa';
+    } else if (updatedUser.role === 'pembina') {
+      const pembina = await PembinaModel.findByUserId(updatedUser.id);
+      if (pembina) {
+        profileData.jabatan = pembina.jabatan || 'Pembina';
+      }
     }
 
     return sendSuccess(res, 'Profil berhasil diperbarui.', profileData);

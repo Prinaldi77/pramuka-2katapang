@@ -1,17 +1,14 @@
-const supabase = require('../config/supabase');
+const KegiatanModel = require('../models/kegiatanModel');
+const SiswaModel = require('../models/siswaModel');
+const PembinaModel = require('../models/pembinaModel');
+const PengurusModel = require('../models/pengurusModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
 // Ambil semua daftar kegiatan
 const getKegiatan = async (req, res, next) => {
   try {
-    const { data: kegiatanList, error: kegError } = await supabase
-      .from('kegiatan')
-      .select('*')
-      .order('tanggal', { ascending: false });
-
-    if (kegError) throw kegError;
-
+    const kegiatanList = await KegiatanModel.findAll();
     return sendSuccess(res, 'Data kegiatan berhasil diambil.', kegiatanList);
   } catch (error) {
     next(error);
@@ -22,14 +19,9 @@ const getKegiatan = async (req, res, next) => {
 const getKegiatanById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const kegiatan = await KegiatanModel.findById(id);
 
-    const { data: kegiatan, error } = await supabase
-      .from('kegiatan')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !kegiatan) {
+    if (!kegiatan) {
       return sendError(res, 'Kegiatan tidak ditemukan.', 404);
     }
 
@@ -49,19 +41,13 @@ const createKegiatan = async (req, res, next) => {
       gambarUrl = await uploadFile(req.file, 'kegiatan');
     }
 
-    const { data: kegiatan, error } = await supabase
-      .from('kegiatan')
-      .insert([{
-        nama_kegiatan,
-        deskripsi,
-        tanggal,
-        lokasi,
-        gambar: gambarUrl
-      }])
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const kegiatan = await KegiatanModel.create({
+      nama_kegiatan,
+      deskripsi,
+      tanggal,
+      lokasi,
+      gambar: gambarUrl
+    });
 
     return sendSuccess(res, 'Kegiatan berhasil ditambahkan.', kegiatan, 201);
   } catch (error) {
@@ -75,13 +61,9 @@ const updateKegiatan = async (req, res, next) => {
     const { id } = req.params;
     const { nama_kegiatan, deskripsi, tanggal, lokasi } = req.body;
 
-    const { data: existingKegiatan, error: fetchError } = await supabase
-      .from('kegiatan')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const existingKegiatan = await KegiatanModel.findById(id);
 
-    if (fetchError || !existingKegiatan) {
+    if (!existingKegiatan) {
       return sendError(res, 'Kegiatan tidak ditemukan.', 404);
     }
 
@@ -101,14 +83,7 @@ const updateKegiatan = async (req, res, next) => {
       }
     }
 
-    const { data: kegiatan, error } = await supabase
-      .from('kegiatan')
-      .update(updates)
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error) throw error;
+    const kegiatan = await KegiatanModel.update(id, updates);
 
     return sendSuccess(res, 'Kegiatan berhasil diperbarui.', kegiatan);
   } catch (error) {
@@ -121,13 +96,9 @@ const deleteKegiatan = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const { data: kegiatan, error: fetchError } = await supabase
-      .from('kegiatan')
-      .select('gambar')
-      .eq('id', id)
-      .maybeSingle();
+    const kegiatan = await KegiatanModel.findById(id);
 
-    if (fetchError || !kegiatan) {
+    if (!kegiatan) {
       return sendError(res, 'Kegiatan tidak ditemukan.', 404);
     }
 
@@ -136,12 +107,7 @@ const deleteKegiatan = async (req, res, next) => {
       await deleteFile(kegiatan.gambar, 'kegiatan');
     }
 
-    const { error } = await supabase
-      .from('kegiatan')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await KegiatanModel.destroy(id);
 
     return sendSuccess(res, 'Kegiatan berhasil dihapus.', {});
   } catch (error) {
@@ -152,18 +118,18 @@ const deleteKegiatan = async (req, res, next) => {
 // Ambil statistik publik (untuk landing page luar)
 const getPublicStats = async (req, res, next) => {
   try {
-    const [siswaRes, pembinaRes, pengurusRes, kegiatanRes] = await Promise.all([
-      supabase.from('siswa').select('*', { count: 'exact', head: true }),
-      supabase.from('pembina').select('*', { count: 'exact', head: true }),
-      supabase.from('pengurus').select('*', { count: 'exact', head: true }),
-      supabase.from('kegiatan').select('*', { count: 'exact', head: true }),
+    const [siswaCount, pembinaCount, pengurusCount, kegiatanCount] = await Promise.all([
+      SiswaModel.count(),
+      PembinaModel.count(),
+      PengurusModel.count(),
+      KegiatanModel.count(),
     ]);
 
     const stats = {
-      siswa: siswaRes.count || 0,
-      pembina: pembinaRes.count || 0,
-      pengurus: pengurusRes.count || 0,
-      kegiatan: kegiatanRes.count || 0
+      siswa: siswaCount,
+      pembina: pembinaCount,
+      pengurus: pengurusCount,
+      kegiatan: kegiatanCount
     };
 
     return sendSuccess(res, 'Statistik publik berhasil diambil.', stats);

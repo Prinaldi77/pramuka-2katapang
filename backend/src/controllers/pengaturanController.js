@@ -1,18 +1,11 @@
-const supabase = require('../config/supabase');
+const PengaturanModel = require('../models/pengaturanModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
 // Ambil pengaturan website
 const getPengaturan = async (req, res, next) => {
   try {
-    const { data: configList, error } = await supabase
-      .from('pengaturan')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
-
-    const config = configList && configList.length > 0 ? configList[0] : {};
+    const config = await PengaturanModel.findFirst() || {};
     return sendSuccess(res, 'Pengaturan website berhasil diambil.', config);
   } catch (error) {
     next(error);
@@ -25,14 +18,7 @@ const updatePengaturan = async (req, res, next) => {
     const { nama_aplikasi, footer } = req.body;
 
     // Ambil data konfigurasi yang sudah ada
-    const { data: configList, error: fetchError } = await supabase
-      .from('pengaturan')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (fetchError) throw fetchError;
-
-    const existingConfig = configList && configList.length > 0 ? configList[0] : null;
+    const existingConfig = await PengaturanModel.findFirst();
 
     const updates = {};
     if (nama_aplikasi !== undefined) updates.nama_aplikasi = nama_aplikasi;
@@ -67,29 +53,14 @@ const updatePengaturan = async (req, res, next) => {
 
     if (existingConfig) {
       // Update konfigurasi
-      const { data, error } = await supabase
-        .from('pengaturan')
-        .update(updates)
-        .eq('id', existingConfig.id)
-        .select('*')
-        .single();
-
-      if (error) throw error;
-      resultData = data;
+      resultData = await PengaturanModel.update(existingConfig.id, updates);
     } else {
       // Simpan konfigurasi awal jika belum ada
       if (!updates.nama_aplikasi) {
         updates.nama_aplikasi = 'Sistem Informasi Pramuka SMPN 2 Katapang';
       }
 
-      const { data, error } = await supabase
-        .from('pengaturan')
-        .insert([updates])
-        .select('*')
-        .single();
-
-      if (error) throw error;
-      resultData = data;
+      resultData = await PengaturanModel.create(updates);
     }
 
     return sendSuccess(res, 'Pengaturan website berhasil diperbarui.', resultData);

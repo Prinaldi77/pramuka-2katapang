@@ -1,4 +1,6 @@
-const supabase = require('../config/supabase');
+const AbsensiModel = require('../models/absensiModel');
+const SiswaModel = require('../models/siswaModel');
+const AgendaModel = require('../models/agendaModel');
 const { calculateDistance } = require('../utils/gpsHelper');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile } = require('../services/storageService');
@@ -6,16 +8,7 @@ const { uploadFile } = require('../services/storageService');
 // Ambil agenda absensi GPS yang aktif
 const getCurrentActivity = async (req, res, next) => {
   try {
-    const { data: agenda, error } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .eq('status', 'aktif')
-      .order('tanggal', { ascending: false })
-      .order('jam_mulai', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) throw error;
+    const agenda = await AgendaModel.findFirstActive();
 
     if (!agenda) {
       return sendError(res, 'Tidak ada kegiatan aktif saat ini.', 404);
@@ -41,13 +34,9 @@ const getAttendanceStatus = async (req, res, next) => {
     const userId = req.user.id;
 
     // Ambil data siswa
-    const { data: siswa, error: siswaErr } = await supabase
-      .from('siswa')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findByUserId(userId);
 
-    if (siswaErr || !siswa) {
+    if (!siswa) {
       return sendSuccess(res, 'Status absensi berhasil diambil.', {
         status: 'Belum Check In',
         checkInTime: null
@@ -55,14 +44,7 @@ const getAttendanceStatus = async (req, res, next) => {
     }
 
     // Cari agenda yang aktif
-    const { data: agenda } = await supabase
-      .from('agenda_absensi')
-      .select('id')
-      .eq('status', 'aktif')
-      .order('tanggal', { ascending: false })
-      .order('jam_mulai', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const agenda = await AgendaModel.findFirstActive();
 
     if (!agenda) {
       return sendSuccess(res, 'Status absensi berhasil diambil.', {
@@ -72,14 +54,7 @@ const getAttendanceStatus = async (req, res, next) => {
     }
 
     // Periksa riwayat absen
-    const { data: absensi, error } = await supabase
-      .from('absensi')
-      .select('created_at, status, keterangan')
-      .eq('siswa_id', siswa.id)
-      .eq('agenda_id', agenda.id)
-      .maybeSingle();
-
-    if (error) throw error;
+    const absensi = await AbsensiModel.findSpecificAbsensi(siswa.id, agenda.id);
 
     if (absensi) {
       let statusStr = 'Sudah Check In';
@@ -119,35 +94,21 @@ const checkIn = async (req, res, next) => {
     const agendaId = parseInt(kegiatanId);
 
     // Ambil data siswa
-    const { data: siswa, error: siswaErr } = await supabase
-      .from('siswa')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findByUserId(userId);
 
-    if (siswaErr || !siswa) {
+    if (!siswa) {
       return sendError(res, 'Profil siswa tidak ditemukan.', 404);
     }
 
     // Ambil data agenda
-    const { data: agenda, error: agendaErr } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .eq('id', agendaId)
-      .maybeSingle();
+    const agenda = await AgendaModel.findById(agendaId);
 
-    if (agendaErr || !agenda) {
+    if (!agenda) {
       return sendError(res, 'Agenda absensi tidak ditemukan.', 404);
     }
 
     // Deteksi Fake GPS berbasis Anomali Kecepatan (Velocity check)
-    const { data: lastAbsensi } = await supabase
-      .from('absensi')
-      .select('latitude, longitude, created_at')
-      .eq('siswa_id', siswa.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const lastAbsensi = await AbsensiModel.findLastBySiswaId(siswa.id);
 
     if (lastAbsensi && lastAbsensi.latitude !== 0 && lastAbsensi.longitude !== 0) {
       const distFromLast = calculateDistance(latVal, lngVal, lastAbsensi.latitude, lastAbsensi.longitude);
@@ -187,47 +148,29 @@ const checkIn = async (req, res, next) => {
     }
 
     // Simpan atau update absensi
-    const { data: existing } = await supabase
-      .from('absensi')
-      .select('id')
-      .eq('siswa_id', siswa.id)
-      .eq('agenda_id', agenda.id)
-      .maybeSingle();
+    const existing = await AbsensiModel.findSpecificAbsensi(siswa.id, agenda.id);
 
     let result;
     if (existing) {
-      const { data, error } = await supabase
-        .from('absensi')
-        .update({
-          latitude: latVal,
-          longitude: lngVal,
-          jarak: parseFloat(distance.toFixed(2)),
-          foto_absen: selfieUrl || undefined,
-          status: 'HADIR',
-          keterangan: 'Absensi GPS Android'
-        })
-        .eq('id', existing.id)
-        .select('*')
-        .single();
-      if (error) throw error;
-      result = data;
+      result = await AbsensiModel.update(existing.id, {
+        latitude: latVal,
+        longitude: lngVal,
+        jarak: parseFloat(distance.toFixed(2)),
+        foto_absen: selfieUrl || undefined,
+        status: 'HADIR',
+        keterangan: 'Absensi GPS Android'
+      });
     } else {
-      const { data, error } = await supabase
-        .from('absensi')
-        .insert([{
-          siswa_id: siswa.id,
-          agenda_id: agenda.id,
-          latitude: latVal,
-          longitude: lngVal,
-          jarak: parseFloat(distance.toFixed(2)),
-          foto_absen: selfieUrl,
-          status: 'HADIR',
-          keterangan: 'Absensi GPS Android'
-        }])
-        .select('*')
-        .single();
-      if (error) throw error;
-      result = data;
+      result = await AbsensiModel.create({
+        siswa_id: siswa.id,
+        agenda_id: agenda.id,
+        latitude: latVal,
+        longitude: lngVal,
+        jarak: parseFloat(distance.toFixed(2)),
+        foto_absen: selfieUrl,
+        status: 'HADIR',
+        keterangan: 'Absensi GPS Android'
+      });
     }
 
     return sendSuccess(res, 'Absensi selfie berhasil disimpan.', result, 201);
@@ -245,24 +188,16 @@ const submitPermit = async (req, res, next) => {
     const agendaId = parseInt(kegiatanId);
 
     // Ambil data siswa
-    const { data: siswa, error: siswaErr } = await supabase
-      .from('siswa')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findByUserId(userId);
 
-    if (siswaErr || !siswa) {
+    if (!siswa) {
       return sendError(res, 'Profil siswa tidak ditemukan.', 404);
     }
 
     // Ambil data agenda
-    const { data: agenda, error: agendaErr } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .eq('id', agendaId)
-      .maybeSingle();
+    const agenda = await AgendaModel.findById(agendaId);
 
-    if (agendaErr || !agenda) {
+    if (!agenda) {
       return sendError(res, 'Agenda absensi tidak ditemukan.', 404);
     }
 
@@ -277,49 +212,31 @@ const submitPermit = async (req, res, next) => {
     }
 
     // Simpan surat izin
-    const { data: existing } = await supabase
-      .from('absensi')
-      .select('id')
-      .eq('siswa_id', siswa.id)
-      .eq('agenda_id', agenda.id)
-      .maybeSingle();
+    const existing = await AbsensiModel.findSpecificAbsensi(siswa.id, agenda.id);
 
     const statusVal = (type || 'IZIN').toUpperCase();
 
     let result;
     if (existing) {
-      const { data, error } = await supabase
-        .from('absensi')
-        .update({
-          latitude: 0,
-          longitude: 0,
-          jarak: 0,
-          foto_absen: docUrl || undefined,
-          status: statusVal,
-          keterangan: reason || `Izin ketidakhadiran: ${type}`
-        })
-        .eq('id', existing.id)
-        .select('*')
-        .single();
-      if (error) throw error;
-      result = data;
+      result = await AbsensiModel.update(existing.id, {
+        latitude: 0,
+        longitude: 0,
+        jarak: 0,
+        foto_absen: docUrl || undefined,
+        status: statusVal,
+        keterangan: reason || `Izin ketidakhadiran: ${type}`
+      });
     } else {
-      const { data, error } = await supabase
-        .from('absensi')
-        .insert([{
-          siswa_id: siswa.id,
-          agenda_id: agenda.id,
-          latitude: 0,
-          longitude: 0,
-          jarak: 0,
-          foto_absen: docUrl,
-          status: statusVal,
-          keterangan: reason || `Izin ketidakhadiran: ${type}`
-        }])
-        .select('*')
-        .single();
-      if (error) throw error;
-      result = data;
+      result = await AbsensiModel.create({
+        siswa_id: siswa.id,
+        agenda_id: agenda.id,
+        latitude: 0,
+        longitude: 0,
+        jarak: 0,
+        foto_absen: docUrl,
+        status: statusVal,
+        keterangan: reason || `Izin ketidakhadiran: ${type}`
+      });
     }
 
     return sendSuccess(res, 'Permohonan izin berhasil dikirim.', result, 201);
@@ -334,26 +251,14 @@ const getTodayAttendance = async (req, res, next) => {
     const userId = req.user.id;
 
     // Ambil data siswa
-    const { data: siswa } = await supabase
-      .from('siswa')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findByUserId(userId);
 
     if (!siswa) {
       return sendSuccess(res, 'Data absensi hari ini kosong.', null);
     }
 
     const today = new Date().toISOString().split('T')[0];
-
-    const { data: logs, error } = await supabase
-      .from('absensi')
-      .select('*, agenda_absensi(*)')
-      .eq('siswa_id', siswa.id)
-      .gte('created_at', `${today}T00:00:00.000Z`)
-      .lte('created_at', `${today}T23:59:59.999Z`);
-
-    if (error) throw error;
+    const logs = await AbsensiModel.findTodayBySiswaId(siswa.id, today);
 
     return sendSuccess(res, 'Data absensi hari ini berhasil diambil.', logs || null);
   } catch (error) {
@@ -372,13 +277,9 @@ const selfieVerification = async (req, res, next) => {
     const agendaId = parseInt(activityId);
 
     // Ambil data siswa aktif
-    const { data: siswa, error: siswaErr } = await supabase
-      .from('siswa')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
+    const siswa = await SiswaModel.findByUserId(userId);
 
-    if (siswaErr || !siswa) {
+    if (!siswa) {
       return res.status(404).json({
         success: false,
         verified: false,
@@ -387,13 +288,9 @@ const selfieVerification = async (req, res, next) => {
     }
 
     // Ambil agenda aktif
-    const { data: agenda, error: agendaErr } = await supabase
-      .from('agenda_absensi')
-      .select('*')
-      .eq('id', agendaId)
-      .maybeSingle();
+    const agenda = await AgendaModel.findById(agendaId);
 
-    if (agendaErr || !agenda) {
+    if (!agenda) {
       return res.status(404).json({
         success: false,
         verified: false,
@@ -431,40 +328,28 @@ const selfieVerification = async (req, res, next) => {
     }
 
     // Simpan data absen
-    const { data: existing } = await supabase
-      .from('absensi')
-      .select('id')
-      .eq('siswa_id', siswa.id)
-      .eq('agenda_id', agenda.id)
-      .maybeSingle();
+    const existing = await AbsensiModel.findSpecificAbsensi(siswa.id, agenda.id);
 
     if (existing) {
-      const { error } = await supabase
-        .from('absensi')
-        .update({
-          latitude: latVal,
-          longitude: lngVal,
-          jarak: parseFloat(distance.toFixed(2)),
-          foto_absen: selfieUrl,
-          status: 'HADIR',
-          keterangan: 'Verifikasi Wajah Android'
-        })
-        .eq('id', existing.id);
-      if (error) throw error;
+      await AbsensiModel.update(existing.id, {
+        latitude: latVal,
+        longitude: lngVal,
+        jarak: parseFloat(distance.toFixed(2)),
+        foto_absen: selfieUrl,
+        status: 'HADIR',
+        keterangan: 'Verifikasi Wajah Android'
+      });
     } else {
-      const { error } = await supabase
-        .from('absensi')
-        .insert([{
-          siswa_id: siswa.id,
-          agenda_id: agenda.id,
-          latitude: latVal,
-          longitude: lngVal,
-          jarak: parseFloat(distance.toFixed(2)),
-          foto_absen: selfieUrl,
-          status: 'HADIR',
-          keterangan: 'Verifikasi Wajah Android'
-        }]);
-      if (error) throw error;
+      await AbsensiModel.create({
+        siswa_id: siswa.id,
+        agenda_id: agenda.id,
+        latitude: latVal,
+        longitude: lngVal,
+        jarak: parseFloat(distance.toFixed(2)),
+        foto_absen: selfieUrl,
+        status: 'HADIR',
+        keterangan: 'Verifikasi Wajah Android'
+      });
     }
 
     return res.status(200).json({

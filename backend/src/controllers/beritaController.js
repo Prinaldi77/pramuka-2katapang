@@ -1,17 +1,11 @@
-const supabase = require('../config/supabase');
+const BeritaModel = require('../models/beritaModel');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 const { uploadFile, deleteFile } = require('../services/storageService');
 
 // Ambil semua daftar berita
 const getBerita = async (req, res, next) => {
   try {
-    const { data: beritaList, error } = await supabase
-      .from('berita')
-      .select('*, users(nama, email)')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
+    const beritaList = await BeritaModel.findAll();
     return sendSuccess(res, 'Data berita berhasil diambil.', beritaList);
   } catch (error) {
     next(error);
@@ -22,14 +16,9 @@ const getBerita = async (req, res, next) => {
 const getBeritaById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const berita = await BeritaModel.findById(id);
 
-    const { data: berita, error } = await supabase
-      .from('berita')
-      .select('*, users(nama, email)')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error || !berita) {
+    if (!berita) {
       return sendError(res, 'Berita tidak ditemukan.', 404);
     }
 
@@ -51,18 +40,12 @@ const createBerita = async (req, res, next) => {
 
     const author = author_id ? parseInt(author_id) : req.user.id;
 
-    const { data: berita, error } = await supabase
-      .from('berita')
-      .insert([{
-        judul,
-        isi,
-        gambar: gambarUrl,
-        author_id: author
-      }])
-      .select('*, users(nama, email)')
-      .single();
-
-    if (error) throw error;
+    const berita = await BeritaModel.create({
+      judul,
+      isi,
+      gambar: gambarUrl,
+      author_id: author
+    });
 
     return sendSuccess(res, 'Berita berhasil ditambahkan.', berita, 201);
   } catch (error) {
@@ -77,13 +60,9 @@ const updateBerita = async (req, res, next) => {
     const { judul, isi, author_id } = req.body;
 
     // Ambil data berita yang sudah ada
-    const { data: existingBerita, error: fetchError } = await supabase
-      .from('berita')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const existingBerita = await BeritaModel.findById(id);
 
-    if (fetchError || !existingBerita) {
+    if (!existingBerita) {
       return sendError(res, 'Berita tidak ditemukan.', 404);
     }
 
@@ -103,14 +82,7 @@ const updateBerita = async (req, res, next) => {
       }
     }
 
-    const { data: berita, error } = await supabase
-      .from('berita')
-      .update(updates)
-      .eq('id', id)
-      .select('*, users(nama, email)')
-      .single();
-
-    if (error) throw error;
+    const berita = await BeritaModel.update(id, updates);
 
     return sendSuccess(res, 'Berita berhasil diperbarui.', berita);
   } catch (error) {
@@ -123,13 +95,9 @@ const deleteBerita = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const { data: berita, error: fetchError } = await supabase
-      .from('berita')
-      .select('gambar')
-      .eq('id', id)
-      .maybeSingle();
+    const berita = await BeritaModel.findById(id);
 
-    if (fetchError || !berita) {
+    if (!berita) {
       return sendError(res, 'Berita tidak ditemukan.', 404);
     }
 
@@ -138,12 +106,7 @@ const deleteBerita = async (req, res, next) => {
       await deleteFile(berita.gambar, 'berita');
     }
 
-    const { error } = await supabase
-      .from('berita')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await BeritaModel.destroy(id);
 
     return sendSuccess(res, 'Berita berhasil dihapus.', {});
   } catch (error) {

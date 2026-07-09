@@ -39,6 +39,54 @@ export default async function Page() {
     .order('created_at', { ascending: false })
     .limit(6);
 
+  // Fetch pembina list for kepengurusan
+  const { data: pembinaList } = await supabase
+    .from('pembina')
+    .select(`
+      id,
+      jabatan,
+      users (
+        nama,
+        foto_profil
+      )
+    `);
+
+  // Fetch pengurus list for kepengurusan
+  const { data: pengurusList } = await supabase
+    .from('pengurus')
+    .select(`
+      id,
+      jabatan,
+      periode,
+      siswa (
+        users (
+          nama,
+          foto_profil
+        )
+      )
+    `);
+
+  // Transform and combine lists
+  const mappedPembina = (pembinaList || []).map((p: any) => ({
+    id: `pembina-${p.id}`,
+    nama: p.users?.nama || 'Pembina',
+    jabatan: p.jabatan || 'Pembina',
+    foto_profil: p.users?.foto_profil || '',
+    type: 'pembina',
+    periode: ''
+  }));
+
+  const mappedPengurus = (pengurusList || []).map((p: any) => ({
+    id: `pengurus-${p.id}`,
+    nama: p.siswa?.users?.nama || 'Siswa',
+    jabatan: p.jabatan || 'Pengurus',
+    foto_profil: p.siswa?.users?.foto_profil || '',
+    type: 'siswa',
+    periode: p.periode || ''
+  }));
+
+  const kepengurusanList = [...mappedPembina, ...mappedPengurus];
+
   // 3. Set actual counts or 0 if empty
   const stats = {
     siswa: siswaCount || 0,
@@ -53,6 +101,7 @@ export default async function Page() {
       kegiatan={kegiatanList || []}
       prestasi={prestasiList || []}
       galeri={galeriList || []}
+      kepengurusan={kepengurusanList}
     />
   );
 }

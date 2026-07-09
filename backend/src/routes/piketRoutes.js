@@ -10,3 +10,4 @@ router.get('/', verifyToken, piketController.getPiket);
 router.put('/:id', verifyToken, verifyPembina, piketController.updatePiket);
 
 module.exports = router;
+        
