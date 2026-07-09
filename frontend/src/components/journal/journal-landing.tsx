@@ -313,7 +313,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="relative mt-12">
             {(() => {
               const defaultKepengurusan = [
                 {
@@ -327,7 +327,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                 {
                   id: 'fallback-pembinaputra',
                   nama: 'Kak Ahmad Dahlan, S.Pd.',
-                  jabatan: 'Pembina Putra',
+                  jabatan: 'Pembina Satuan Putra',
                   foto_profil: '',
                   type: 'pembina',
                   periode: ''
@@ -335,7 +335,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                 {
                   id: 'fallback-pembinaputri',
                   nama: 'Kak Siti Nurhaliza, S.Pd.',
-                  jabatan: 'Pembina Putri',
+                  jabatan: 'Pembina Satuan Putri',
                   foto_profil: '',
                   type: 'pembina',
                   periode: ''
@@ -399,33 +399,120 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                 return dbRecord || def;
               });
 
-              return finalKepengurusan.map((item, idx) => (
-                <div 
-                  key={item.id || idx}
-                  className="bg-white border border-[#D1C9BC] p-6 rounded-2xl flex items-center space-x-4 shadow-sm hover:border-accent transition-colors"
-                >
-                  <div className="w-16 h-16 rounded-full border-2 border-primary overflow-hidden shrink-0 bg-[#FBF9F6] flex items-center justify-center">
+              // Extract individual roles for structured rendering
+              const kamabigus = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('kamabigus')) || finalKepengurusan[0];
+              const pembinaPutra = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('pembina putra') || k.jabatan.toLowerCase().includes('pembina satuan putra') || k.jabatan.toLowerCase() === 'pembina putra') || finalKepengurusan[1];
+              const pembinaPutri = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('pembina putri') || k.jabatan.toLowerCase().includes('pembina satuan putri') || k.jabatan.toLowerCase() === 'pembina putri') || finalKepengurusan[2];
+              const pratamaPutra = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('pratama putra')) || finalKepengurusan[3];
+              const pratamaPutri = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('pratama putri')) || finalKepengurusan[4];
+              const sekretaris1 = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('sekretaris 1')) || finalKepengurusan[5];
+              const sekretaris2 = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('sekretaris 2')) || finalKepengurusan[6];
+              const bendahara1 = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('bendahara 1')) || finalKepengurusan[7];
+              const bendahara2 = finalKepengurusan.find(k => k.jabatan.toLowerCase().includes('bendahara 2')) || finalKepengurusan[8];
+
+              const renderCard = (item: any) => (
+                <div className="flex bg-white border-2 border-primary rounded-xl overflow-hidden shadow-md max-w-sm w-full transition-transform hover:scale-[1.03] duration-300 mx-auto z-10 relative">
+                  {/* Left side: square photo */}
+                  <div className="w-20 h-20 shrink-0 bg-[#FBF9F6] border-r border-[#D1C9BC] flex items-center justify-center overflow-hidden">
                     {item.foto_profil ? (
                       <img src={item.foto_profil} alt={item.nama} className="w-full h-full object-cover" />
                     ) : (
-                      <Compass className="h-8 w-8 text-primary/45" />
+                      <Compass className="h-10 w-10 text-primary/45" />
                     )}
                   </div>
-                  <div className="min-w-0">
-                    <span className="text-[9px] font-mono text-primary bg-primary/10 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                      {item.jabatan}
-                    </span>
-                    <h4 className="font-serif font-bold text-base text-primary mt-2 truncate" title={item.nama}>
-                      {item.nama}
-                    </h4>
+                  
+                  {/* Right side: text details */}
+                  <div className="flex flex-col flex-grow min-w-0 justify-between">
+                    {/* Top: Position */}
+                    <div className="bg-primary px-3 py-1.5 flex items-center">
+                      <span className="text-[10px] md:text-xs font-mono font-bold uppercase tracking-wider text-[#E7E2D8] truncate">
+                        {item.jabatan}
+                      </span>
+                    </div>
+                    {/* Bottom: Name */}
+                    <div className="px-3 py-2 flex-grow flex items-center bg-[#FBF9F6]">
+                      <h4 className="font-serif font-bold text-sm md:text-base text-primary italic truncate w-full" title={item.nama}>
+                        {item.nama}
+                      </h4>
+                    </div>
                     {item.periode && (
-                      <p className="text-[10px] font-mono text-gray-400 mt-1">
-                        Periode: {item.periode}
-                      </p>
+                      <div className="px-3 pb-1 bg-[#FBF9F6]">
+                        <span className="text-[8px] font-mono text-gray-400">
+                          Periode: {item.periode}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
-              ));
+              );
+
+              return (
+                <div className="relative max-w-5xl mx-auto space-y-12 md:space-y-0">
+                  {/* Vertical central stem line */}
+                  <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#D1C9BC] -translate-x-1/2 hidden md:block"></div>
+
+                  {/* Level 1: Kamabigus (Center Top) */}
+                  <div className="relative flex justify-center pb-8 md:pb-12">
+                    {renderCard(kamabigus)}
+                  </div>
+
+                  {/* Level 2: Pembina (Left / Right) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative py-6 items-center">
+                    {/* Left: Pembina Putra */}
+                    <div className="flex justify-end relative">
+                      <div className="absolute right-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 translate-x-full hidden md:block"></div>
+                      {renderCard(pembinaPutra)}
+                    </div>
+                    {/* Right: Pembina Putri */}
+                    <div className="flex justify-start relative">
+                      <div className="absolute left-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 -translate-x-full hidden md:block"></div>
+                      {renderCard(pembinaPutri)}
+                    </div>
+                  </div>
+
+                  {/* Level 3: Pratama (Left / Right) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative py-6 items-center">
+                    {/* Left: Pratama Putra */}
+                    <div className="flex justify-end relative">
+                      <div className="absolute right-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 translate-x-full hidden md:block"></div>
+                      {renderCard(pratamaPutra)}
+                    </div>
+                    {/* Right: Pratama Putri */}
+                    <div className="flex justify-start relative">
+                      <div className="absolute left-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 -translate-x-full hidden md:block"></div>
+                      {renderCard(pratamaPutri)}
+                    </div>
+                  </div>
+
+                  {/* Level 4: Sekretaris (Left / Right) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative py-6 items-center">
+                    {/* Left: Sekretaris 1 */}
+                    <div className="flex justify-end relative">
+                      <div className="absolute right-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 translate-x-full hidden md:block"></div>
+                      {renderCard(sekretaris1)}
+                    </div>
+                    {/* Right: Sekretaris 2 */}
+                    <div className="flex justify-start relative">
+                      <div className="absolute left-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 -translate-x-full hidden md:block"></div>
+                      {renderCard(sekretaris2)}
+                    </div>
+                  </div>
+
+                  {/* Level 5: Bendahara (Left / Right) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 relative py-6 items-center">
+                    {/* Left: Bendahara 1 */}
+                    <div className="flex justify-end relative">
+                      <div className="absolute right-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 translate-x-full hidden md:block"></div>
+                      {renderCard(bendahara1)}
+                    </div>
+                    {/* Right: Bendahara 2 */}
+                    <div className="flex justify-start relative">
+                      <div className="absolute left-0 top-1/2 w-12 h-px border-t-2 border-dashed border-[#D1C9BC] -translate-y-1/2 -translate-x-full hidden md:block"></div>
+                      {renderCard(bendahara2)}
+                    </div>
+                  </div>
+                </div>
+              );
             })()}
           </div>
         </div>
@@ -440,7 +527,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
           <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-16">
             <div>
               <span className="text-xs font-mono tracking-widest text-[#5C3D2E] uppercase font-bold">[ ARSIP KEJUARAAN ]</span>
-              <h2 className="text-4xl font-serif font-bold text-primary mt-2">Papan Prestasi Ekspedisi</h2>
+              <h2 className="text-4xl font-serif font-bold text-primary mt-2">Prestasi Kejuaraan</h2>
             </div>
             <p className="text-sm text-gray-600 max-w-md mt-4 md:mt-0 leading-relaxed">
               Daftar penghargaan dan trofi kejuaraan yang diraih oleh kontingen Pramuka SMPN 2 Katapang (Satria Batara) dalam kompetisi tingkat Kwartir, Cabang, Provinsi, hingga Nasional.
@@ -645,7 +732,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Isi Pesan Jurnal</label>
+                <label className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Pesan</label>
                 <textarea 
                   name="pesan"
                   rows={4}
