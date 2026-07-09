@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useCallback } from 'react';
 import { Camera, AlertCircle, CheckCircle2, Loader2, Compass } from 'lucide-react';
 import { updateProfileAction } from '@/app/actions/profile';
+import Cropper from 'react-easy-crop';
 
 interface ProfileFormProps {
   user: {
@@ -18,6 +19,48 @@ interface ProfileFormProps {
   };
 }
 
+// Helper to crop image using HTML Canvas
+const getCroppedImg = (imageSrc: string, pixelCrop: any): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.src = imageSrc;
+    image.crossOrigin = 'anonymous';
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        reject(new Error('Tidak dapat memperoleh konteks 2D canvas'));
+        return;
+      }
+
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
+
+      ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('Canvas kosong'));
+          return;
+        }
+        const file = new File([blob], 'cropped-avatar.jpg', { type: 'image/jpeg' });
+        resolve(file);
+      }, 'image/jpeg', 0.9);
+    };
+    image.onerror = (err) => reject(err);
+  });
+};
+
 export default function ProfileForm({ user }: ProfileFormProps) {
   const [nama, setNama] = useState(user.nama);
   const [password, setPassword] = useState('');
@@ -31,20 +74,56 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const [jenisKelamin, setJenisKelamin] = useState(user.jenis_kelamin || 'Laki-laki');
   const [phone, setPhone] = useState(user.phone || '');
 
-  // For image preview
+  // For image preview & file upload
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.foto_profil || null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Cropper specific states
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [isCropping, setIsCropping] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
+        setImageSrc(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropSave = async () => {
+    if (!imageSrc || !croppedAreaPixels) return;
+    setIsCropping(true);
+    try {
+      const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
+      setSelectedFile(croppedFile);
+      
+      // Update preview using local reader
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+        setImageSrc(null); // Close cropper modal
+        setIsCropping(false);
+      };
+      reader.readAsDataURL(croppedFile);
+    } catch (err: any) {
+      console.error('Gagal memotong gambar:', err);
+      setError('Gagal memproses pemotongan gambar profil.');
+      setIsCropping(false);
+    }
+  };
+
+  const handleCropCancel = () => {
+    setImageSrc(null); // Close cropper modal
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,7 +167,74 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white border border-[#D1C9BC] rounded-3xl p-8 md:p-12 shadow-sm space-y-8 text-left">
+    <div className="max-w-2xl mx-auto bg-white border border-[#D1C9BC] rounded-3xl p-8 md:p-12 shadow-sm space-y-8 text-left relative">
+      
+      {/* CROPPER MODAL DIALOG */}
+      {imageSrc && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+          <div className="w-full max-w-md bg-white border border-[#D1C9BC] rounded-3xl p-6 shadow-xl flex flex-col space-y-4 text-left">
+            <div>
+              <span className="text-[10px] font-mono tracking-widest text-[#5C3D2E] uppercase font-bold">[ SESUAIKAN FOTO ]</span>
+              <h3 className="text-xl font-serif font-bold text-primary mt-1">Potong Foto Profil</h3>
+              <p className="text-[11px] text-gray-500 mt-1">Geser dan atur perbesaran gambar agar wajah pas berada di dalam lingkaran.</p>
+            </div>
+
+            {/* Cropper Container */}
+            <div className="relative w-full h-72 bg-[#1e1e1e] rounded-2xl overflow-hidden border border-[#D1C9BC]/50">
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            {/* Zoom Slider */}
+            <div className="space-y-1">
+              <label htmlFor="zoom-slider" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold flex justify-between">
+                <span>Perbesaran (Zoom)</span>
+                <span>{zoom.toFixed(1)}x</span>
+              </label>
+              <input
+                id="zoom-slider"
+                type="range"
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                className="w-full h-1.5 bg-[#E6DFD3] rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                disabled={isCropping}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleCropSave}
+                disabled={isCropping}
+                className="px-5 py-2 bg-primary hover:bg-opacity-95 text-[#E7E2D8] text-xs font-mono font-bold uppercase tracking-wider rounded-xl transition-colors cursor-pointer flex items-center justify-center min-w-[120px]"
+              >
+                {isCropping ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Potong & Simpan'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div>
         <span className="text-[10px] font-mono tracking-widest text-[#5C3D2E] uppercase font-bold">[ PENGATURAN AKUN ]</span>
         <h2 className="text-3xl font-serif font-bold text-primary mt-2">Edit Profil Pribadi</h2>
@@ -143,7 +289,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <div className="flex-1 text-center sm:text-left space-y-1">
             <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold block">Foto Profil</span>
             <p className="text-[11px] text-gray-400">
-              Format JPG, PNG, atau WEBP. Klik ikon kamera pada lingkaran foto untuk mengunggah.
+              Format JPG, PNG, atau WEBP. Klik ikon kamera pada lingkaran foto untuk mengunggah dan memotong foto.
             </p>
           </div>
         </div>
