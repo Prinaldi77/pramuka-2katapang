@@ -17,6 +17,8 @@ export default async function SiswaDashboard() {
       id,
       nis,
       kelas,
+      tingkatan,
+      regu,
       users (
         nama,
         email
@@ -82,11 +84,11 @@ export default async function SiswaDashboard() {
           <div className="grid grid-cols-2 gap-4 border-b border-[#D1C9BC]/60 pb-6">
             <div>
               <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Regu Keanggotaan</span>
-              <p className="font-serif font-bold text-lg text-primary">{(siswa as any).regu || 'Regu Singa'}</p>
+              <p className="font-serif font-bold text-lg text-primary">{siswa.regu || 'Regu Singa'}</p>
             </div>
             <div>
               <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Tingkatan</span>
-              <p className="font-serif font-bold text-lg text-primary">{(siswa as any).tingkatan || 'Penggalang Ramu'}</p>
+              <p className="font-serif font-bold text-lg text-primary">{siswa.tingkatan || 'Penggalang Ramu'}</p>
             </div>
             <div className="mt-4">
               <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Kelas</span>
@@ -101,11 +103,30 @@ export default async function SiswaDashboard() {
           <div className="space-y-4">
             <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Pencapaian SKU / SKK</span>
             <div className="flex flex-wrap gap-3">
-              <span className="px-3.5 py-1.5 bg-[#1E3F20]/10 border border-primary/20 text-primary text-xs font-bold rounded-lg flex items-center">
+              <span className={`px-3.5 py-1.5 border text-xs font-bold rounded-lg flex items-center ${
+                siswa.tingkatan === 'Penggalang Ramu' || siswa.tingkatan === 'Penggalang Rakit' || siswa.tingkatan === 'Penggalang Terap'
+                  ? 'bg-[#1E3F20]/10 border-primary/20 text-primary'
+                  : 'bg-[#E6DFD3] border-[#D1C9BC] text-gray-500'
+              }`}>
                 <Award className="h-3.5 w-3.5 mr-1.5" /> Uji Kelayakan Ramu [Selesai]
               </span>
-              <span className="px-3.5 py-1.5 bg-[#E6DFD3] border border-[#D1C9BC] text-gray-500 text-xs rounded-lg flex items-center">
-                <Award className="h-3.5 w-3.5 mr-1.5 opacity-50" /> Uji Kelayakan Rakit [Belum]
+              <span className={`px-3.5 py-1.5 border text-xs font-bold rounded-lg flex items-center ${
+                siswa.tingkatan === 'Penggalang Rakit' || siswa.tingkatan === 'Penggalang Terap'
+                  ? 'bg-[#1E3F20]/10 border-primary/20 text-primary'
+                  : 'bg-[#E6DFD3] border-[#D1C9BC] text-gray-500'
+              }`}>
+                <Award className={`h-3.5 w-3.5 mr-1.5 ${
+                  siswa.tingkatan === 'Penggalang Rakit' || siswa.tingkatan === 'Penggalang Terap' ? '' : 'opacity-50'
+                }`} /> Uji Kelayakan Rakit [{siswa.tingkatan === 'Penggalang Rakit' || siswa.tingkatan === 'Penggalang Terap' ? 'Selesai' : 'Belum'}]
+              </span>
+              <span className={`px-3.5 py-1.5 border text-xs font-bold rounded-lg flex items-center ${
+                siswa.tingkatan === 'Penggalang Terap'
+                  ? 'bg-[#1E3F20]/10 border-primary/20 text-primary'
+                  : 'bg-[#E6DFD3] border-[#D1C9BC] text-gray-500'
+              }`}>
+                <Award className={`h-3.5 w-3.5 mr-1.5 ${
+                  siswa.tingkatan === 'Penggalang Terap' ? '' : 'opacity-50'
+                }`} /> Uji Kelayakan Terap [{siswa.tingkatan === 'Penggalang Terap' ? 'Selesai' : 'Belum'}]
               </span>
             </div>
           </div>

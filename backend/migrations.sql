@@ -20,3 +20,8 @@ CREATE INDEX IF NOT EXISTS idx_nilai_kategori_id ON nilai(kategori_nilai_id);
 
 -- 6. Index on siswa foreign key in pengurus
 CREATE INDEX IF NOT EXISTS idx_pengurus_siswa_id ON pengurus(siswa_id);
+
+-- 7. Add tingkatan (SKU) and regu columns to table siswa
+ALTER TABLE siswa ADD COLUMN IF NOT EXISTS tingkatan VARCHAR(100) DEFAULT 'Penggalang Ramu';
+ALTER TABLE siswa ADD COLUMN IF NOT EXISTS regu VARCHAR(100) DEFAULT 'Regu Singa';
+

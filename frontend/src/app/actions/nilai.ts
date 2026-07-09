@@ -77,3 +77,35 @@ export async function deleteNilaiAction(id: number) {
     throw err;
   }
 }
+
+export async function updateSiswaSkuAction(formData: FormData) {
+  const session = await getSession();
+  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+    throw new Error('Akses ditolak. Anda tidak memiliki wewenang.');
+  }
+
+  const siswa_id = Number(formData.get('siswa_id'));
+  const tingkatan = formData.get('tingkatan') as string;
+  const regu = formData.get('regu') as string;
+
+  if (!siswa_id || !tingkatan || !regu) {
+    throw new Error('Pilih siswa, masukkan tingkatan SKU, dan masukkan regu yang valid!');
+  }
+
+  try {
+    const { error } = await supabase
+      .from('siswa')
+      .update({ tingkatan, regu })
+      .eq('id', siswa_id);
+
+    if (error) throw error;
+
+    revalidatePath('/siswa');
+    revalidatePath('/siswa/sku');
+    revalidatePath('/admin/penilaian');
+  } catch (err: any) {
+    console.error('Update siswa SKU action error:', err);
+    throw err;
+  }
+}
+

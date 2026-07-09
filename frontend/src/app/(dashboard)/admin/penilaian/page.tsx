@@ -2,7 +2,7 @@ import { getSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import { Award, Trash2 } from 'lucide-react';
-import { upsertNilaiAction, deleteNilaiAction } from '@/app/actions/nilai';
+import { upsertNilaiAction, deleteNilaiAction, updateSiswaSkuAction } from '@/app/actions/nilai';
 
 export default async function AdminPenilaianPage() {
   const session = await getSession();
@@ -54,67 +54,130 @@ export default async function AdminPenilaianPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* INPUT SCORE FORM */}
-        <div className="lg:col-span-5 bg-white border border-[#D1C9BC] rounded-3xl p-8 shadow-sm space-y-6">
-          <h3 className="font-serif font-bold text-xl text-primary border-b border-[#D1C9BC]/45 pb-3">Input / Perbarui Nilai</h3>
+        {/* LEFT COLUMN: BOTH FORMS */}
+        <div className="lg:col-span-5 space-y-6">
           
-          <form action={upsertNilaiAction} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="siswa_id" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Pilih Siswa (Penggalang)</label>
-              <select 
-                id="siswa_id"
-                name="siswa_id"
-                required
-                className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          {/* INPUT SCORE FORM */}
+          <div className="bg-white border border-[#D1C9BC] rounded-3xl p-8 shadow-sm space-y-6">
+            <h3 className="font-serif font-bold text-xl text-primary border-b border-[#D1C9BC]/45 pb-3">Input / Perbarui Nilai</h3>
+            
+            <form action={upsertNilaiAction} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="siswa_id" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Pilih Siswa (Penggalang)</label>
+                <select 
+                  id="siswa_id"
+                  name="siswa_id"
+                  required
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                >
+                  <option value="">-- Pilih Anggota --</option>
+                  {siswaList?.map((item: any) => (
+                    <option key={item.id} value={item.id}>
+                      {item.users?.nama} ({item.nis})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="kategori_nilai_id" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Kategori Penilaian</label>
+                <select 
+                  id="kategori_nilai_id"
+                  name="kategori_nilai_id"
+                  required
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                >
+                  <option value="">-- Pilih Kategori --</option>
+                  {kategoriList?.map((item: any) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nama_kategori}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="nilai" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Nilai Evaluasi (0 - 100)</label>
+                <input 
+                  id="nilai"
+                  name="nilai"
+                  type="number"
+                  min="0"
+                  max="100"
+                  required
+                  placeholder="85"
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full py-3.5 bg-primary text-[#E7E2D8] font-mono font-bold uppercase tracking-wider text-xs rounded-xl shadow-md hover:bg-opacity-95 transition-all cursor-pointer"
               >
-                <option value="">-- Pilih Anggota --</option>
-                {siswaList?.map((item: any) => (
-                  <option key={item.id} value={item.id}>
-                    {item.users?.nama} ({item.nis})
-                  </option>
-                ))}
-              </select>
-            </div>
+                Simpan Penilaian
+              </button>
+            </form>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="kategori_nilai_id" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Kategori Penilaian</label>
-              <select 
-                id="kategori_nilai_id"
-                name="kategori_nilai_id"
-                required
-                className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+          {/* UPDATE SKU & REGU FORM */}
+          <div className="bg-white border border-[#D1C9BC] rounded-3xl p-8 shadow-sm space-y-6">
+            <h3 className="font-serif font-bold text-xl text-primary border-b border-[#D1C9BC]/45 pb-3">Kelola SKU & Regu Siswa</h3>
+            
+            <form action={updateSiswaSkuAction} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="sku_siswa_id" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Pilih Siswa (Penggalang)</label>
+                <select 
+                  id="sku_siswa_id"
+                  name="siswa_id"
+                  required
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                >
+                  <option value="">-- Pilih Anggota --</option>
+                  {siswaList?.map((item: any) => (
+                    <option key={item.id} value={item.id}>
+                      {item.users?.nama} ({item.nis})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="tingkatan" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Tingkatan SKU</label>
+                <select 
+                  id="tingkatan"
+                  name="tingkatan"
+                  required
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                >
+                  <option value="Penggalang Ramu">Penggalang Ramu</option>
+                  <option value="Penggalang Rakit">Penggalang Rakit</option>
+                  <option value="Penggalang Terap">Penggalang Terap</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="regu" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Nama Regu</label>
+                <input 
+                  id="regu"
+                  name="regu"
+                  type="text"
+                  required
+                  placeholder="Regu Garuda"
+                  className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full py-3.5 bg-primary text-[#E7E2D8] font-mono font-bold uppercase tracking-wider text-xs rounded-xl shadow-md hover:bg-opacity-95 transition-all cursor-pointer"
               >
-                <option value="">-- Pilih Kategori --</option>
-                {kategoriList?.map((item: any) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nama_kategori}
-                  </option>
-                ))}
-              </select>
-            </div>
+                Simpan SKU & Regu
+              </button>
+            </form>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="nilai" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Nilai Evaluasi (0 - 100)</label>
-              <input 
-                id="nilai"
-                name="nilai"
-                type="number"
-                min="0"
-                max="100"
-                required
-                placeholder="85"
-                className="w-full px-4 py-3 bg-[#FBF9F6] border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              />
-            </div>
-
-            <button 
-              type="submit"
-              className="w-full py-3.5 bg-primary text-[#E7E2D8] font-mono font-bold uppercase tracking-wider text-xs rounded-xl shadow-md hover:bg-opacity-95 transition-all cursor-pointer"
-            >
-              Simpan Penilaian
-            </button>
-          </form>
         </div>
+
 
         {/* LIST TABLE */}
         <div className="lg:col-span-7 bg-white border border-[#D1C9BC] rounded-3xl p-8 shadow-sm space-y-6">

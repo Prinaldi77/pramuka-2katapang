@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS siswa (
     tanggal_lahir DATE,
     nama_ortu VARCHAR(255),
     no_hp_ortu VARCHAR(50),
+    tingkatan VARCHAR(100) DEFAULT 'Penggalang Ramu',
+    regu VARCHAR(100) DEFAULT 'Regu Singa',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
