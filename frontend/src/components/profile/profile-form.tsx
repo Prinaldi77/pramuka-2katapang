@@ -216,15 +216,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
                 disabled={isPending}
                 className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               >
-                <option value="VII-A">VII-A</option>
-                <option value="VII-B">VII-B</option>
-                <option value="VII-C">VII-C</option>
-                <option value="VIII-A">VIII-A</option>
-                <option value="VIII-B">VIII-B</option>
-                <option value="VIII-C">VIII-C</option>
-                <option value="IX-A">IX-A</option>
-                <option value="IX-B">IX-B</option>
-                <option value="IX-C">IX-C</option>
+                {['VII', 'VIII', 'IX'].flatMap(grade => 
+                  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'].map(letter => `${grade}-${letter}`)
+                ).map(cls => (
+                  <option key={cls} value={cls}>{cls}</option>
+                ))}
               </select>
             </div>
 
