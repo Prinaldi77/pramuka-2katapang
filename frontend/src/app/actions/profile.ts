@@ -16,6 +16,12 @@ export async function updateProfileAction(formData: FormData) {
   const password = formData.get('password') as string;
   const file = formData.get('foto') as File | null;
 
+  // Student specific fields
+  const nis = formData.get('nis') as string || '';
+  const kelas = formData.get('kelas') as string || '';
+  const jenis_kelamin = formData.get('jenis_kelamin') as string || 'Laki-laki';
+  const phone = formData.get('phone') as string || '';
+
   if (!nama || nama.trim() === '') {
     return { success: false, error: 'Nama lengkap wajib diisi!' };
   }
@@ -99,6 +105,41 @@ export async function updateProfileAction(formData: FormData) {
     if (error) {
       console.error('Database update error:', error.message);
       return { success: false, error: 'Gagal memperbarui data profil ke database.' };
+    }
+
+    // Update siswa details if role is siswa
+    if (session.role === 'siswa') {
+      const { data: existingSiswa } = await supabase
+        .from('siswa')
+        .select('id')
+        .eq('user_id', session.id)
+        .maybeSingle();
+
+      const studentUpdates = {
+        nis: nis.trim(),
+        kelas: kelas.trim(),
+        jenis_kelamin: jenis_kelamin,
+        no_hp_ortu: phone.trim()
+      };
+
+      if (existingSiswa) {
+        const { error: studentError } = await supabase
+          .from('siswa')
+          .update(studentUpdates)
+          .eq('id', existingSiswa.id);
+        if (studentError) {
+          console.error('Error updating siswa profile:', studentError.message);
+          return { success: false, error: 'Gagal memperbarui data detail siswa.' };
+        }
+      } else {
+        const { error: studentError } = await supabase
+          .from('siswa')
+          .insert([{ user_id: session.id, ...studentUpdates }]);
+        if (studentError) {
+          console.error('Error inserting siswa profile:', studentError.message);
+          return { success: false, error: 'Gagal menginisialisasi detail siswa.' };
+        }
+      }
     }
 
     revalidatePath('/profil');

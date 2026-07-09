@@ -22,7 +22,8 @@ const getMe = async (req, res, next) => {
       nomorInduk: '',
       jabatan: '',
       isActive: true,
-      kelas: ''
+      kelas: '',
+      jenis_kelamin: ''
     };
 
     if (user.role === 'siswa') {
@@ -33,6 +34,7 @@ const getMe = async (req, res, next) => {
         profileData.gugusDepan = siswa.kelas || '';
         profileData.kelas = siswa.kelas || '';
         profileData.phone = siswa.no_hp_ortu || '';
+        profileData.jenis_kelamin = siswa.jenis_kelamin || 'Laki-laki';
         profileData.jabatan = 'Siswa';
       }
     } else if (user.role === 'pembina') {
@@ -53,13 +55,14 @@ const getMe = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const user = req.user;
-    const { fullName, name, phoneNumber, phone, gugusDepan, kelas, nomorInduk, nis, jabatan, avatar, foto_profil, password } = req.body;
+    const { fullName, name, phoneNumber, phone, gugusDepan, kelas, nomorInduk, nis, jabatan, avatar, foto_profil, password, jenisKelamin, jenis_kelamin } = req.body;
 
     const newName = fullName || name;
     const newPhone = phoneNumber || phone;
     const newKelas = kelas || gugusDepan;
     const newNis = nomorInduk || nis;
     const newAvatar = avatar || foto_profil;
+    const newJenisKelamin = jenisKelamin || jenis_kelamin;
 
     const userUpdates = {};
     if (newName) userUpdates.nama = newName;
@@ -85,6 +88,7 @@ const updateProfile = async (req, res, next) => {
       if (newNis !== undefined) siswaUpdates.nis = newNis;
       if (newKelas !== undefined) siswaUpdates.kelas = newKelas;
       if (newPhone !== undefined) siswaUpdates.no_hp_ortu = newPhone;
+      if (newJenisKelamin !== undefined) siswaUpdates.jenis_kelamin = newJenisKelamin;
 
       if (existingSiswa) {
         // Jika profil sudah ada, jalankan update
@@ -125,7 +129,8 @@ const updateProfile = async (req, res, next) => {
       nomorInduk: '',
       jabatan: '',
       isActive: true,
-      kelas: ''
+      kelas: '',
+      jenis_kelamin: ''
     };
 
     if (updatedUser.role === 'siswa') {
@@ -136,6 +141,7 @@ const updateProfile = async (req, res, next) => {
         profileData.gugusDepan = siswa.kelas || '';
         profileData.kelas = siswa.kelas || '';
         profileData.phone = siswa.no_hp_ortu || '';
+        profileData.jenis_kelamin = siswa.jenis_kelamin || 'Laki-laki';
       }
       profileData.jabatan = 'Siswa';
     } else if (updatedUser.role === 'pembina') {

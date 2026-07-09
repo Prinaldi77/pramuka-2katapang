@@ -289,7 +289,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                   </div>
                   {item.gambar && (
                     <div className="w-1/3 h-full rounded-xl overflow-hidden border border-[#D1C9BC]/40 bg-slate-50 flex-shrink-0">
-                      <img src={item.gambar} alt={item.nama_kegiatan} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={item.gambar} alt={item.nama_kegiatan} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                     </div>
                   )}
                 </div>
@@ -415,7 +415,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                   {/* Left side: square photo */}
                   <div className="w-20 h-20 shrink-0 bg-[#FBF9F6] border-r border-[#D1C9BC] flex items-center justify-center overflow-hidden">
                     {item.foto_profil ? (
-                      <img src={item.foto_profil} alt={item.nama} className="w-full h-full object-cover" />
+                      <img src={item.foto_profil} alt={item.nama} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <Compass className="h-10 w-10 text-primary/45" />
                     )}
@@ -558,7 +558,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                   {/* Photo at the top if exists */}
                   {item.gambar ? (
                     <div className="h-40 w-full overflow-hidden border-b border-[#D1C9BC]/40 bg-slate-50">
-                      <img src={item.gambar} alt={item.nama_prestasi} className="w-full h-full object-cover" />
+                      <img src={item.gambar} alt={item.nama_prestasi} className="w-full h-full object-cover" loading="lazy" />
                     </div>
                   ) : (
                     <div className="h-40 w-full flex items-center justify-center text-accent bg-amber-50 border-b border-[#D1C9BC]/40">
@@ -611,6 +611,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                   src="/OPEN_RECTRUITMEN.jpg" 
                   alt="Open Recruitment"
                   className="w-full h-auto object-cover max-h-96 group-hover:scale-105 transition-transform duration-500" 
+                  loading="lazy"
                 />
                 <div className="p-4 bg-white border-t border-[#D1C9BC]/40">
                   <h3 className="font-serif font-bold text-sm text-primary">Penerimaan Anggota Baru</h3>
@@ -622,6 +623,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                   src="/tentang_gudep.jpg" 
                   alt="Latihan Bersama"
                   className="w-full h-auto object-cover max-h-96 group-hover:scale-105 transition-transform duration-500" 
+                  loading="lazy"
                 />
                 <div className="p-4 bg-white border-t border-[#D1C9BC]/40">
                   <h3 className="font-serif font-bold text-sm text-primary">Latihan Kepemimpinan Lapangan</h3>
@@ -640,6 +642,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
                     src={item.gambar} 
                     alt={item.judul}
                     className="w-full h-auto object-cover max-h-96 group-hover:scale-105 transition-transform duration-500" 
+                    loading="lazy"
                   />
                   <div className="p-4 bg-white border-t border-[#D1C9BC]/40">
                     <h3 className="font-serif font-bold text-sm text-primary">{item.judul}</h3>

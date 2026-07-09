@@ -11,6 +11,10 @@ interface ProfileFormProps {
     email: string;
     role: string;
     foto_profil?: string;
+    nis?: string;
+    kelas?: string;
+    jenis_kelamin?: string;
+    phone?: string;
   };
 }
 
@@ -20,6 +24,12 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  // Student specific states
+  const [nis, setNis] = useState(user.nis || '');
+  const [kelas, setKelas] = useState(user.kelas || '');
+  const [jenisKelamin, setJenisKelamin] = useState(user.jenis_kelamin || 'Laki-laki');
+  const [phone, setPhone] = useState(user.phone || '');
 
   // For image preview
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.foto_profil || null);
@@ -57,6 +67,13 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     formData.append('password', password);
     if (selectedFile) {
       formData.append('foto', selectedFile);
+    }
+    
+    if (user.role === 'siswa') {
+      formData.append('nis', nis);
+      formData.append('kelas', kelas);
+      formData.append('jenis_kelamin', jenisKelamin);
+      formData.append('phone', phone);
     }
 
     startTransition(async () => {
@@ -171,6 +188,76 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             {user.role}
           </div>
         </div>
+
+        {user.role === 'siswa' && (
+          <div className="space-y-4 p-4 bg-[#FBF9F6] border border-[#D1C9BC]/50 rounded-2xl text-left">
+            <span className="text-[9px] font-mono text-primary font-bold uppercase tracking-wider block mb-2">[ DETAIL DATA SISWA ]</span>
+            
+            {/* NIS */}
+            <div className="space-y-2">
+              <label htmlFor="profile-nis" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">NIS (Nomor Induk Siswa)</label>
+              <input 
+                id="profile-nis"
+                type="text"
+                value={nis}
+                onChange={(e) => setNis(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+            </div>
+
+            {/* KELAS */}
+            <div className="space-y-2">
+              <label htmlFor="profile-kelas" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Kelas</label>
+              <select 
+                id="profile-kelas"
+                value={kelas}
+                onChange={(e) => setKelas(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="VII-A">VII-A</option>
+                <option value="VII-B">VII-B</option>
+                <option value="VII-C">VII-C</option>
+                <option value="VIII-A">VIII-A</option>
+                <option value="VIII-B">VIII-B</option>
+                <option value="VIII-C">VIII-C</option>
+                <option value="IX-A">IX-A</option>
+                <option value="IX-B">IX-B</option>
+                <option value="IX-C">IX-C</option>
+              </select>
+            </div>
+
+            {/* JENIS KELAMIN */}
+            <div className="space-y-2">
+              <label htmlFor="profile-jk" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Jenis Kelamin</label>
+              <select 
+                id="profile-jk"
+                value={jenisKelamin}
+                onChange={(e) => setJenisKelamin(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="Laki-laki">Laki-laki (Siswa)</option>
+                <option value="Perempuan">Perempuan (Siswi)</option>
+              </select>
+            </div>
+
+            {/* NO HP ORTU */}
+            <div className="space-y-2">
+              <label htmlFor="profile-phone" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Nomor HP Orang Tua</label>
+              <input 
+                id="profile-phone"
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={isPending}
+                placeholder="0812XXXXXXXX"
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+            </div>
+          </div>
+        )}
 
         {/* PASSWORD BARU */}
         <div className="space-y-2 pt-2 border-t border-[#D1C9BC]/45">

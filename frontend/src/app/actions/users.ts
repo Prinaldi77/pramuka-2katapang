@@ -15,6 +15,11 @@ export async function createUserAction(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const role = formData.get('role') as string;
+  
+  // Additional fields for student
+  const nis = formData.get('nis') as string;
+  const kelas = formData.get('kelas') as string;
+  const jenis_kelamin = formData.get('jenis_kelamin') as string;
 
   if (!nama || !email || !password || !role) {
     return { success: false, error: 'Semua input pendaftaran anggota wajib diisi!' };
@@ -57,9 +62,9 @@ export async function createUserAction(formData: FormData) {
         .insert([
           {
             user_id: newUser.id,
-            nis: `NIS-${Date.now().toString().slice(-6)}`,
-            kelas: 'VIII-A',
-            jenis_kelamin: 'Laki-laki',
+            nis: nis?.trim() || `NIS-${Date.now().toString().slice(-6)}`,
+            kelas: kelas?.trim() || 'VIII-A',
+            jenis_kelamin: jenis_kelamin || 'Laki-laki',
           },
         ]);
       if (profileError) console.error('Error seeding siswa profile:', profileError.message);

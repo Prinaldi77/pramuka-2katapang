@@ -10,6 +10,11 @@ export default function RegisterUserForm() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('siswa');
   
+  // Additional fields for student
+  const [nis, setNis] = useState('');
+  const [kelas, setKelas] = useState('VIII-A');
+  const [jenisKelamin, setJenisKelamin] = useState('Laki-laki');
+  
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -34,6 +39,12 @@ export default function RegisterUserForm() {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('role', role);
+    
+    if (role === 'siswa') {
+      formData.append('nis', nis);
+      formData.append('kelas', kelas);
+      formData.append('jenis_kelamin', jenisKelamin);
+    }
 
     startTransition(async () => {
       const result = await createUserAction(formData);
@@ -43,6 +54,9 @@ export default function RegisterUserForm() {
         setEmail('');
         setPassword('');
         setRole('siswa');
+        setNis('');
+        setKelas('VIII-A');
+        setJenisKelamin('Laki-laki');
       } else {
         setError(result.error || 'Gagal mendaftarkan anggota baru.');
       }
@@ -128,6 +142,63 @@ export default function RegisterUserForm() {
             <option value="admin">Administrator Sistem</option>
           </select>
         </div>
+
+        {role === 'siswa' && (
+          <div className="space-y-4 p-4 bg-[#FBF9F6] border border-[#D1C9BC]/50 rounded-2xl animate-fadeIn text-left">
+            <span className="text-[9px] font-mono text-primary font-bold uppercase tracking-wider block mb-2">[ DETAIL PROFIL SISWA ]</span>
+            
+            {/* NIS */}
+            <div className="space-y-2">
+              <label htmlFor="nis" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">NIS (Nomor Induk Siswa) - Opsional</label>
+              <input 
+                id="nis"
+                type="text"
+                value={nis}
+                onChange={(e) => setNis(e.target.value)}
+                disabled={isPending}
+                placeholder="22230104"
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+            </div>
+
+            {/* KELAS */}
+            <div className="space-y-2">
+              <label htmlFor="kelas" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Kelas</label>
+              <select 
+                id="kelas"
+                value={kelas}
+                onChange={(e) => setKelas(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="VII-A">VII-A</option>
+                <option value="VII-B">VII-B</option>
+                <option value="VII-C">VII-C</option>
+                <option value="VIII-A">VIII-A</option>
+                <option value="VIII-B">VIII-B</option>
+                <option value="VIII-C">VIII-C</option>
+                <option value="IX-A">IX-A</option>
+                <option value="IX-B">IX-B</option>
+                <option value="IX-C">IX-C</option>
+              </select>
+            </div>
+
+            {/* JENIS KELAMIN */}
+            <div className="space-y-2">
+              <label htmlFor="jenis_kelamin" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Jenis Kelamin</label>
+              <select 
+                id="jenis_kelamin"
+                value={jenisKelamin}
+                onChange={(e) => setJenisKelamin(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="Laki-laki">Laki-laki (Siswa)</option>
+                <option value="Perempuan">Perempuan (Siswi)</option>
+              </select>
+            </div>
+          </div>
+        )}
 
         {/* SUBMIT BUTTON */}
         <button 
