@@ -172,13 +172,13 @@ export default async function AdminDashboard() {
         </div>
 
         {/* SMALL CARD: INFO/GUIDE */}
-        <div className="bg-primary text-secondary p-8 rounded-3xl flex flex-col justify-between h-auto">
-          <div className="p-3 bg-secondary text-primary rounded-xl w-fit">
+        <div className="bg-primary text-[#E7E2D8] p-8 rounded-3xl flex flex-col justify-between h-auto">
+          <div className="p-3 bg-[#E6DFD3] text-primary rounded-xl w-fit">
             <Shield className="h-6 w-6" />
           </div>
           <div className="space-y-2 mt-6 text-left">
             <h4 className="font-serif font-bold text-white">Panduan Pembina</h4>
-            <p className="text-xs text-secondary/60 leading-relaxed">
+            <p className="text-xs text-[#E7E2D8]/70 leading-relaxed">
               Gunakan panel kiri untuk mengakses basis data anggota, memverifikasi syarat kecakapan umum (SKU/SKK), dan memantau status peta geofence secara berkala.
             </p>
           </div>

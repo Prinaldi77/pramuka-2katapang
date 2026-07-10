@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Users, Calendar, Award, LogOut, CheckSquare, Layers, BookOpen, Mail, Image as ImageIcon, User } from 'lucide-react';
 import { logoutAction } from '@/app/actions/auth';
 
@@ -16,52 +17,62 @@ interface SidebarWrapperProps {
 
 export default function SidebarWrapper({ session, children }: SidebarWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
 
+  const getLinkClass = (href: string) => {
+    const isActive = pathname === href;
+    return `flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+      isActive 
+        ? 'bg-white/10 text-white font-bold' 
+        : 'text-[#E7E2D8]/80 hover:text-white hover:bg-white/5'
+    }`;
+  };
+
   const navLinks = session.role === 'siswa' ? (
     <>
-      <Link href="/siswa" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/siswa" onClick={closeSidebar} className={getLinkClass('/siswa')}>
         <Users className="h-4 w-4" /> <span>Paspor Jurnal</span>
       </Link>
-      <Link href="/siswa/sku" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/siswa/sku" onClick={closeSidebar} className={getLinkClass('/siswa/sku')}>
         <CheckSquare className="h-4 w-4" /> <span>SKU & SKK</span>
       </Link>
-      <Link href="/siswa/absensi" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/siswa/absensi" onClick={closeSidebar} className={getLinkClass('/siswa/absensi')}>
         <Calendar className="h-4 w-4" /> <span>Absensi GPS</span>
       </Link>
-      <Link href="/profil" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/profil" onClick={closeSidebar} className={getLinkClass('/profil')}>
         <User className="h-4 w-4" /> <span>Edit Profil</span>
       </Link>
     </>
   ) : (
     <>
-      <Link href="/admin" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin" onClick={closeSidebar} className={getLinkClass('/admin')}>
         <Layers className="h-4 w-4" /> <span>Ringkasan Panel</span>
       </Link>
-      <Link href="/admin/users" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/users" onClick={closeSidebar} className={getLinkClass('/admin/users')}>
         <Users className="h-4 w-4" /> <span>Kelola Anggota</span>
       </Link>
-      <Link href="/admin/prestasi" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/prestasi" onClick={closeSidebar} className={getLinkClass('/admin/prestasi')}>
         <Award className="h-4 w-4" /> <span>Kelola Prestasi</span>
       </Link>
-      <Link href="/admin/galeri" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/galeri" onClick={closeSidebar} className={getLinkClass('/admin/galeri')}>
         <ImageIcon className="h-4 w-4" /> <span>Kelola Galeri</span>
       </Link>
-      <Link href="/admin/sejarah" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/sejarah" onClick={closeSidebar} className={getLinkClass('/admin/sejarah')}>
         <BookOpen className="h-4 w-4" /> <span>Kelola Sejarah</span>
       </Link>
-      <Link href="/admin/absensi" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/absensi" onClick={closeSidebar} className={getLinkClass('/admin/absensi')}>
         <Calendar className="h-4 w-4" /> <span>Kelola Absensi</span>
       </Link>
-      <Link href="/admin/penilaian" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/penilaian" onClick={closeSidebar} className={getLinkClass('/admin/penilaian')}>
         <CheckSquare className="h-4 w-4" /> <span>Kelola Penilaian</span>
       </Link>
-      <Link href="/admin/pesan" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors">
+      <Link href="/admin/pesan" onClick={closeSidebar} className={getLinkClass('/admin/pesan')}>
         <Mail className="h-4 w-4" /> <span>Pesan Masuk</span>
       </Link>
-      <Link href="/profil" onClick={closeSidebar} className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-white/5 text-sm font-medium transition-colors border-t border-white/10 pt-4 mt-2">
+      <Link href="/profil" onClick={closeSidebar} className={`${getLinkClass('/profil')} border-t border-white/10 pt-4 mt-2 rounded-t-none`}>
         <User className="h-4 w-4" /> <span>Edit Profil</span>
       </Link>
     </>
@@ -77,7 +88,7 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
           </div>
           <span className="font-serif font-bold text-sm uppercase tracking-wider text-white">Satria Batara</span>
         </div>
-        <button onClick={toggleSidebar} className="p-1.5 hover:bg-white/5 rounded-lg text-secondary focus:outline-none cursor-pointer">
+        <button onClick={toggleSidebar} className="p-1.5 hover:bg-white/5 rounded-lg text-[#E7E2D8] focus:outline-none cursor-pointer">
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </header>
@@ -104,7 +115,7 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
             </div>
             <div className="flex flex-col text-left">
               <span className="font-serif font-bold text-sm uppercase tracking-wider text-white">Satria Batara</span>
-              <span className="text-[9px] font-mono text-secondary/60 uppercase">Panel Administrasi</span>
+              <span className="text-[9px] font-mono text-[#E7E2D8]/60 uppercase">Panel Administrasi</span>
             </div>
           </div>
 
@@ -115,9 +126,9 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
         </div>
 
         {/* PROFILE CARD & LOGOUT */}
-        <div className="border-t border-secondary/10 pt-6 space-y-4 text-left">
+        <div className="border-t border-[#E7E2D8]/10 pt-6 space-y-4 text-left">
           <div className="flex flex-col">
-            <span className="text-xs font-mono text-secondary/40 uppercase">Masuk Sebagai:</span>
+            <span className="text-xs font-mono text-[#E7E2D8]/50 uppercase">Masuk Sebagai:</span>
             <span className="text-sm font-bold text-white truncate">{session.email}</span>
             <span className="text-[10px] font-mono text-accent uppercase font-bold mt-0.5">{session.role}</span>
           </div>

@@ -288,7 +288,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
         </nav>
         <Link 
           href="/login" 
-          className="inline-flex items-center justify-center px-5 py-2.5 text-xs font-mono font-bold tracking-widest uppercase text-secondary bg-primary hover:bg-opacity-95 transition-all rounded-md shadow-md border border-[#D1C9BC]"
+          className="inline-flex items-center justify-center px-5 py-2.5 text-xs font-mono font-bold tracking-widest uppercase text-[#E7E2D8] bg-primary hover:bg-opacity-95 transition-all rounded-md shadow-md border border-[#D1C9BC]"
         >
           Masuk
         </Link>
@@ -319,7 +319,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
           <div className="hero-reveal flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
             <a 
               href="#dokumentasi" 
-              className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-secondary bg-primary hover:bg-opacity-90 rounded-md transition-colors"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-[#E7E2D8] bg-primary hover:bg-opacity-90 rounded-md transition-colors"
             >
               Galeri Kegiatan <ArrowRight className="ml-2 h-4 w-4" />
             </a>
