@@ -48,6 +48,24 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
+@theme {
+  --color-scout-brown: #5C3D2E;
+  --color-scout-secondary: #8B5E3C;
+  --color-scout-gold: #D4A373;
+  --color-surface-container: #231f1d;
+  --color-outline-variant: #50443f;
+  --color-on-surface-variant: #d4c3bc;
+
+  --font-plus-jakarta: var(--font-jakarta-sans);
+
+  --spacing-margin-mobile: 20px;
+  --spacing-container-max: 1280px;
+  --spacing-card-padding: 32px;
+  --spacing-section-gap: 80px;
+  --spacing-margin-desktop: 64px;
+  --spacing-gutter: 24px;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0D160E; /* Dark Forest Green tint background */
@@ -80,4 +98,17 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Custom classes for Stitch Scout Login */
+.glass-card {
+  background: rgba(22, 19, 17, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(80, 68, 63, 0.3);
+}
+
+.scout-overlay {
+  background: linear-gradient(135deg, rgba(22, 19, 17, 0.8) 0%, rgba(22, 19, 17, 0.95) 100%);
+}
+
 

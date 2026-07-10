@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
+import { Outfit, Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 const fontSans = Outfit({
@@ -10,6 +10,11 @@ const fontSans = Outfit({
 const fontSerif = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
+});
+
+const fontPlusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta-sans",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${fontSans.variable} ${fontSerif.variable} h-full antialiased`}
+      className={`${fontSans.variable} ${fontSerif.variable} ${fontPlusJakarta.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
