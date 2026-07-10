@@ -6,7 +6,7 @@ import { upsertNilaiAction, deleteNilaiAction, updateSiswaSkuAction } from '@/ap
 
 export default async function AdminPenilaianPage() {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'pembina') {
     redirect('/login');
   }
 

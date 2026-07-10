@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 export default async function AdminPrestasiPage() {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'pembina') {
     redirect('/login');
   }
 

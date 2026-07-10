@@ -11,7 +11,7 @@ export default async function AdminSejarahPage({
   searchParams: Promise<{ editId?: string }>;
 }) {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'admin') {
     redirect('/login');
   }
 

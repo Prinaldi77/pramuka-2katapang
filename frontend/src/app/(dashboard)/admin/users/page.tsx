@@ -5,7 +5,7 @@ import UsersTabsContainer from '@/components/users/users-tabs-container';
 
 export default async function AdminUsersPage() {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'admin') {
     redirect('/login');
   }
 

@@ -6,7 +6,7 @@ import { deleteMessageAction } from '@/app/actions/pesan';
 
 export default async function AdminPesanPage() {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'admin') {
     redirect('/login');
   }
 

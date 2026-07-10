@@ -31,52 +31,69 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
     }`;
   };
 
-  const navLinks = session.role === 'siswa' ? (
-    <>
-      <Link href="/siswa" onClick={closeSidebar} className={getLinkClass('/siswa')}>
-        <Users className="h-4 w-4" /> <span>Paspor Jurnal</span>
-      </Link>
-      <Link href="/siswa/sku" onClick={closeSidebar} className={getLinkClass('/siswa/sku')}>
-        <CheckSquare className="h-4 w-4" /> <span>SKU & SKK</span>
-      </Link>
-      <Link href="/siswa/absensi" onClick={closeSidebar} className={getLinkClass('/siswa/absensi')}>
-        <Calendar className="h-4 w-4" /> <span>Absensi GPS</span>
-      </Link>
-      <Link href="/profil" onClick={closeSidebar} className={getLinkClass('/profil')}>
-        <User className="h-4 w-4" /> <span>Edit Profil</span>
-      </Link>
-    </>
-  ) : (
-    <>
-      <Link href="/admin" onClick={closeSidebar} className={getLinkClass('/admin')}>
-        <Layers className="h-4 w-4" /> <span>Ringkasan Panel</span>
-      </Link>
-      <Link href="/admin/users" onClick={closeSidebar} className={getLinkClass('/admin/users')}>
-        <Users className="h-4 w-4" /> <span>Kelola Anggota</span>
-      </Link>
-      <Link href="/admin/prestasi" onClick={closeSidebar} className={getLinkClass('/admin/prestasi')}>
-        <Award className="h-4 w-4" /> <span>Kelola Prestasi</span>
-      </Link>
-      <Link href="/admin/galeri" onClick={closeSidebar} className={getLinkClass('/admin/galeri')}>
-        <ImageIcon className="h-4 w-4" /> <span>Kelola Galeri</span>
-      </Link>
-      <Link href="/admin/sejarah" onClick={closeSidebar} className={getLinkClass('/admin/sejarah')}>
-        <BookOpen className="h-4 w-4" /> <span>Kelola Sejarah</span>
-      </Link>
-      <Link href="/admin/absensi" onClick={closeSidebar} className={getLinkClass('/admin/absensi')}>
-        <Calendar className="h-4 w-4" /> <span>Kelola Absensi</span>
-      </Link>
-      <Link href="/admin/penilaian" onClick={closeSidebar} className={getLinkClass('/admin/penilaian')}>
-        <CheckSquare className="h-4 w-4" /> <span>Kelola Penilaian</span>
-      </Link>
-      <Link href="/admin/pesan" onClick={closeSidebar} className={getLinkClass('/admin/pesan')}>
-        <Mail className="h-4 w-4" /> <span>Pesan Masuk</span>
-      </Link>
-      <Link href="/profil" onClick={closeSidebar} className={`${getLinkClass('/profil')} border-t border-white/10 pt-4 mt-2 rounded-t-none`}>
-        <User className="h-4 w-4" /> <span>Edit Profil</span>
-      </Link>
-    </>
-  );
+  let navLinks;
+  if (session.role === 'siswa') {
+    navLinks = (
+      <>
+        <Link href="/siswa" onClick={closeSidebar} className={getLinkClass('/siswa')}>
+          <Users className="h-4 w-4" /> <span>Paspor Jurnal</span>
+        </Link>
+        <Link href="/siswa/sku" onClick={closeSidebar} className={getLinkClass('/siswa/sku')}>
+          <CheckSquare className="h-4 w-4" /> <span>SKU & SKK</span>
+        </Link>
+        <Link href="/siswa/absensi" onClick={closeSidebar} className={getLinkClass('/siswa/absensi')}>
+          <Calendar className="h-4 w-4" /> <span>Absensi GPS</span>
+        </Link>
+        <Link href="/profil" onClick={closeSidebar} className={getLinkClass('/profil')}>
+          <User className="h-4 w-4" /> <span>Edit Profil</span>
+        </Link>
+      </>
+    );
+  } else if (session.role === 'admin') {
+    navLinks = (
+      <>
+        <Link href="/admin" onClick={closeSidebar} className={getLinkClass('/admin')}>
+          <Layers className="h-4 w-4" /> <span>Ringkasan Panel</span>
+        </Link>
+        <Link href="/admin/users" onClick={closeSidebar} className={getLinkClass('/admin/users')}>
+          <Users className="h-4 w-4" /> <span>Kelola Anggota</span>
+        </Link>
+        <Link href="/admin/galeri" onClick={closeSidebar} className={getLinkClass('/admin/galeri')}>
+          <ImageIcon className="h-4 w-4" /> <span>Kelola Galeri</span>
+        </Link>
+        <Link href="/admin/sejarah" onClick={closeSidebar} className={getLinkClass('/admin/sejarah')}>
+          <BookOpen className="h-4 w-4" /> <span>Kelola Sejarah</span>
+        </Link>
+        <Link href="/admin/pesan" onClick={closeSidebar} className={getLinkClass('/admin/pesan')}>
+          <Mail className="h-4 w-4" /> <span>Pesan Masuk</span>
+        </Link>
+        <Link href="/profil" onClick={closeSidebar} className={`${getLinkClass('/profil')} border-t border-white/10 pt-4 mt-2 rounded-t-none`}>
+          <User className="h-4 w-4" /> <span>Edit Profil</span>
+        </Link>
+      </>
+    );
+  } else {
+    // pembina
+    navLinks = (
+      <>
+        <Link href="/admin" onClick={closeSidebar} className={getLinkClass('/admin')}>
+          <Layers className="h-4 w-4" /> <span>Ringkasan Panel</span>
+        </Link>
+        <Link href="/admin/absensi" onClick={closeSidebar} className={getLinkClass('/admin/absensi')}>
+          <Calendar className="h-4 w-4" /> <span>Kelola Absensi</span>
+        </Link>
+        <Link href="/admin/penilaian" onClick={closeSidebar} className={getLinkClass('/admin/penilaian')}>
+          <CheckSquare className="h-4 w-4" /> <span>Kelola Penilaian</span>
+        </Link>
+        <Link href="/admin/prestasi" onClick={closeSidebar} className={getLinkClass('/admin/prestasi')}>
+          <Award className="h-4 w-4" /> <span>Kelola Prestasi</span>
+        </Link>
+        <Link href="/profil" onClick={closeSidebar} className={`${getLinkClass('/profil')} border-t border-white/10 pt-4 mt-2 rounded-t-none`}>
+          <User className="h-4 w-4" /> <span>Edit Profil</span>
+        </Link>
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#FBF9F6] text-[#111827]">

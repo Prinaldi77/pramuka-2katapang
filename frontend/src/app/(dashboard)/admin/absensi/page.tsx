@@ -7,7 +7,7 @@ import AgendaForm from '@/components/absensi/agenda-form';
 
 export default async function AdminAbsensiPage() {
   const session = await getSession();
-  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+  if (!session || session.role !== 'pembina') {
     redirect('/login');
   }
 
