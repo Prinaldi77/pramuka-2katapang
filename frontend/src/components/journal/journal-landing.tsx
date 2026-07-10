@@ -305,8 +305,8 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
         </div>
 
         <div className="max-w-5xl text-center space-y-8 z-10 flex flex-col items-center">
-          <img src="/logo.png" alt="Logo Satria Batara" className="h-28 w-28 object-contain drop-shadow-md" />
-          <span className="hero-reveal inline-flex items-center px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider bg-secondary text-primary border border-primary/20">
+          <img src="/logo.png" alt="Logo Satria Batara" className="h-40 w-40 object-contain drop-shadow-md" />
+          <span className="hero-reveal inline-flex items-center px-4 py-1.5 rounded-full text-xs font-mono font-bold tracking-wider bg-[#E6DFD3] text-primary border border-primary/20">
              GUDEP 28.065 - 28.066 
           </span>
           <h1 className="hero-reveal text-5xl md:text-7xl font-serif font-black text-primary leading-none tracking-tight">
@@ -802,7 +802,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
 
             <div className="space-y-6 font-mono text-sm text-[#5C3D2E]">
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-secondary text-primary rounded-xl shrink-0">
+                <div className="p-3 bg-[#E6DFD3] text-primary rounded-xl shrink-0">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
@@ -815,7 +815,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
               </div>
 
               <div className="flex items-start space-x-4">
-                <div className="p-3 bg-secondary text-primary rounded-xl shrink-0">
+                <div className="p-3 bg-[#E6DFD3] text-primary rounded-xl shrink-0">
                   <Calendar className="h-5 w-5" />
                 </div>
                 <div>

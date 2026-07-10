@@ -330,7 +330,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <label className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">
             Hak Akses Peran
           </label>
-          <div className="w-fit px-3 py-1 bg-secondary text-primary rounded-lg text-xs font-mono font-bold uppercase tracking-wider">
+          <div className="w-fit px-3 py-1 bg-[#E6DFD3] text-primary rounded-lg text-xs font-mono font-bold uppercase tracking-wider">
             {user.role}
           </div>
         </div>

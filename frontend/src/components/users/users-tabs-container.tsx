@@ -94,7 +94,7 @@ export default function UsersTabsContainer({
                 usersList.map((item: any, idx: number) => (
                   <div key={item.id || idx} className="py-4 flex justify-between items-center first:pt-0 last:pb-0">
                     <div className="flex items-center space-x-4 min-w-0">
-                      <div className="p-3 bg-secondary text-primary rounded-xl shrink-0">
+                      <div className="p-3 bg-[#E6DFD3] text-primary rounded-xl shrink-0">
                         {item.role === 'admin' ? (
                           <Shield className="h-5 w-5" />
                         ) : item.role === 'pembina' ? (
