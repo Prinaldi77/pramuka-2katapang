@@ -40,6 +40,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
   const heroRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
@@ -127,7 +128,39 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
             end: () => `+=${timelineRef.current?.offsetWidth}`,
           },
         });
+
+        // Horizontal parallax for the background image
+        gsap.fromTo('.timeline-bg',
+          { xPercent: 0 },
+          {
+            xPercent: -15,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: timelineRef.current,
+              scrub: 1,
+              start: 'top top',
+              end: () => `+=${timelineRef.current?.offsetWidth}`,
+            }
+          }
+        );
       }
+    });
+
+    // Vertical parallax for the background image on mobile/tablet (Only for screen widths < 1024px)
+    mm.add("(max-width: 1023px)", () => {
+      gsap.fromTo('.timeline-bg',
+        { yPercent: -10 },
+        {
+          yPercent: 10,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: timelineRef.current,
+            scrub: true,
+            start: 'top bottom',
+            end: 'bottom top',
+          }
+        }
+      );
     });
 
     // Statistics Counter Animation
@@ -142,6 +175,90 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
     });
 
     return () => mm.revert();
+  }, []);
+
+  // Ambient Particle System (Scout History Archive Atmosphere)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = canvas.width = canvas.offsetWidth;
+    let height = canvas.height = canvas.offsetHeight;
+
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    class Particle {
+      x: number;
+      y: number;
+      size: number;
+      speedX: number;
+      speedY: number;
+      opacity: number;
+
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 0.5; // Small and subtle
+        this.speedX = (Math.random() - 0.5) * 0.15; // Slow drift
+        this.speedY = -(Math.random() * 0.25 + 0.08); // Drift upwards slowly
+        this.opacity = Math.random() * 0.4 + 0.1;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Reset particle when it goes off screen
+        if (this.y < -10 || this.x < -10 || this.x > width + 10) {
+          this.y = height + 10;
+          this.x = Math.random() * width;
+          this.opacity = 0;
+        }
+
+        // Fade in slowly if near bottom, or keep subtle pended opacity
+        if (this.opacity < 0.5) {
+          this.opacity += 0.003;
+        }
+      }
+
+      draw() {
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(209, 201, 188, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    const particlesArray: Particle[] = [];
+    const numberOfParticles = Math.min(60, Math.floor((width * height) / 18000));
+    for (let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   return (
@@ -251,7 +368,19 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
         id="tentang"
         className="min-h-screen bg-[#F5F2EB] text-[#111827] flex flex-col justify-center py-20 border-b border-[#D1C9BC] relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[url('/tentang_gudep.jpg')] bg-cover bg-center opacity-25 pointer-events-none"></div>
+        <div 
+          className="timeline-bg absolute inset-0 bg-[url('/tentang_gudep.jpg')] bg-cover bg-center pointer-events-none scale-110"
+          style={{ 
+            filter: 'sepia(40%) grayscale(60%) contrast(1.1) brightness(0.95)',
+            opacity: 0.22,
+            maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)'
+          }}
+        />
+        <canvas 
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none z-0"
+        />
         <div className="px-6 md:px-12 mb-12 relative z-10 text-left">
           <span className="text-xs font-mono tracking-widest text-[#5C3D2E] uppercase font-bold">[ ARSIP SEJARAH ]</span>
           <h2 className="text-4xl font-serif font-bold text-primary mt-2">Jejak Langkah Satria Batara</h2>
