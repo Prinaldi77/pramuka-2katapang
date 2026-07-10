@@ -369,7 +369,7 @@ export default function JournalLanding({ stats, kegiatan, prestasi, galeri, kepe
         className="min-h-screen bg-[#F5F2EB] text-[#111827] flex flex-col justify-center py-20 border-b border-[#D1C9BC] relative overflow-hidden"
       >
         <div 
-          className="timeline-bg absolute inset-0 bg-[url('/tentang_gudep.jpg')] bg-cover bg-center pointer-events-none scale-110"
+          className="timeline-bg absolute left-0 top-0 w-[125%] h-full bg-[url('/tentang_gudep.jpg')] bg-cover bg-center pointer-events-none"
           style={{ 
             filter: 'sepia(40%) grayscale(60%) contrast(1.1) brightness(0.95)',
             opacity: 0.22,
