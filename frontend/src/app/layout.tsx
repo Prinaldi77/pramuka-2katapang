@@ -20,6 +20,9 @@ const fontPlusJakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Sistem Informasi Pramuka SMPN 2 Katapang",
   description: "Jurnal Ekspedisi Digital Keanggotaan Pramuka SMP Negeri 2 Katapang.",
+  verification: {
+    google: "oaFqMi58jJhn8f5HkDvdtlQfWFEZMwQauljpKGIDRvs",
+  },
 };
 
 export default function RootLayout({
