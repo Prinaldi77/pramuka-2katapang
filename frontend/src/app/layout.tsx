@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: "Sistem Informasi Pramuka SMPN 2 Katapang",
   description: "Jurnal Ekspedisi Digital Keanggotaan Pramuka SMP Negeri 2 Katapang.",
   verification: {
-    google: "oaFqMi58jJhn8f5HkDvdtlQfWFEZMwQauljpKGIDRvs",
+    google: "EolLsvM3yDMgc2HSge4mgqvJFSr_smfA5HgAoBn4QTs",
   },
 };
 
