@@ -83,7 +83,7 @@ export default async function AdminAbsensiPage() {
                       </div>
                       <div className="text-right">
                         <span className={`text-[10px] font-mono font-bold border px-2.5 py-1 rounded-full uppercase ${badgeColor}`}>
-                          {statusLabel} ({log.jarak === 0 ? 'QR Live' : (log.jarak < 0 ? 'Izin' : `${Math.round(log.jarak)}m`)})
+                          {statusLabel} ({log.jarak === 0 ? 'QR Dinamis' : (log.jarak < 0 ? 'Izin/Sakit' : 'Tervalidasi')})
                         </span>
                       </div>
                     </div>

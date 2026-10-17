@@ -35,10 +35,24 @@ export default function AgendaListWithQR({ agendaList }: AgendaListWithQRProps) 
           </span>
         </div>
 
+        <div className="p-4 bg-[#FBF9F6] border border-[#D1C9BC] rounded-2xl flex items-center justify-between">
+          <div className="flex items-center space-x-3 text-left">
+            <div className="p-2.5 bg-[#1E3F20]/10 text-primary rounded-xl shrink-0">
+              <QrCode className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h4 className="font-serif font-bold text-sm text-primary">Tampilkan QR Presensi ke Siswa</h4>
+              <p className="text-[11px] font-mono text-gray-500">
+                Klik tombol <span className="text-[#1E3F20] font-bold">"BUKA QR LIVE"</span> di bawah untuk menampilkan QR Code 60 detik di layar proyektor / laptop pembina.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="divide-y divide-[#D1C9BC]/35">
           {!agendaList || agendaList.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
-              Belum ada agenda absensi aktif terdaftar.
+              Belum ada agenda absensi aktif terdaftar. Buat agenda di formulir sebelah kiri untuk memulai.
             </div>
           ) : (
             agendaList.map((item: any, idx: number) => (
@@ -60,18 +74,18 @@ export default function AgendaListWithQR({ agendaList }: AgendaListWithQRProps) 
                   {/* TOMBOL BUKA QR DINAMIS */}
                   <button
                     onClick={() => setSelectedAgenda({ id: item.id, judul: item.judul })}
-                    className="px-3 py-2 bg-primary text-[#E7E2D8] hover:bg-opacity-95 font-mono text-xs font-bold uppercase rounded-xl transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer"
-                    title="Tampilkan QR Code Dinamis"
+                    className="px-4 py-2.5 bg-[#1E3F20] hover:bg-[#2A562D] text-[#E7E2D8] font-mono text-xs font-bold uppercase rounded-xl transition-all shadow-md flex items-center space-x-2 cursor-pointer border border-[#D4AF37]/50 ring-1 ring-primary/20 hover:scale-[1.02]"
+                    title="Tampilkan QR Code Dinamis di Layar Proyektor"
                   >
-                    <QrCode className="h-4 w-4" />
-                    <span>Layar QR (60s)</span>
+                    <QrCode className="h-4 w-4 text-[#D4AF37]" />
+                    <span>BUKA QR LIVE</span>
                   </button>
 
                   {/* TOMBOL HAPUS */}
                   <button
                     onClick={() => handleDelete(item.id)}
                     disabled={deletingId === item.id}
-                    className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    className="p-2.5 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                     title="Hapus Agenda"
                   >
                     <Trash2 className="h-5 w-5" />

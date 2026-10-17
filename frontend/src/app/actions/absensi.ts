@@ -171,12 +171,15 @@ export async function createAgendaAction(formData: FormData) {
   const tanggal = formData.get('tanggal') as string;
   const jam_mulai = formData.get('jam_mulai') as string;
   const jam_selesai = formData.get('jam_selesai') as string;
-  const latitude = parseFloat(formData.get('latitude') as string);
-  const longitude = parseFloat(formData.get('longitude') as string);
-  const radius = parseFloat(formData.get('radius') as string);
+  const latStr = formData.get('latitude') as string;
+  const lngStr = formData.get('longitude') as string;
+  const radStr = formData.get('radius') as string;
+  const latitude = latStr ? parseFloat(latStr) : 0;
+  const longitude = lngStr ? parseFloat(lngStr) : 0;
+  const radius = radStr ? parseFloat(radStr) : 0;
 
-  if (!judul || !tanggal || !jam_mulai || !jam_selesai || isNaN(latitude) || isNaN(longitude) || isNaN(radius)) {
-    throw new Error('Semua input parameter absensi wajib diisi dengan benar!');
+  if (!judul || !tanggal || !jam_mulai || !jam_selesai) {
+    throw new Error('Nama agenda, tanggal, jam mulai, dan jam selesai wajib diisi!');
   }
 
   try {
@@ -188,15 +191,16 @@ export async function createAgendaAction(formData: FormData) {
           tanggal,
           jam_mulai,
           jam_selesai,
-          latitude,
-          longitude,
-          radius,
+          latitude: isNaN(latitude) ? 0 : latitude,
+          longitude: isNaN(longitude) ? 0 : longitude,
+          radius: isNaN(radius) ? 0 : radius,
           status: 'aktif'
         },
       ]);
 
     if (error) throw error;
     revalidatePath('/admin');
+    revalidatePath('/admin/absensi');
   } catch (err: any) {
     console.error('Create agenda error:', err);
     throw err;
