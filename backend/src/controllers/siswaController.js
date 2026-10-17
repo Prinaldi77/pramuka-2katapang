@@ -38,8 +38,13 @@ const createSiswa = async (req, res, next) => {
       tempat_lahir,
       tanggal_lahir,
       nama_ortu,
-      no_hp_ortu
+      no_hp_ortu,
+      tingkatan,
+      regu
     } = req.body;
+
+    const resolvedRegu = regu || (jenis_kelamin === 'Perempuan' ? 'Regu Valerian' : 'Regu Wolf');
+    const resolvedTingkatan = tingkatan || 'Penggalang Ramu';
 
     const siswa = await SiswaModel.create({
       user_id,
@@ -49,7 +54,9 @@ const createSiswa = async (req, res, next) => {
       tempat_lahir,
       tanggal_lahir,
       nama_ortu,
-      no_hp_ortu
+      no_hp_ortu,
+      tingkatan: resolvedTingkatan,
+      regu: resolvedRegu
     });
 
     return sendSuccess(res, 'Data siswa berhasil ditambahkan.', siswa, 201);
@@ -69,7 +76,9 @@ const updateSiswa = async (req, res, next) => {
       tempat_lahir,
       tanggal_lahir,
       nama_ortu,
-      no_hp_ortu
+      no_hp_ortu,
+      tingkatan,
+      regu
     } = req.body;
 
     const updates = {};
@@ -80,6 +89,8 @@ const updateSiswa = async (req, res, next) => {
     if (tanggal_lahir !== undefined) updates.tanggal_lahir = tanggal_lahir;
     if (nama_ortu !== undefined) updates.nama_ortu = nama_ortu;
     if (no_hp_ortu !== undefined) updates.no_hp_ortu = no_hp_ortu;
+    if (tingkatan !== undefined) updates.tingkatan = tingkatan;
+    if (regu !== undefined) updates.regu = regu;
 
     const siswa = await SiswaModel.update(id, updates);
 

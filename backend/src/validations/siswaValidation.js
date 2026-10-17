@@ -57,7 +57,15 @@ const createSiswaValidation = [
     .optional()
     .isDate().withMessage('Tanggal lahir harus berformat YYYY-MM-DD'),
   body('nama_ortu').optional().trim(),
-  body('no_hp_ortu').optional().trim()
+  body('no_hp_ortu').optional().trim(),
+  body('tingkatan')
+    .optional()
+    .isIn(['Penggalang Ramu', 'Penggalang Rakit', 'Penggalang Terap'])
+    .withMessage('Tingkatan harus Penggalang Ramu, Penggalang Rakit, atau Penggalang Terap'),
+  body('regu')
+    .optional()
+    .isIn(['Regu Wolf', 'Regu Valerian'])
+    .withMessage('Regu harus Regu Wolf atau Regu Valerian')
 ];
 
 const updateSiswaValidation = [
@@ -90,7 +98,15 @@ const updateSiswaValidation = [
     .optional()
     .isDate().withMessage('Tanggal lahir harus berformat YYYY-MM-DD'),
   body('nama_ortu').optional().trim(),
-  body('no_hp_ortu').optional().trim()
+  body('no_hp_ortu').optional().trim(),
+  body('tingkatan')
+    .optional()
+    .isIn(['Penggalang Ramu', 'Penggalang Rakit', 'Penggalang Terap'])
+    .withMessage('Tingkatan harus Penggalang Ramu, Penggalang Rakit, atau Penggalang Terap'),
+  body('regu')
+    .optional()
+    .isIn(['Regu Wolf', 'Regu Valerian'])
+    .withMessage('Regu harus Regu Wolf atau Regu Valerian')
 ];
 
 module.exports = {

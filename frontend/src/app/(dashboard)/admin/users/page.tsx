@@ -9,10 +9,24 @@ export default async function AdminUsersPage() {
     redirect('/login');
   }
 
-  // 1. Fetch current users list
+  // 1. Fetch current users list with linked siswa profile
   const { data: usersList } = await supabase
     .from('users')
-    .select('id, nama, email, role, created_at')
+    .select(`
+      id,
+      nama,
+      email,
+      role,
+      created_at,
+      siswa (
+        id,
+        nis,
+        kelas,
+        jenis_kelamin,
+        tingkatan,
+        regu
+      )
+    `)
     .order('created_at', { ascending: false });
 
   // 2. Fetch pembina profiles linked to users for dropdown selection
@@ -35,6 +49,9 @@ export default async function AdminUsersPage() {
       id,
       nis,
       kelas,
+      jenis_kelamin,
+      tingkatan,
+      regu,
       users (
         nama
       )

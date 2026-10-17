@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Users, Calendar, Award, LogOut, CheckSquare, Layers, BookOpen, Mail, Image as ImageIcon, User } from 'lucide-react';
+import { Menu, X, Users, Calendar, Award, LogOut, CheckSquare, Layers, BookOpen, Mail, Image as ImageIcon, User, QrCode } from 'lucide-react';
 import { logoutAction } from '@/app/actions/auth';
 
 interface SidebarWrapperProps {
@@ -42,7 +42,7 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
           <CheckSquare className="h-4 w-4" /> <span>SKU & SKK</span>
         </Link>
         <Link href="/siswa/absensi" onClick={closeSidebar} className={getLinkClass('/siswa/absensi')}>
-          <Calendar className="h-4 w-4" /> <span>Absensi GPS</span>
+          <QrCode className="h-4 w-4" /> <span>Absensi QR Code</span>
         </Link>
         <Link href="/profil" onClick={closeSidebar} className={getLinkClass('/profil')}>
           <User className="h-4 w-4" /> <span>Edit Profil</span>
@@ -57,6 +57,9 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
         </Link>
         <Link href="/admin/users" onClick={closeSidebar} className={getLinkClass('/admin/users')}>
           <Users className="h-4 w-4" /> <span>Kelola Anggota</span>
+        </Link>
+        <Link href="/admin/absensi" onClick={closeSidebar} className={getLinkClass('/admin/absensi')}>
+          <QrCode className="h-4 w-4" /> <span>Absensi & QR Code</span>
         </Link>
         <Link href="/admin/galeri" onClick={closeSidebar} className={getLinkClass('/admin/galeri')}>
           <ImageIcon className="h-4 w-4" /> <span>Kelola Galeri</span>
@@ -80,7 +83,7 @@ export default function SidebarWrapper({ session, children }: SidebarWrapperProp
           <Layers className="h-4 w-4" /> <span>Ringkasan Panel</span>
         </Link>
         <Link href="/admin/absensi" onClick={closeSidebar} className={getLinkClass('/admin/absensi')}>
-          <Calendar className="h-4 w-4" /> <span>Kelola Absensi</span>
+          <QrCode className="h-4 w-4" /> <span>Absensi & QR Code</span>
         </Link>
         <Link href="/admin/penilaian" onClick={closeSidebar} className={getLinkClass('/admin/penilaian')}>
           <CheckSquare className="h-4 w-4" /> <span>Kelola Penilaian</span>

@@ -57,6 +57,9 @@ export async function createUserAction(formData: FormData) {
 
     // 3. If role is siswa, seed basic profile matching database schema
     if (role === 'siswa' && newUser) {
+      const tingkatan = (formData.get('tingkatan') as string) || 'Penggalang Ramu';
+      const regu = jenis_kelamin === 'Perempuan' ? 'Regu Valerian' : 'Regu Wolf';
+
       const { error: profileError } = await supabase
         .from('siswa')
         .insert([
@@ -65,6 +68,8 @@ export async function createUserAction(formData: FormData) {
             nis: nis?.trim() || `NIS-${Date.now().toString().slice(-6)}`,
             kelas: kelas?.trim() || 'VIII-A',
             jenis_kelamin: jenis_kelamin || 'Laki-laki',
+            tingkatan,
+            regu,
           },
         ]);
       if (profileError) console.error('Error seeding siswa profile:', profileError.message);
@@ -92,6 +97,45 @@ export async function createUserAction(formData: FormData) {
   }
 }
 
+export async function updateSiswaTingkatanAction(formData: FormData) {
+  const session = await getSession();
+  if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
+    return { success: false, error: 'Akses ditolak. Anda tidak memiliki wewenang.' };
+  }
+
+  const siswaId = Number(formData.get('siswa_id'));
+  const tingkatan = formData.get('tingkatan') as string;
+  const customRegu = formData.get('regu') as string;
+
+  const validTingkatan = ['Penggalang Ramu', 'Penggalang Rakit', 'Penggalang Terap'];
+  if (!siswaId || !validTingkatan.includes(tingkatan)) {
+    return { success: false, error: 'Tingkatan yang dipilih tidak valid.' };
+  }
+
+  try {
+    const updatePayload: Record<string, any> = { tingkatan };
+    if (customRegu) {
+      updatePayload.regu = customRegu;
+    }
+
+    const { error } = await supabase
+      .from('siswa')
+      .update(updatePayload)
+      .eq('id', siswaId);
+
+    if (error) throw error;
+
+    revalidatePath('/admin/users');
+    revalidatePath('/siswa');
+    revalidatePath('/siswa/sku');
+    revalidatePath('/admin/penilaian');
+    return { success: true };
+  } catch (err: any) {
+    console.error('Update tingkatan action error:', err);
+    return { success: false, error: err.message || 'Gagal memperbarui tingkatan.' };
+  }
+}
+
 export async function deleteUserAction(id: number) {
   const session = await getSession();
   if (!session || (session.role !== 'admin' && session.role !== 'pembina')) {
@@ -112,3 +156,4 @@ export async function deleteUserAction(id: number) {
     throw err;
   }
 }
+

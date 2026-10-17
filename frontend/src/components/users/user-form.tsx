@@ -14,10 +14,13 @@ export default function RegisterUserForm() {
   const [nis, setNis] = useState('');
   const [kelas, setKelas] = useState('VIII-A');
   const [jenisKelamin, setJenisKelamin] = useState('Laki-laki');
+  const [tingkatan, setTingkatan] = useState('Penggalang Ramu');
   
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const calculatedRegu = jenisKelamin === 'Perempuan' ? 'Regu Valerian' : 'Regu Wolf';
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,6 +47,8 @@ export default function RegisterUserForm() {
       formData.append('nis', nis);
       formData.append('kelas', kelas);
       formData.append('jenis_kelamin', jenisKelamin);
+      formData.append('tingkatan', tingkatan);
+      formData.append('regu', calculatedRegu);
     }
 
     startTransition(async () => {
@@ -57,6 +62,7 @@ export default function RegisterUserForm() {
         setNis('');
         setKelas('VIII-A');
         setJenisKelamin('Laki-laki');
+        setTingkatan('Penggalang Ramu');
       } else {
         setError(result.error || 'Gagal mendaftarkan anggota baru.');
       }
@@ -192,6 +198,34 @@ export default function RegisterUserForm() {
                 <option value="Laki-laki">Laki-laki (Siswa)</option>
                 <option value="Perempuan">Perempuan (Siswi)</option>
               </select>
+            </div>
+
+            {/* TINGKATAN PRAMUKA */}
+            <div className="space-y-2">
+              <label htmlFor="tingkatan" className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Tingkatan Anggota</label>
+              <select 
+                id="tingkatan"
+                value={tingkatan}
+                onChange={(e) => setTingkatan(e.target.value)}
+                disabled={isPending}
+                className="w-full px-4 py-2.5 bg-white border border-[#D1C9BC] rounded-xl text-sm font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="Penggalang Ramu">Penggalang Ramu (Tingkat 1)</option>
+                <option value="Penggalang Rakit">Penggalang Rakit (Tingkat 2)</option>
+                <option value="Penggalang Terap">Penggalang Terap (Tingkat 3)</option>
+              </select>
+            </div>
+
+            {/* REGU OTOMATIS INFO */}
+            <div className="p-3 bg-white/80 border border-[#D1C9BC] rounded-xl flex items-center justify-between text-xs">
+              <span className="text-[10px] font-mono text-gray-500 uppercase font-bold">Regu Keanggotaan</span>
+              <span className={`px-2.5 py-1 rounded-lg font-mono text-[11px] font-bold ${
+                calculatedRegu === 'Regu Wolf'
+                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                  : 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+              }`}>
+                {calculatedRegu} {calculatedRegu === 'Regu Wolf' ? '(Putra)' : '(Putri)'}
+              </span>
             </div>
           </div>
         )}

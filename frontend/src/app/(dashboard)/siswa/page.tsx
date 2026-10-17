@@ -2,7 +2,7 @@ import { getSession } from '@/lib/session';
 import { supabase } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import { Award, Compass } from 'lucide-react';
-import CheckInWidget from '@/components/absensi/check-in-widget';
+import QRScannerWidget from '@/components/absensi/qr-scanner-widget';
 
 export default async function SiswaDashboard() {
   const session = await getSession();
@@ -17,6 +17,7 @@ export default async function SiswaDashboard() {
       id,
       nis,
       kelas,
+      jenis_kelamin,
       tingkatan,
       regu,
       users (
@@ -84,7 +85,9 @@ export default async function SiswaDashboard() {
           <div className="grid grid-cols-2 gap-4 border-b border-[#D1C9BC]/60 pb-6">
             <div>
               <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Regu Keanggotaan</span>
-              <p className="font-serif font-bold text-lg text-primary">{siswa.regu || 'Regu Singa'}</p>
+              <p className="font-serif font-bold text-lg text-primary">
+                {siswa.regu || (siswa.jenis_kelamin === 'Perempuan' ? 'Regu Valerian' : 'Regu Wolf')}
+              </p>
             </div>
             <div>
               <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Tingkatan</span>
@@ -133,10 +136,9 @@ export default async function SiswaDashboard() {
         </div>
       </div>
 
-      {/* GEOLOCATION CHECK-IN WIDGET */}
-      <CheckInWidget
+      {/* DYNAMIC QR ATTENDANCE SCANNER */}
+      <QRScannerWidget
         siswaId={siswa.id}
-        activeAgendas={activeAgendas || []}
         initialLogs={initialLogs || []}
       />
     </div>
