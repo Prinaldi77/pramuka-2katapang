@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { redirect } from 'next/navigation';
 import AgendaForm from '@/components/absensi/agenda-form';
 import AgendaListWithQR from '@/components/absensi/agenda-list-with-qr';
+import ExportAttendanceButton from '@/components/absensi/export-attendance-button';
 
 export default async function AdminAbsensiPage() {
   const session = await getSession();
@@ -56,7 +57,10 @@ export default async function AdminAbsensiPage() {
           <AgendaListWithQR agendaList={agendaList || []} />
 
           <div className="bg-white border border-[#D1C9BC] rounded-3xl p-8 shadow-sm space-y-6 text-left">
-            <h3 className="font-serif font-bold text-xl text-primary border-b border-[#D1C9BC]/45 pb-3">Log Riwayat Absensi & Izin Masuk</h3>
+            <div className="flex justify-between items-center border-b border-[#D1C9BC]/45 pb-3">
+              <h3 className="font-serif font-bold text-xl text-primary">Log Riwayat Absensi & Izin Masuk</h3>
+              <ExportAttendanceButton logs={checkInLogs || []} />
+            </div>
 
             <div className="divide-y divide-[#D1C9BC]/35 max-h-96 overflow-y-auto pr-2">
               {!checkInLogs || checkInLogs.length === 0 ? (

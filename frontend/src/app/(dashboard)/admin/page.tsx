@@ -87,7 +87,7 @@ export default async function AdminDashboard() {
         <div className="bg-white border border-[#D1C9BC] p-8 rounded-3xl flex flex-col justify-between h-48 hover:border-accent transition-colors">
           <div className="flex justify-between items-center">
             <CheckCircle2 className="h-8 w-8 text-primary" />
-            <span className="text-[10px] font-mono text-[#5C3D2E] font-bold">[ Geofence OK ]</span>
+            <span className="text-[10px] font-mono text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full font-bold border border-green-200">[ QR Valid ]</span>
           </div>
           <div>
             <span className="text-[10px] font-mono text-[#5C3D2E] uppercase font-bold">Log Absensi Sukses</span>
@@ -161,7 +161,7 @@ export default async function AdminDashboard() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-mono font-bold text-[#5C3D2E]">Jarak: {Math.round(log.jarak)}m</span>
+                  <span className="text-[10px] font-mono font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">QR Dinamis</span>
                   <p className="text-[9px] text-gray-400 mt-0.5">
                     {new Date(log.created_at).toLocaleTimeString('id-ID')}
                   </p>
@@ -179,7 +179,7 @@ export default async function AdminDashboard() {
           <div className="space-y-2 mt-6 text-left">
             <h4 className="font-serif font-bold text-white">Panduan Pembina</h4>
             <p className="text-xs text-[#E7E2D8]/70 leading-relaxed">
-              Gunakan panel kiri untuk mengakses basis data anggota, memverifikasi syarat kecakapan umum (SKU/SKK), dan memantau status peta geofence secara berkala.
+              Gunakan panel kiri untuk mengakses basis data anggota, memverifikasi syarat kecakapan umum (SKU/SKK), dan memantau presensi QR Code live secara berkala.
             </p>
           </div>
         </div>
